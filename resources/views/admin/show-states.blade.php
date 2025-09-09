@@ -1,0 +1,130 @@
+@extends('admin.main-dashboard-frame')
+@section('admin-content')
+    <div class="container-fluid">
+        <!-- Page Heading -->
+        <!-- Content Row -->
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <div class="card rounded-0">
+                    <div
+                        class="card-header d-flex justify-content-between align-items-center rounded-0 py-2 bg-dark text-light font-weight-bolder">
+                        All States
+                        <button type="button" onclick="toggleAddCategory()" class="btn btn-secondary">Enter New State</button>
+                    </div>
+                    <div class="card-body pb-0">
+                        <div class="card my-4 rounded-0 {{ old('isok') ? 'd-block' : 'd-none' }}" id="category_card">
+                            <div
+                                class="card-header d-flex justify-content-between align-items-center rounded-0 py-2 bg-dark text-light font-weight-bolder">
+                                Enter New State
+                            </div>
+                            <form method="post" action="{{ route('admin.add.state') }}" enctype="multipart/form-data"
+                                class="card-body pb-0">
+                                @csrf
+                                <div class="row">
+                                    <div class="col-md-4 form-group">
+                                        <input type="text" name="state_name" id="name" class="form-control"
+                                            placeholder="Enter the state name" value="{{ old('state_name') }}">
+                                        <input type="hidden" name="isok" value="{{ old('isok') ? 1 : 1 }}">
+                                        <input type="hidden" name="country_id" value="{{ $country_id }}">
+                                        @error('state_name')
+                                            <p class="text-danger">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+
+                                    <div class="col-md-4 form-group">
+                                        <input type="file" name="image" id="image">
+                                        <small class="d-block">State Image</small>
+                                        @error('image')
+                                            <p class="text-danger">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-3 col-md-4 px-3">
+                                        <button type="submit" class="btn btn-sm btn-primary">Add State</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <style>
+                            td {
+                                padding: 4px !important;
+                                font-size: 14px !important;
+                            }
+
+                            td p {
+                                font-size: 14px !important;
+                                padding: 0px !important;
+                                margin: 0px !important;
+                            }
+
+                            td a {
+                                font-weight: 700 !important;
+                            }
+                        </style>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped " id="dataTable" width="100%"
+                                cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th>Country</th>
+                                        <th>Banner</th>
+                                        <th>State</th>
+                                        <th>City</th>
+                                        <th>Action</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($states as $key => $state)
+                                        <tr>
+                                            <td class="align-middle">{{ $key + 1 }}</td>
+                                            <td class="align-middle">
+                                                {{ $state->country->name }}
+                                            </td>
+
+                                            <td class="align-middle">
+                                                @if ($state->image != '')
+                                                    <img src="{{asset('uploads/state_banners/'.$state->image)}}" style="height: 3rem;"
+                                                        alt="">
+                                                @endif
+                                            </td>
+                                            <td class="align-middle">
+                                                <a href="{{ route('admin.all.city', $state->id) }}">{{ $state->name }}</a>
+                                            </td>
+                                            <td class="align-middle">
+                                                <a
+                                                    href="{{ route('admin.all.city', $state->id) }}">{{ $state->cities_count }}</a>
+                                            </td>
+                                            <td class="align-middle">
+                                                <a href="{{route('admin.edit.state',$state->id)}}" class="btn btn-sm btn-info"><i
+                                                        class="fas fa-edit    "></i></a>
+                                                <a href="{{route('admin.delete.state',$state->id)}}" id="delete" class="btn btn-sm btn-primary"><i
+                                                        class="fas fa-trash    "></i></a>
+                                            </td>
+
+                                        </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+@endsection
+@section('custom-js')
+    <script>
+        function toggleAddCategory() {
+            $('#category_card').toggleClass('d-none');
+        }
+    </script>
+    
+@endsection

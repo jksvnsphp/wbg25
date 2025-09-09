@@ -1,0 +1,1002 @@
+@extends('external-user.external-frame')
+
+@section('external-main-content')
+    <style>
+        .scroll_listing::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scroll_listing::-webkit-scrollbar-thumb {
+            background-color: #9b9999;
+            border-radius: 10px;
+        }
+
+        .scroll_listing::-webkit-scrollbar-thumb:hover {
+            background-color: #b8b8b8;
+        }
+    </style>
+    <!-- main home banner section start here -->
+    <section class="container-fluid mt-2 mb-0 main-banner-slider">
+        <div id="home-banner" class="owl-carousel h-100 w-100">
+            @foreach ($banners as $banner)
+                <a href="{{ $banner['banner_link'] }}" class="banner-slide ">
+                    <img class="img-fluid" src="{{ asset('uploads/home_banners/' . $banner['banner']) }}" alt="" />
+                </a>
+            @endforeach
+        </div>
+    </section>
+    <!-- main home banner section end here -->
+
+    <!-- top features sections start here -->
+    <section class="container-fluid d-md-block d-none shadow mt-0 bg-white text-center pt-5 pb-5">
+        <div class="row features-card">
+            <div class="col-md-4 col-sm-12">
+                <div class="box my-2">
+                    <a class="page-scroll" href="#featur1">
+                        <i class="fa fa-compass yo-2" aria-hidden="true"></i>
+                        Discover Products Suppliers
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="box my-2">
+                    <a class="page-scroll" href="#featur2">
+                        <i class="fa fa-star yo-2" aria-hidden="true"></i> Latest Products</a>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="box my-2">
+                    <a class="page-scroll" href="#featur3">
+                        <i class="fa fa-life-ring yo-2" aria-hidden="true"></i> Top
+                        Suppliers And Agents</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- top features sections end here -->
+
+    <div class="container-fluid my-4" id="featur1">
+        <div class="row">
+            <div class="col-md-4 mt-2">
+                <div class="card equal-box shadow category-list">
+                    <div class="first-category-heading d-flex justify-content-between">
+                        <span class="icon-category">
+                            <i aria-hidden="true" class="fa fa-bars"></i>
+                            <span class="mx-2">Products by Category</span>
+                        </span>
+                        <div id="back-button" style="display: none;cursor: pointer;">
+                            <i id="back-category" class="fa-solid fa-arrow-left "></i>
+                        </div>
+                    </div>
+                    <ul class="listing scroll_listing px-3" id="category-list"
+                        style="height:35rem;overflow-y:scroll;scroll-behavior: smooth;">
+                        @foreach ($categories as $category)
+                            <li>
+                                <a href="javascript:void(0);" data-id="{{ $category->id }}" class="category-link"
+                                    title="{{ $category->name }}">
+                                    <span>{{ $category->name }}</span>
+                                    <span class="open-arrow">
+                                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+
+
+
+                    <!-- Pass all categories and subcategories as a JSON object -->
+                    <script type="text/javascript">
+                        var categoriesData = {!! json_encode($categories) !!};
+                    </script>
+
+                </div>
+            </div>
+            <div class="col-md-4 mt-2">
+                <div class="card equal-box shadow">
+                    <h3 class="mid-card-heading">
+                        <a href="#">
+                            <img src="{{ asset('uploads/icons/icon1.png') }}" class="rfq_img" />
+                            <span>{!! $infos[1]->title !!}</span>
+                        </a>
+                    </h3>
+                    <div class="describe text-center mb-0">
+                        {!! $infos[1]->sub_title !!}
+                    </div>
+                    <div class="new-deatils">
+                        <div class="img-content">
+                            <a href="" target="_self">
+                                <img class="img-fluid img-thumbnail"
+                                    src="{{ asset('uploads/home_banners/' . $infos[1]->image) }}" alt />
+                            </a>
+                        </div>
+
+                        {!! $infos[1]->content !!}
+                    </div>
+
+                    <div class="w-100">
+                        <a class="btn btn-primary w-100" href="">Get Quote</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mt-2">
+                <div class="card equal-box shadow">
+                    <div class="product-group">
+                        <h3 class="mid-card-heading">
+                            <a href="#">
+                                <img src="{{ asset('uploads/icons/icon2.png') }}" class="rfq_img" />
+                                <span class>New Members </span>
+                            </a>
+                        </h3>
+                        <div class="describe">
+                            <a class="text-primary" href="">Global Brands Converge Here</a>
+                        </div>
+                        @foreach ($wholesalerUsers as $wholesalerUser)
+                            <a class="small_product_card mt-2 p-2 row"
+                                href="{{ route('seller.profile.view', $wholesalerUser->ref_no) }}"
+                                title="{{ isset($wholesalerUser->company->name) ? $wholesalerUser->company->name : 'NA' }}">
+                                <div class="col-3">
+                                    <span class="round_img">
+                                        <img style="height:2rem; width:auto;"
+                                            src="@if (isset($wholesalerUser->company->company_logo) && $wholesalerUser->company->company_logo != '') {{ asset('uploads/profile/' . $wholesalerUser->company->company_logo) }}
+                                                    @else
+                                                    {{ asset('uploads/logo/default-logo.png') }} @endif"
+                                            class="lazyloaded" />
+                                    </span>
+                                </div>
+                                <div class="col-9 product_named">
+                                    <div>
+                                        <h6 class="product_title text-every fw-bolder">
+                                            {{ isset($wholesalerUser->company->name) ? $wholesalerUser->company->name : 'NA' }}
+                                        </h6>
+
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- section start for featured products -->
+    <section class="container-fluid mb-4" id="featur2">
+        <div class="card rounded-0 shadow bg-white">
+            <div class="card-header border-bottom-0 bg-white d-flex justify-content-between py-4">
+                <span class="fs-5 fw-bold text-every">Latest Products</span>
+                <a href="{{ route('all.products') }}" class="text-every">View More</a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="owl-carousel" id="featured_products">
+                        @if (isset($latestProducts))
+                            @foreach ($latestProducts as $latestProduct)
+                                @php
+                                    $variants = is_string($latestProduct->variants)
+                                        ? json_decode($latestProduct->variants, true)
+                                        : $latestProduct->variants;
+                                    $variants = is_array($variants) ? $variants : [];
+                                    $allImages = [];
+                                    $prices = [];
+                                    foreach ($variants as $variant) {
+                                        if (!empty($variant['images']) && is_array($variant['images'])) {
+                                            $allImages = array_merge($allImages, $variant['images']);
+                                        }
+                                        if (isset($variant['price']) && is_numeric($variant['price'])) {
+                                            $prices[] = $variant['price'];
+                                        }
+                                    }
+                                    $minPrice = !empty($prices) ? min($prices) : $latestProduct->minPrice ?? 1;
+                                    $previewImage = !empty($allImages)
+                                        ? asset('uploads/products/' . $allImages[0])
+                                        : null;
+                                    if (empty($previewImage)) {
+                                        $previewImage =
+                                            isset($latestProduct->gallery[0]->image) &&
+                                            !empty($latestProduct->gallery[0]->image)
+                                                ? asset('uploads/products/gallery/' . $latestProduct->gallery[0]->image)
+                                                : 'uploads/products/gallery/Image_not_available.png';
+                                    }
+                                @endphp
+
+                                <a href="{{ route('product.detail', $latestProduct->slug) }}"
+                                    class="card text-dark  p-2 border-0 product-card">
+                                    <div class="w-100 d-flex justify-content-center">
+                                        <img src="
+                                           @if (isset($previewImage)) {{ $previewImage }} @endif
+                                        "class="rounded-2"
+                                            style="height: 8rem; width: 8rem" alt="" />
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="product-title">
+                                            {{ $latestProduct->name }}
+                                        </p>
+                                        <span class="text-primary product-price d-block">
+                                            Price at: $
+                                            @if ($latestProduct->isMultiple == 1)
+                                                {{ number_format($minPrice, 2) }}
+                                            @else
+                                                @if (isset($latestProduct->isPrice0) && $latestProduct->isPrice0 == 1)
+                                                    {{ $latestProduct->price0 }}
+                                                @elseif (isset($latestProduct->isPrice1) && $latestProduct->isPrice1 == 1)
+                                                    {{ $latestProduct->price1 }}
+                                                @elseif (isset($latestProduct->isPrice2) && $latestProduct->isPrice2 == 1)
+                                                    {{ $latestProduct->price2 }}
+                                                @else
+                                                    {{ $latestProduct->price3 }}
+                                                @endif
+                                            @endif
+                                        </span>
+                                    </div>
+                                </a>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- section end featured products -->
+
+
+    <!-- section start for Latest Buy tenders -->
+    <section class="container-fluid mb-4">
+        <div class="card shadow rounded-0 bg-white">
+            <div class="card-header border-bottom-0 bg-white d-flex justify-content-between py-4">
+                <span class="fs-5 fw-bold text-every">Latest Tenders</span>
+                <a href="{{ route('all.tenders') }}" class="text-every">View More</a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="owl-carousel" id="latest_bclassifieds">
+                        @if (isset($latestTenders))
+                            @foreach ($latestTenders as $ltender)
+                                <div class="card p-2 border-0 product-card">
+                                    <div class="w-100 d-flex justify-content-center">
+                                        <img src="@if (isset($ltender->image_1) && $ltender->image_1 != '') {{ asset('uploads/tender/' . $ltender->image_1) }} @else https://placehold.co/400x400 @endif"
+                                            class="rounded-2" style="height: 8rem; width: 8rem" alt="" />
+                                    </div>
+                                    <div class="card-body pt-0">
+                                        <p class="product-title">
+                                            {{ $ltender->name }}
+                                        </p>
+                                        <span class="text-primary product-price d-block">
+                                            Price at: ${{ $ltender->price }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- section end latest tenders -->
+
+    <!-- section start for Top Suppliers And Agents -->
+    <section class="container-fluid mb-4" id="featur3">
+        <div class="card shadow rounded-0 bg-white">
+            <div class="card-header border-bottom-0 bg-white d-flex justify-content-between py-4">
+                <span class="fs-5 fw-bold text-every">Top Suppliers And Agents</span>
+                <a href="{{ route('all.suppliers') }}" class="text-every">View More</a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="owl-carousel" id="top_suppliers">
+                        <div class="card p-2 border-0">
+                            <div class="card-body">
+                                <span class="text-secondary count_supplier fw-bold fw-1">1+</span>
+                                <p>Lorem ipsum dolor, sit amet consectetur adipisicing.</p>
+                            </div>
+                            <div class="w-100 d-flex justify-content-center">
+                                <img src="{{ asset('world-business/images/product_images/450X450/apple_watch.jpeg') }}"
+                                    class="card-img-top" style="height: 8rem; width: 8rem" alt="" />
+                            </div>
+                        </div>
+                        <div class="card p-2 border-0">
+                            <div class="card-body">
+                                <span class="text-secondary count_supplier fw-bold fw-1">1+</span>
+                                <p>Lorem ipsum dolor, sit amet consectetur adipisicing.</p>
+                            </div>
+                            <div class="w-100 d-flex justify-content-center">
+                                <img src="{{ asset('world-business/images/product_images/450X450/apple_watch.jpeg') }}"
+                                    class="card-img-top" style="height: 8rem; width: 8rem" alt="" />
+                            </div>
+                        </div>
+                        <div class="card p-2 border-0">
+                            <div class="card-body">
+                                <span class="text-secondary count_supplier fw-bold fw-1">23+</span>
+                                <p>Lorem ipsum dolor, sit amet consectetur adipisicing.</p>
+                            </div>
+                            <div class="w-100 d-flex justify-content-center">
+                                <img src="{{ asset('world-business/images/product_images/450X450/apple_watch.jpeg') }}"
+                                    class="card-img-top" style="height: 8rem; width: 8rem" alt="" />
+                            </div>
+                        </div>
+                        <div class="card p-2 border-0">
+                            <div class="card-body">
+                                <span class="text-secondary count_supplier fw-bold fw-1">41+</span>
+                                <p>Lorem ipsum dolor, sit amet consectetur adipisicing.</p>
+                            </div>
+                            <div class="w-100 d-flex justify-content-center">
+                                <img src="{{ asset('world-business/images/product_images/450X450/apple_watch.jpeg') }}"
+                                    class="card-img-top" style="height: 8rem; width: 8rem" alt="" />
+                            </div>
+                        </div>
+                        <div class="card p-2 border-0">
+                            <div class="card-body">
+                                <span class="text-secondary count_supplier fw-bold fw-1">12+</span>
+                                <p>Lorem ipsum dolor, sit amet consectetur adipisicing.</p>
+                            </div>
+                            <div class="w-100 d-flex justify-content-center">
+                                <img src="{{ asset('world-business/images/product_images/450X450/apple_watch.jpeg') }}"
+                                    class="card-img-top" style="height: 8rem; width: 8rem" alt="" />
+                            </div>
+                        </div>
+                        <div class="card p-2 border-0">
+                            <div class="card-body">
+                                <span class="text-secondary count_supplier fw-bold fw-1">1+</span>
+                                <p>Lorem ipsum dolor, sit amet consectetur adipisicing.</p>
+                            </div>
+                            <div class="w-100 d-flex justify-content-center">
+                                <img src="{{ asset('world-business/images/product_images/450X450/apple_watch.jpeg') }}"
+                                    class="card-img-top" style="height: 8rem; width: 8rem" alt="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- section end Top Suppliers And Agents -->
+
+    <!-- section start for Limited Offers -->
+    <section class="container-fluid mb-4">
+        <div class="card shadow rounded-0 bg-white">
+            <div class="card-header border-bottom-0 bg-white d-flex justify-content-between py-4">
+                <span class="fs-5 fw-bold text-every">Limited Offers</span>
+                <a href="" class="text-every">View More</a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="owl-carousel" id="limited_offers">
+                        @if ($LimitedProducts)
+                            @foreach ($LimitedProducts as $LimitedProduct)
+                                @php
+                                    $variants = is_string($LimitedProduct->variants)
+                                        ? json_decode($LimitedProduct->variants, true)
+                                        : $LimitedProduct->variants;
+                                    $variants = is_array($variants) ? $variants : [];
+                                    $allImages = [];
+                                    $prices = [];
+                                    foreach ($variants as $variant) {
+                                        if (!empty($variant['images']) && is_array($variant['images'])) {
+                                            $allImages = array_merge($allImages, $variant['images']);
+                                        }
+                                        if (isset($variant['price']) && is_numeric($variant['price'])) {
+                                            $prices[] = $variant['price'];
+                                        }
+                                    }
+                                    $minPrice = !empty($prices) ? min($prices) : $LimitedProduct->minPrice ?? 1;
+                                    $previewImage = !empty($allImages)
+                                        ? asset('uploads/products/' . $allImages[0])
+                                        : null;
+                                    if (empty($previewImage)) {
+                                        $previewImage =
+                                            isset($LimitedProduct->gallery[0]->image) &&
+                                            !empty($LimitedProduct->gallery[0]->image)
+                                                ? asset(
+                                                    'uploads/products/gallery/' . $LimitedProduct->gallery[0]->image,
+                                                )
+                                                : 'uploads/products/gallery/Image_not_available.png';
+                                    }
+                                @endphp
+                                <a href="{{ route('product.detail', $LimitedProduct->slug) }}"
+                                    class="card p-2 text-dark border-0 product-card">
+                                    <div class="w-100 d-flex justify-content-center">
+                                        <img src="{{ $previewImage }}" class="rounded-2"
+                                            style="height: 8rem; width: 8rem" alt="" />
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="product-title">
+                                            {{ $LimitedProduct->name }}
+                                        </p>
+                                        <span class="text-primary product-price d-block">
+                                            Price at: $
+                                            @if ($LimitedProduct->isMultiply == 1)
+                                                {{ number_format($minPrice, 2) }}
+                                            @else
+                                                @if (isset($LimitedProduct->isPrice0) && $LimitedProduct->isPrice0 == 1)
+                                                    {{ $LimitedProduct->price0 }}
+                                                @elseif (isset($LimitedProduct->isPrice1) && $LimitedProduct->isPrice1 == 1)
+                                                    {{ $LimitedProduct->price1 }}
+                                                @elseif (isset($LimitedProduct->isPrice2) && $LimitedProduct->isPrice2 == 1)
+                                                    {{ $LimitedProduct->price2 }}
+                                                @else
+                                                    {{ $LimitedProduct->price3 }}
+                                                @endif
+                                            @endif
+                                        </span>
+                                    </div>
+                                </a>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- section end Limited Offers -->
+
+    <!-- section start cards -->
+    <section class="container-fluid mb-4">
+        <div class="row">
+            <div class="col-md-12 py-4 text-center">
+                <h3 class="fs-5 text-bolder py-2 text-every">
+                    Daily Deals By Sellers
+                </h3>
+                <small class="small text-every">Offers, Sales and Discounts</small>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow p-md-4 p-2 rounded-0 bg-white">
+                    <div class="card-header border-bottom-0 bg-white d-flex justify-content-between py-4 pt-1">
+                        <span class="fs-5 fw-bold text-every">Bulk Buying</span>
+                        <a href="" class="text-every">View More</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="owl-carousel" id="bulk_buying">
+                                @if ($BulkProducts)
+                                    @foreach ($BulkProducts as $BulkProduct)
+                                        @php
+                                            $variants = is_string($BulkProduct->variants)
+                                                ? json_decode($BulkProduct->variants, true)
+                                                : $BulkProduct->variants;
+                                            $variants = is_array($variants) ? $variants : [];
+                                            $allImages = [];
+                                            $prices = [];
+                                            foreach ($variants as $variant) {
+                                                if (!empty($variant['images']) && is_array($variant['images'])) {
+                                                    $allImages = array_merge($allImages, $variant['images']);
+                                                }
+                                                if (isset($variant['price']) && is_numeric($variant['price'])) {
+                                                    $prices[] = $variant['price'];
+                                                }
+                                            }
+                                            $minPrice = !empty($prices) ? min($prices) : $BulkProduct->minPrice ?? 1;
+                                            $previewImage = !empty($allImages)
+                                                ? asset('uploads/products/' . $allImages[0])
+                                                : null;
+                                            if (empty($previewImage)) {
+                                                $previewImage =
+                                                    isset($BulkProduct->gallery[0]->image) &&
+                                                    !empty($BulkProduct->gallery[0]->image)
+                                                        ? asset(
+                                                            'uploads/products/gallery/' .
+                                                                $BulkProduct->gallery[0]->image,
+                                                        )
+                                                        : 'uploads/products/gallery/Image_not_available.png';
+                                            }
+                                        @endphp
+                                        <a href="{{ route('product.detail', $BulkProduct->slug) }}"
+                                            class="card text-dark p-2 border-0 product-card">
+                                            <div class="w-100 d-flex justify-content-center">
+                                                <img src="{{ $previewImage }}" class="rounded-2"
+                                                    style="height: 8rem; width: 8rem" alt="" />
+                                            </div>
+                                            <div class="card-body">
+                                                <p class="product-title">
+                                                    {{ $BulkProduct->name }}
+                                                </p>
+                                                <span class="text-primary product-price d-block">
+                                                    Price at: $
+                                                    @if ($BulkProduct->isMultiply == 1)
+                                                        {{ number_format($minPrice, 2) }}
+                                                    @else
+                                                        @if (isset($BulkProduct->isPrice0) && $BulkProduct->isPrice0 == 1)
+                                                            {{ $BulkProduct->price0 }}
+                                                        @elseif (isset($BulkProduct->isPrice1) && $BulkProduct->isPrice1 == 1)
+                                                            {{ $BulkProduct->price1 }}
+                                                        @elseif (isset($BulkProduct->isPrice2) && $BulkProduct->isPrice2 == 1)
+                                                            {{ $BulkProduct->price2 }}
+                                                        @else
+                                                            {{ $BulkProduct->price3 }}
+                                                        @endif
+                                                    @endif
+                                                </span>
+                                            </div>
+                                        </a>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow p-md-4 p-2 rounded-0 bg-white">
+                    <div class="card-header border-bottom-0 bg-white d-flex justify-content-between py-4 pt-1">
+                        <span class="fs-5 fw-bold text-every">Daily Deals</span>
+                        <a href="" class="text-every">View More</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="owl-carousel" id="daily_deals">
+                                @if ($DailyProducts)
+                                    @foreach ($DailyProducts as $DailyProduct)
+                                        @php
+                                            $variants = is_string($DailyProduct->variants)
+                                                ? json_decode($DailyProduct->variants, true)
+                                                : $DailyProduct->variants;
+                                            $variants = is_array($variants) ? $variants : [];
+                                            $allImages = [];
+                                            $prices = [];
+                                            foreach ($variants as $variant) {
+                                                if (!empty($variant['images']) && is_array($variant['images'])) {
+                                                    $allImages = array_merge($allImages, $variant['images']);
+                                                }
+                                                if (isset($variant['price']) && is_numeric($variant['price'])) {
+                                                    $prices[] = $variant['price'];
+                                                }
+                                            }
+                                            $minPrice = !empty($prices) ? min($prices) : $DailyProduct->minPrice ?? 1;
+                                            $previewImage = !empty($allImages)
+                                                ? asset('uploads/products/' . $allImages[0])
+                                                : null;
+                                            if (empty($previewImage)) {
+                                                $previewImage =
+                                                    isset($DailyProduct->gallery[0]->image) &&
+                                                    !empty($DailyProduct->gallery[0]->image)
+                                                        ? asset(
+                                                            'uploads/products/gallery/' .
+                                                                $DailyProduct->gallery[0]->image,
+                                                        )
+                                                        : 'uploads/products/gallery/Image_not_available.png';
+                                            }
+                                        @endphp
+                                        <a href="{{ route('product.detail', $DailyProduct->slug) }}"
+                                            class="card text-dark p-2 border-0 product-card">
+                                            <div class="w-100 d-flex justify-content-center">
+                                                <img src="{{ $previewImage }}" class="rounded-2"
+                                                    style="height: 8rem; width: 8rem" alt="" />
+                                            </div>
+                                            <div class="card-body">
+                                                <p class="product-title">
+                                                    {{ $DailyProduct->name }}
+                                                </p>
+                                                <span class="text-primary product-price d-block">
+                                                    Price at: $
+                                                    @if ($DailyProduct->isMultiple == 1)
+                                                        {{ number_format($minPrice, 2) }}
+                                                    @else
+                                                        @if (isset($DailyProduct->isPrice0) && $DailyProduct->isPrice0 == 1)
+                                                            {{ $DailyProduct->price0 }}
+                                                        @elseif (isset($DailyProduct->isPrice1) && $DailyProduct->isPrice1 == 1)
+                                                            {{ $DailyProduct->price1 }}
+                                                        @elseif (isset($DailyProduct->isPrice2) && $DailyProduct->isPrice2 == 1)
+                                                            {{ $DailyProduct->price2 }}
+                                                        @else
+                                                            {{ $DailyProduct->price3 }}
+                                                        @endif
+                                                    @endif
+                                                </span>
+                                            </div>
+                                        </a>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow p-md-4 p-2 rounded-0 bg-white">
+                    <div class="card-header border-bottom-0 bg-white d-flex justify-content-between py-4 pt-1">
+                        <span class="fs-5 fw-bold text-every">Hot Product</span>
+                        <a href="" class="text-every">View More</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="owl-carousel" id="hot_product">
+                                @if ($HotsProducts)
+                                    @foreach ($HotsProducts as $HotsProduct)
+                                        @php
+                                            $variants = is_string($HotsProduct->variants)
+                                                ? json_decode($HotsProduct->variants, true)
+                                                : $HotsProduct->variants;
+                                            $variants = is_array($variants) ? $variants : [];
+                                            $allImages = [];
+                                            $prices = [];
+                                            foreach ($variants as $variant) {
+                                                if (!empty($variant['images']) && is_array($variant['images'])) {
+                                                    $allImages = array_merge($allImages, $variant['images']);
+                                                }
+                                                if (isset($variant['price']) && is_numeric($variant['price'])) {
+                                                    $prices[] = $variant['price'];
+                                                }
+                                            }
+                                            $minPrice = !empty($prices) ? min($prices) : $HotsProduct->minPrice ?? 1;
+                                            $previewImage = !empty($allImages)
+                                                ? asset('uploads/products/' . $allImages[0])
+                                                : null;
+                                            if (empty($previewImage)) {
+                                                $previewImage =
+                                                    isset($HotsProduct->gallery[0]->image) &&
+                                                    !empty($HotsProduct->gallery[0]->image)
+                                                        ? asset(
+                                                            'uploads/products/gallery/' .
+                                                                $HotsProduct->gallery[0]->image,
+                                                        )
+                                                        : 'uploads/products/gallery/Image_not_available.png';
+                                            }
+                                        @endphp
+                                        <a href="{{ route('product.detail', $HotsProduct->slug) }}"
+                                            class="card text-dark p-2 border-0 product-card">
+                                            <div class="w-100 d-flex justify-content-center">
+                                                <img src="{{ $previewImage }}" class="rounded-2"
+                                                    style="height: 8rem; width: 8rem" alt="" />
+                                            </div>
+                                            <div class="card-body">
+                                                <p class="product-title">
+                                                    {{ $HotsProduct->name }}
+                                                </p>
+                                                <span class="text-primary product-price d-block">
+                                                    Price at: $
+                                                    @if ($HotsProduct->isMultiple == 1)
+                                                        {{ number_fromat($minPrice, 2) }}
+                                                    @else
+                                                        @if (isset($HotsProduct->isPrice0) && $HotsProduct->isPrice0 == 1)
+                                                            {{ $HotsProduct->price0 }}
+                                                        @elseif (isset($HotsProduct->isPrice1) && $HotsProduct->isPrice1 == 1)
+                                                            {{ $HotsProduct->price1 }}
+                                                        @elseif (isset($HotsProduct->isPrice2) && $HotsProduct->isPrice2 == 1)
+                                                            {{ $HotsProduct->price2 }}
+                                                        @else
+                                                            {{ $HotsProduct->price3 }}
+                                                        @endif
+                                                    @endif
+                                                </span>
+                                            </div>
+                                        </a>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- section end -->
+
+    <!-- section start for Spotlight Stores -->
+    <section class="container-fluid mb-4">
+        <div class="card shadow rounded-0 bg-white">
+            <div class="card-header border-bottom-0 bg-white d-flex justify-content-between py-4">
+                <span class="fs-5 fw-bold text-every">Spotlight Stores</span>
+                <a href="" class="text-every">View More</a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="owl-carousel" id="spotlight_stores">
+                        <div class="card p-2 border-0">
+                            <div class="w-100 d-flex justify-content-center">
+                                <img src="{{ asset('world-business/images/mic1.jpg') }}" class="card-img-top"
+                                    style="height: 8rem; " alt="" />
+                            </div>
+                            <div class="card-body d-flex align-items-center">
+
+                                <div>
+                                    <h5>SAMSUNG</h5>
+                                    <small class="text-muted mt-2" style="font-size: 11px">vbn</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-2 border-0">
+                            <div class="w-100 d-flex justify-content-center">
+                                <img src="{{ asset('world-business/images/mic2.jpg') }}" class="card-img-top"
+                                    style="height: 8rem;" alt="" />
+                            </div>
+                            <div class="card-body d-flex align-items-center">
+
+                                <div>
+                                    <h5>Milling House</h5>
+                                    <small class="text-muted mt-2" style="font-size: 11px">Milling House</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-2 border-0">
+                            <div class="w-100 d-flex justify-content-center">
+                                <img src="{{ asset('world-business/images/mic3.jpg') }}" class="card-img-top"
+                                    style="height: 8rem;" alt="" />
+                            </div>
+                            <div class="card-body d-flex align-items-center">
+
+                                <div>
+                                    <h5>Fashion Store</h5>
+                                    <small class="text-muted mt-2" style="font-size: 11px">Fashion Store</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card p-2 border-0">
+                            <div class="w-100 d-flex justify-content-center">
+                                <img src="{{ asset('world-business/images/mic1.jpg') }}" class="card-img-top"
+                                    style="height: 8rem; " alt="" />
+                            </div>
+                            <div class="card-body d-flex align-items-center">
+
+                                <div>
+                                    <h5>SAMSUNG</h5>
+                                    <small class="text-muted mt-2" style="font-size: 11px">vbn</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-2 border-0">
+                            <div class="w-100 d-flex justify-content-center">
+                                <img src="{{ asset('world-business/images/mic2.jpg') }}" class="card-img-top"
+                                    style="height: 8rem; " alt="" />
+                            </div>
+                            <div class="card-body d-flex align-items-center">
+
+                                <div>
+                                    <h5>Milling House</h5>
+                                    <small class="text-muted mt-2" style="font-size: 11px">Milling House</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-2 border-0">
+                            <div class="w-100 d-flex justify-content-center">
+                                <img src="{{ asset('world-business/images/mic3.jpg') }}" class="card-img-top"
+                                    style="height: 8rem;" alt="" />
+                            </div>
+                            <div class="card-body d-flex align-items-center">
+
+                                <div>
+                                    <h5>Fashion Store</h5>
+                                    <small class="text-muted mt-2" style="font-size: 11px">Fashion Store</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- section end Top Suppliers And Agents -->
+
+    <!-- section start info cards -->
+    <section class="container-fluid mb-4">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card shadow p-1 rounded-0 bg-white">
+                    <div class="card-header border-bottom-0 bg-white d-flex justify-content-between py-4">
+                        <span class="fs-5 fw-bold text-every">Latest News</span>
+                        <a href="{{ route('all.news.show') }}" class="text-every">View More</a>
+                    </div>
+                    <div class="card-body overflow-y-scroll news_scroll">
+                        @foreach ($latestNews as $news)
+                            <a href="{{ route('read.news', $news->slug) }}" class="row text-dark news_card">
+                                <div class="col-md-3">
+
+                                    <img src="
+                                    @if (isset($news->image) && $news->image != null) {{ asset('uploads/news/' . $news->image) }}
+                                         @else
+                                       https://placehold.co/200 @endif
+                                    "
+                                        alt="{{ $news->title }}" />
+
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="news_details">
+                                        <h4>
+                                            {{ $news->title }}
+                                        </h4>
+                                        <p>
+                                            {{ $news->short_description }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card shadow p-1 rounded-0 bg-white">
+                    <div class="card-header border-bottom-0 bg-white d-flex justify-content-between py-4">
+                        <span class="fs-5 fw-bold text-every">Products Video Show</span>
+                        <a href="{{ route('all.product-video.show') }}" class="text-every">View More</a>
+                    </div>
+                    <div class="card-body news_scroll">
+                        <a class="text-dark fw-bold fs-6 text-center" href="{{ route('product.detail') }}">
+                            <h6>HP Laptop 16GB RAM</h6>
+                        </a>
+                        <div class="bg-primary mt-3 mx-auto" style="height: 9.5rem; width: 80%;">
+                            <iframe style="height: 100%; width: 100%;"
+                                src="https://www.youtube.com/embed/D0UnqGm_miA?si=OCOMLbaZUWvofrjq"
+                                title="YouTube video player" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card shadow p-1 rounded-0 bg-white">
+                    <div class="card-header border-bottom-0 bg-white d-flex justify-content-between py-4">
+                        <span class="fs-5 fw-bold text-every">Find Suppliers by Region</span>
+                        <a href="{{ route('all.supplier.region') }}" class="text-every">View More</a>
+                    </div>
+                    <div class="card-body news_scroll overflow-y-scroll">
+                        <div class="row h-100 ">
+                            @foreach ($countries as $country)
+                                <div
+                                    class="col-md-3 col-sm-4 col-6 mb-3 d-flex flex-column align-items-center justify-content-center">
+                                    <img src="https://flagcdn.com/48x36/{{ strtolower($country->iso2) }}.png"
+                                        class="img-fluid" alt="" />
+                                    <small class="fw-bold pt-2"
+                                        style="font-size: 12px !important;white-space:nowrap;">{{ $country->name }}</small>
+                                </div>
+                            @endforeach
+
+                        </div>
+                        <!-- <div class="alert alert-danger">Not Found!</div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- section end -->
+
+    <!-- section start for working steps -->
+    <section class="container-fluid mb-4">
+        <div class="row">
+
+            <div class="col-md-12 mt-4">
+                <div class="card shadow p-md-5 p-0 rounded-0">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <img src="{{ asset('uploads/home_banners/' . $infos[0]->image) }}"
+                                class="img-fluid rounded-2" alt="" />
+                        </div>
+                        <div class="col-md-7 px-3 py-2">
+                            <h3 class="fs-3 mt-4 fw-bold text-every">
+                                {{ $infos[0]->title }}
+                            </h3>
+                            <small>{{ $infos[0]->sub_title }}</small>
+
+                            <p class="mt-2">{!! $infos[0]->content !!}</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- section end for working steps -->
+
+    <!-- section start for featured brands -->
+    <section class="container-fluid mb-4">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h3 class="fs-3 py-2 fw-bold text-every"> {!! $infos[2]->title !!} </h3>
+                <small class="small text-every">
+                    {!! $infos[2]->sub_title !!}
+                </small>
+            </div>
+            <div class="col-md-12 mt-4">
+                <div class="card shadow p-md-5 p-0 rounded-0">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="p-2">
+                                <p class="paragraph-text">
+                                    {!! $infos[2]->content !!}
+                                </p>
+                                <a href="https://www.click-coin.eu" target="_blank" class="mt-4 btn btn-primary">Invest &
+                                    Profit</a>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <img src="{{ asset('uploads/home_banners/' . $infos[2]->image) }}" class="img-fluid"
+                                alt="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="card rounded-0 bg-primary py-2">
+                    <h5 class="fw-bold fs-5 text-light text-center py-3 pb-3">
+                        Do you have something to sell ?
+                    </h5>
+                    <div class="card-body">
+                        <p class="text-light text-center">
+                            Post your AD for free on World Business Guide - www.wbg24.com -
+                            Your International Market
+                        </p>
+                        <div class="text-center mt-4">
+                            <a href="{{ route('user.member.package') }}" class="btn btn-secondary">
+                                Post Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection
+
+@section('custom-js-external')
+    <script>
+        $(document).ready(function() {
+            let parentCategories = []; // To store the history of categories for back navigation
+            let currentCategories = categoriesData; // Initially set to top-level categories
+
+            // Function to render category list
+            function renderCategories(categories) {
+                let categoryHtml = '';
+                $.each(categories, function(index, category) {
+                    // Check if the category has subcategories
+                    let hasSubcategory = category.subcategory && category.subcategory.length > 0;
+
+                    // Use href="#" for final categories without subcategories
+                    let hrefValue = hasSubcategory ? 'javascript:void(0);' : '#';
+                    let linkClass = hasSubcategory ? 'category-link' : 'final-category';
+
+                    categoryHtml += `
+                <li>
+                    <a href="${hrefValue}" data-id="${category.id}" class="${linkClass}" title="${category.name}">
+                        <span>${category.name}</span>
+                        <span class="open-arrow">
+                            <i class="fa fa-angle-right" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                </li>
+            `;
+                });
+                $('#category-list').html(categoryHtml);
+            }
+
+            // Event listener for clicking on a category
+            $(document).on('click', '.category-link', function(e) {
+                e.preventDefault();
+                let categoryId = $(this).data('id');
+
+                // Find the clicked category and its subcategories
+                let clickedCategory = currentCategories.find(category => category.id == categoryId);
+
+                if (clickedCategory && clickedCategory.subcategory && clickedCategory.subcategory.length >
+                    0) {
+                    // Save the current categories for back navigation
+                    parentCategories.push(currentCategories);
+
+                    // Update the category list to show subcategories
+                    currentCategories = clickedCategory.subcategory;
+                    renderCategories(currentCategories);
+
+                    // Show the back button
+                    $('#back-button').show();
+                }
+            });
+
+            // Event listener for clicking the back button
+            $('#back-category').click(function() {
+                if (parentCategories.length > 0) {
+                    // Go back to the previous category level
+                    currentCategories = parentCategories.pop();
+                    renderCategories(currentCategories);
+
+                    // Hide the back button if no more history
+                    if (parentCategories.length === 0) {
+                        $('#back-button').hide();
+                    }
+                }
+            });
+
+            // Initially render top-level categories
+            renderCategories(currentCategories);
+        });
+    </script>
+@endsection

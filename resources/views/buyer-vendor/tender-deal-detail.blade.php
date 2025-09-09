@@ -1,0 +1,376 @@
+@extends('buyer-vendor.buyer-frame')
+
+@section('buyer-main-content')
+    <style>
+        .table-img {
+            width: 100px;
+            height: 100px;
+
+        }
+
+        .table-img img {
+            border-radius: 10px;
+        }
+    </style>
+    <div id="loadingOverlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999;">
+        <div class="spinner-border text-light" role="status"
+            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 3rem; height: 3rem;">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <section class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 mt-2 bg-primary py-3">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="fs-5 text-light py-2 mt-0 px-3 mb-0">
+                        Tender Details
+                    </h6>
+                </div>
+
+                <div class="card rounded-0">
+                    <div class="card-body py-4">
+                        <div class="row justify-content-center">
+                            <div class="col-md-11">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-bordered align-middle">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div class="table-img">
+                                                        <img src="{{ asset('uploads/tender/' . $tender->image_1) }}"
+                                                            style="height: 100%; width: 100%" alt="" />
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <p style="width: 10rem">
+                                                        {{ $tender->name ?? '' }}
+                                                    </p>
+                                                </td>
+
+                                                <td>
+                                                    <h6 class="text-center">
+                                                        Deal Done
+                                                        {{ date('d M, Y', strtotime($tenderOffer->created_at)) }}</h6>
+                                                    <h6 class="text-center">CET
+                                                        {{ date('h:i A', strtotime($tenderOffer->created_at)) }}</h6>
+                                                </td>
+                                                <td>
+                                                    <span class="text-secondary fw-semibold">
+                                                        Tender Price
+                                                        @if ($tender->currency == 'usd')
+                                                            USD &dollar; {{ $tender->price }}
+                                                        @else
+                                                            EURO &euro; {{ $tender->price }}
+                                                        @endif
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="text-secondary fw-semibold">
+                                                        Deal Price
+                                                        @if ($tender->currency == 'usd')
+                                                            USD &dollar; {{ $tenderOffer->offer_price ?? 0 }}
+                                                        @else
+                                                            EURO &euro; {{ $tenderOffer->offer_price ?? 0 }}
+                                                        @endif
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <div class="d-flex align-items-center">
+                                                            <span class="fw-bold fs-6 me-1">Status:</span>
+                                                            <img src="{{ asset('world-business/images/iconcart.png') }}"
+                                                                style="height: 4rem" alt="" />
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-3" style="border-right: 1px solid #ddd">
+                                            <h6 class="fw-bold mb-3">Payment Methods</h6>
+                                            @php
+                                                $payment_infos = $tender->vendor->payment_infos ?? [];
+                                               
+                                            @endphp
+                                            
+                                            <div class="row">
+                                                <p>Please Transfer the deal amount of  @if ($tender->currency == 'usd')
+                                                            USD &dollar; {{ $tenderOffer->offer_price ?? 0 }}
+                                                        @else
+                                                            EURO &euro; {{ $tenderOffer->offer_price ?? 0 }}
+                                                        @endif</p>
+                                                        <h5>To:</h5>
+    @foreach ($payment_infos as $bankDetails)
+        @if ($bankDetails->isPayPal)
+            <div class="col-md-12">
+                <div class="card border-0 shadow-0">
+                    <div class="card-body py-1 px-1">
+                        <h5 class="card-title">
+                            <img src="{{ asset('uploads/logo/paypal.png') }}" style="height:1.5rem;" alt="PayPal">
+                            PayPal
+                        </h5>
+                        <p class="card-text mb-0">Email: {{ $bankDetails->email }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if ($bankDetails->isGooglePay)
+            <div class="col-md-12 ">
+                <div class="card  border-0 shadow-0">
+                    <div class="card-body py-1 px-1">
+                        <h5 class="card-title">
+                            <img src="{{ asset('uploads/logo/gpay.png') }}" style="height:1.7rem;" alt="Google Pay">
+                            Google Pay
+                        </h5>
+                        <p class="card-text mb-0">UPI ID: {{ $bankDetails->upi_google }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if ($bankDetails->isOther)
+            <div class="col-md-12">
+                <div class="card  border-0 shadow-0">
+                    <div class="card-body py-1 px-1">
+                        <h5 class="card-title">
+                            <img src="{{ asset('apple-pay.png') }}" style="height:1.7rem;" alt="Other Method">
+                            {{ $bankDetails->other_method_name }}
+                        </h5>
+                        <p class="card-text mb-0">Details: {{ $bankDetails->other_value }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if ($bankDetails->isBankDetail)
+            <div class="col-md-12">
+                <div class="card  border-0 shadow-0">
+                    <div class="card-body py-1 px-1">
+                        <h5 class="card-title">
+                            <img src="{{ asset('uploads/logo/bank.png') }}" style="height:1.7rem;" alt="Bank Transfer">
+                            Instant Transfer
+                        </h5>
+                        <p class="card-text mb-1">Account Holder: {{ $bankDetails->account_holder }}</p>
+                        <p class="card-text mb-1">Bank Name: {{ $bankDetails->bank_name }}</p>
+                        <p class="card-text mb-1">IBAN: {{ $bankDetails->iban }}</p>
+                        <p class="card-text mb-0">BIC: {{ $bankDetails->bic }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endforeach
+</div>
+
+                                            @if($tenderOffer->isDealClose==0)
+                                                <span class="text-danger fw-bold">Please pay for close the deal.</span>
+                                            @endif
+                                        </div>
+                                    <div style="border-right: 1px solid #ddd"
+                                        class="col-md-3 d-flex flex-column justify-content-start">
+                                        <h6 class="fw-bold mb-3">Payment Details</h6>
+
+                                        <p>
+
+                                            @if ($tenderOffer->payment_status == 'pending')
+                                                <span class="badge rounded-0 p-2 bg-primary">Not yet paid</span>
+                                            @elseif ($tenderOffer->payment_status == 'failed')
+                                                <span class="badge rounded-0 p-2 bg-danger">Failed</span>
+                                            @elseif ($tenderOffer->payment_status == 'cancelled')
+                                                <span class="badge rounded-0 p-2 bg-danger">Cancelled</span>
+                                            @elseif ($tenderOffer->payment_status == 'paid')
+                                                <span class="badge rounded-0 p-2 bg-success">Paid</span>
+                                            @else
+                                                <span class="badge rounded-0 p-2 bg-dark">No Status Found</span>
+                                            @endif
+                                        </p>
+                                    </div>
+                                    <div style="border-right: 1px solid #ddd"
+                                        class="col-md-3 d-flex flex-column justify-content-center">
+                                        <h6 class="fw-bold mb-3">Shipment Details</h6>
+
+                                        <p>
+
+                                            @if ($tenderOffer->shipment_status == 'pending')
+                                                <span class="badge rounded-0 bg-warning">Not yet Shipped</span>
+                                            @elseif($tenderOffer->shipment_status == 'failed')
+                                                <span class="badge rounded-0 bg-secondary">Returned</span>
+                                            @elseif($tenderOffer->shipment_status == 'cancelled')
+                                                <span class="badge rounded-0 bg-danger">Cancelled</span>
+                                            @elseif($tenderOffer->shipment_status == 'delivered')
+                                                <span class="badge rounded-0 bg-success">Delivered</span>
+                                            @else
+                                                <span class="badge rounded-0 bg-success">Shipped</span>
+                                            @endif
+                                        </p>
+                                        @if ($tenderOffer->shipment_status == 'delivered' || $tenderOffer->shipment_status == 'shipped')
+                                            <p class="mt-3 d-block"><strong>Shipment Company:</strong>
+                                                {{ $tenderOffer->shippment_company ?? '' }}</p>
+                                            <p><strong>Shipment Tracking Number:</strong>
+                                                {{ $tenderOffer->tracking_number ?? '' }}</p>
+                                        @else
+                                            <p class="mt-3 d-block"><strong>Shipment Company:</strong> .......</p>
+                                            <p><strong>Shipment Tracking Number:</strong> .......</p>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-3 flex-column d-flex justify-content-center align-items-center">
+
+                                        <a data-bs-toggle="modal" data-bs-target="#contactseller" href="javaScript:void(0)"
+                                            class="btn btn-primary mt-4">
+                                            Contact Seller
+                                        </a>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button type="button" onclick="window.history.back()" class="btn text-light"><i
+                            class="fas fa-arrow-left "></i> Back</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <div class="modal fade" id="contactseller" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-lg modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Contact Seller</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" id="contact_form" class="card-body">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="hidden" name="receiver_id" value="{{ $tenderOffer->vendor_id ?? null }}">
+                                <input type="hidden" name="tender_id" value="{{ $tender->id ?? null }}">
+                                <div class="form-group mb-2">
+                                    <label for="name" class="form-label">Name:</label>
+                                    <input type="text" name="name" class="form-control"
+                                        value="{{ old('name') }}" />
+                                    <div id="name_error" class="text-danger mt-2"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-2">
+                                    <label for="subject" class="form-label">Subject:</label>
+                                    <input type="text" name="subject" class="form-control"
+                                        value="{{ old('subject') }}" />
+                                    <div id="subject_error" class="text-danger mt-2"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group mb-2">
+                                    <label for="message" class="form-label">Message:</label>
+                                    <textarea name="message" id="message" class="form-control">{{ old('message') }}</textarea>
+                                    <div id="message_error" class="text-danger mt-2"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mt-3">
+                                <div class="form-group d-flex flex-column mb-3">
+                                    <label for="image" class="form-label">Verification Code:</label>
+                                    <div class="d-flex align-items-center">
+                                        {!! captcha_img('flat', ['id' => 'captcha_img']) !!}
+                                        <i class="fa-solid fa-rotate mx-3" onclick="refreshCaptcha()"
+                                            style="cursor: pointer !important"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mt-3">
+                                <div class="form-group mb-3">
+                                    <label for="ver_box" class="form-label">Enter Verification Code:</label>
+                                    <input type="text" value="{{ old('captcha') }}" class="form-control"
+                                        name="captcha" id="captcha" />
+                                    <div id="captcha_error" class="text-danger mt-2"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-secondary mt-3">Send</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+@section('buyer-custome-js')
+    <script>
+        function refreshCaptcha() {
+            $.ajax({
+                type: 'GET',
+                url: "{{ route('refreshCaptcha') }}",
+                success: function(data) {
+                    $('#captcha_img').attr('src', data);
+                },
+                error: function() {
+                    alert('Error refreshing CAPTCHA. Please try again.');
+                }
+            });
+        }
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#contact_form').on('submit', function(e) {
+                e.preventDefault();
+                $('#name_error').text('');
+                $('#subject_error').text('');
+                $('#message_error').text('');
+                $('#captcha_error').text('');
+                var formData = new FormData(this);
+                $.ajax({
+                    url: "{{ route('send.contact.form2') }}",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            toastr.success(response.message);
+                            $('#contact_form')[0].reset();
+                            $('#contactseller').modal('hide');
+                        } else if (response.status === 'error') {
+                            $.each(response.errors, function(key, value) {
+                                $('#' + key + '_error').text(value[0]);
+                            });
+                        } else if (response.status === 'unauth') {
+                            Swal.fire({
+                                title: "<h5 class='fw-bolder fs-5'>To use this option you need to</h5>",
+                                text: "",
+                                icon: "",
+                                draggable: true,
+                                confirmButtonText: "Sign in",
+                                confirmButtonColor: "#FF7519",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    location.href = "{{ route('login') }}";
+                                }
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        toastr.error("An error occurred. Please try again.");
+                    }
+                });
+            });
+        });
+    </script>
+@endsection
