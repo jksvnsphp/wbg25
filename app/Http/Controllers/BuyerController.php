@@ -406,7 +406,7 @@ class BuyerController extends Controller
 
     public function showAllBuyers()
     {
-        $buyers = User::where('account_type', 'buyer')->with('countryData')->latest()->get();
+        $buyers = User::where('account_type', 'buyer')->with('countryData','sellerPackage')->latest()->get();
         // dd($buyers);
         return view('admin.all-buyers', compact('buyers'));
     }

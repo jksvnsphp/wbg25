@@ -10,40 +10,54 @@
                     </div>
                     <div class="card-body pb-0">
                         <div class="table-responsive">
-                            <table class="table table-bordered" width="100%" cellspacing="0">
+                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Product Name</th>
                                         <th>Company Name</th>
-                                        <th>Email</th>
-                                        <th>Image</th>
+                                        <th>Product Title</th>
+ 
+                                        <th>Quantity</th>
                                         <th>Entry Date</th>
-                                        <th>Approval</th>
+                                        <th>Duration Left Time</th> 
+ 
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($products as $index => $product)
                                         <tr>
-                                            <td>{{ $products->firstItem() + $index }}</td>
-                                            <td>{{ $product->name }}</td>
-                                            <td>{{ $product->seller->company_name ?? 'N/A' }}</td>
-                                            <td>{{ $product->seller->email ?? 'N/A' }}</td>
                                             <td>
+                                               
+                                            {{ $products->firstItem() + $index }}</td>
+                                             <td>{{getUserCompany($product->vendor->id) ?? 'N/A' }}</td>
+                                            <td>{{ $product->name }}</td>
+                                           
+                                            <td>{{ $product->totalQty ?? 'N/A' }}</td>
+                                          @php /* @endphp  <td>
                                                 @if($product->image)
                                                     <img src="{{ asset('uploads/products/' . $product->image) }}" style="height:50px" alt="">
                                                 @else
                                                     <span>No Image</span>
                                                 @endif
-                                            </td>
+                                            </td> @php */ @endphp
                                             <td>{{ $product->created_at->format('d M Y') }}</td>
                                             <td>
-                                                <label class="switch round_switch">
-                                                    <input type="checkbox" class="approval-toggle" data-id="{{ $product->id }}"
-                                                        {{ $product->is_approved ? 'checked' : '' }}>
-                                                    <div class="slider round"></div>
-                                                </label>
+                                                @if($product->duration)
+                                                    @php
+                                                        $entryDate = \Carbon\Carbon::parse($product->created_at);
+                                                        $expiryDate = $entryDate->copy()->addDays($product->duration);
+                                                        $now = \Carbon\Carbon::now();
+                                                        $daysLeft = $now->diffInDays($expiryDate, false);
+                                                    @endphp
+                                                    @if($daysLeft >= 0)
+                                                        {{ $daysLeft }} days left
+                                                    @else
+                                                        Expired
+                                                    @endif
+                                                @else
+                                                    N/A
+                                                @endif
                                             </td>
                                             <td>
                                                 <a title="View" href="{{ route('admin.products.show', $product->id) }}"

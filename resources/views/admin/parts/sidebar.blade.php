@@ -41,8 +41,8 @@
         <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionSidebar">
             <div class="bg-white  collapse-inner ">
 
-                <a class="collapse-item" href="{{ route('admin.show.buyers') }}">Show Buyers</a>
-                <a class="collapse-item" href="{{ route('admin.all.sellers') }}">Show Sellers</a>
+                <a class="collapse-item" href="{{ route('admin.show.buyers') }}">Show all Buyers</a>
+                <a class="collapse-item" href="{{ route('admin.all.sellers') }}">Show all Sellers</a>
 
             </div>
         </div>
@@ -58,9 +58,9 @@
 
                 <a class="collapse-item" href="{{ route('admin.product.approval') }}">Product Approval</a>
                 
-                <a class="collapse-item" href="{{ route('admin.buy.tender.approval') }}">RFQ Tenders</a>
+                <a class="collapse-item" href="{{ route('admin.buy.tender.approval') }}">RFQ Approval</a>
                 <a class="collapse-item" href="{{ route('admin.sell.tender.approval') }}">Tenders Approval</a>
-                 <a class="collapse-item" href="{{ route('admin.seller.approval') }}">Seller Approval</a>
+                 <a class="collapse-item" href="{{ route('admin.seller.approval') }}">Sellers Approval</a>
             </div>
         </div>
     </li>
@@ -73,8 +73,9 @@
         </a>
         <div id="collapseCoupon" class="collapse" aria-labelledby="headingCoupon" data-parent="#accordionSidebar">
             <div class="bg-white  collapse-inner ">
-                <a class="collapse-item" href="{{ route('admin.all.enquiries') }}">Buyer Inquiry`s</a>
-                <a class="collapse-item" href="#">Seller Inquiry`s</a>
+                <a class="collapse-item" href="{{ route('admin.inquiries.index') }}">Buyer Inquiry`s</a>
+                <a class="collapse-item" href="{{ route('admin.sellerinquiries.index') }}">Seller Inquiry`s</a> 
+                 <a class="collapse-item" href="#">Users Communications</a>
             </div>
         </div>
     </li>
@@ -87,7 +88,7 @@
         <div id="collapseProduct" class="collapse" aria-labelledby="headingProduct" data-parent="#accordionSidebar">
             <div class="bg-white  collapse-inner ">
                 <a class="collapse-item" href="{{ route('admin.product.manager') }}">All listed normal Products</a>
-                <a class="collapse-item" href="#">Normal sell out Products</a>
+                <a class="collapse-item" href="#">All Normal sell out Products</a>
             </div>
         </div>
     </li>
@@ -131,7 +132,7 @@
             <div class="bg-white  collapse-inner ">
 
                 <a class="collapse-item " href="{{ route('admin.sell.trade.list') }}">All listed Tenders</a>
-                <a class="collapse-item" href="{{ route('admin.buy.trade.list') }}">Tender Deals</a>
+                <a class="collapse-item" href="{{ route('admin.buy.trade.list') }}">All Tender Deals</a>
 
 
             </div>
@@ -149,26 +150,14 @@
             <div class="bg-white  collapse-inner ">
 
                 <a class="collapse-item " href="{{ route('admin.all.buy.quotations') }}">All listed  FRQ`s </a>
-                <a class="collapse-item" href="{{ route('admin.buy.trade.list') }}">Quotation Deals</a>
+                <a class="collapse-item" href="{{ route('admin.buy.trade.list') }}">All Quotation Deals</a>
 
 
             </div>
         </div>
     </li>
 
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCoupon"
-            aria-expanded="true" aria-controls="collapseCoupon">
-            <i class="fas fa-fw fa-gift"></i>
-            <span>Promotion Management</span>
-        </a>
-        <div id="collapseCoupon" class="collapse" aria-labelledby="headingCoupon" data-parent="#accordionSidebar">
-            <div class="bg-white  collapse-inner ">
-                <a class="collapse-item" href="{{ route('admin.all.coupon') }}">Promotions</a>
-                <a class="collapse-item" href="{{ route('admin.create.coupon') }}">Add Promotion</a>
-            </div>
-        </div>
-    </li>
+    
 
     <li class="nav-item ">
         <a class="nav-link  collapsed" href="#" data-toggle="collapse" data-target="#collapse10"
@@ -211,11 +200,19 @@
             <i class="fas fa-fw fa-money-bill "></i>
             <span>Payment Center</span></a>
     </li>
-    <li class="nav-item ">
-        <a class="nav-link" href="{{ route('admin.send.bulk.mail') }}">
-
-            <i class="fa-solid fa-envelopes-bulk"></i>
-            <span>Bulk Mail</span></a>
+   
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCoupon"
+            aria-expanded="true" aria-controls="collapseCoupon">
+            <i class="fas fa-fw fa-gift"></i>
+            <span>Promotion Management</span>
+        </a>
+        <div id="collapseCoupon" class="collapse" aria-labelledby="headingCoupon" data-parent="#accordionSidebar">
+            <div class="bg-white  collapse-inner ">
+                <a class="collapse-item" href="{{ route('admin.all.coupon') }}">Promotions</a>
+                <a class="collapse-item" href="{{ route('admin.create.coupon') }}">Add Promotion</a>
+            </div>
+        </div>
     </li>
 
     <li class="nav-item">
@@ -258,19 +255,32 @@
             <span>Inquiry Box</span></a>
     </li> -->
     <li class="nav-item ">
-        <a class="nav-link" href="{{ route('admin.all.enquiries.admin') }}">
-            <i class="fa-solid fa-fw fa-phone"></i>
-
-            <span>Admin Inquiry</span></a>
-    </li>
-
-    <li class="nav-item ">
         <a class="nav-link" href="{{ route('admin.all.countries') }}">
             <i class="fa-solid fa-fw fa-location-dot"></i>
 
             <span>Location Management</span></a>
     </li>
+    <!-- <li class="nav-item ">
+        <a class="nav-link" href="{{ route('admin.all.enquiries.admin') }}">
+            <i class="fa-solid fa-fw fa-phone"></i>
+
+            <span>Admin Inquiry</span></a>
+    </li> -->
+
     <li class="nav-item ">
+        <a class="nav-link" href="{{ route('admin.home.setting') }}">
+            <i class="fa-solid fa-fw fa-file"></i>
+
+            <span>Home Page Management</span></a>
+    </li>
+    
+     <li class="nav-item ">
+        <a class="nav-link" href="{{ route('admin.send.bulk.mail') }}">
+
+            <i class="fa-solid fa-envelopes-bulk"></i>
+            <span>Bulk Mail</span></a>
+    </li>
+    <!-- <li class="nav-item ">
         <a class="nav-link  collapsed" href="#" data-toggle="collapse" data-target="#collapseSeven"
             aria-expanded="true" aria-controls="collapseSix">
 
@@ -287,31 +297,26 @@
 
             </div>
         </div>
-    </li>
-    <li class="nav-item ">
+    </li> -->
+    <!-- <li class="nav-item ">
         <a class="nav-link" href="{{ route('admin.import.customers') }}">
 
             <i class="fas fa-fw fa-download "></i>
             <span>Import Customer</span></a>
-    </li>
-    <li class="nav-item ">
-        <a class="nav-link" href="{{ route('admin.home.setting') }}">
-            <i class="fa-solid fa-fw fa-file"></i>
-
-            <span>Home Page Management</span></a>
-    </li>
+    </li> -->
+   
     <li class="nav-item ">
         <a class="nav-link" href="{{ route('admin.all.email.templates') }}">
             <i class="fa-solid fa-fw fa-message"></i>
 
             <span>eMail Template</span></a>
     </li>
-    <li class="nav-item ">
+    <!-- <li class="nav-item ">
         <a class="nav-link" href="{{ route('admin.videos.index') }}">
             <i class="fa-solid fa-fw fa-video"></i>
 
             <span>Video Show</span></a>
-    </li>
+    </li> -->
 
 
     

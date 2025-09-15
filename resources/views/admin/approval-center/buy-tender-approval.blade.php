@@ -2,12 +2,11 @@
 @section('admin-content')
     <div class="container-fluid">
         <!-- Page Heading -->
-        <!-- Content Row -->
         <div class="row">
             <div class="col-md-12 mb-3">
                 <div class="card rounded-0">
                     <div class="card-header rounded-0 py-2 bg-dark text-light font-weight-bolder">
-                    Buy Tenders
+                         FRQ  Approval
                     </div>
                     <div class="card-body pb-0">
                         <div class="table-responsive">
@@ -15,53 +14,82 @@
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Product Name</th>
+                                         
                                         <th>Company Name</th>
-                                        <th>Email</th>
-                                        <th>Image</th>
+                                        <th>RFQ  Title </th>
+                                        <th>Quantity </th>
+                                        
                                         <th>Entry Date</th>
-                                        <th>Approval</th>
+                                        <th>Duration left</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-
                                 <tbody>
-                                    
-                                    
+                                    @foreach($tenders as $index => $tender)
+                                        <tr>
+                                            <td>{{ $tenders->firstItem() + $index }}</td>
+                                              <td>{{getUserCompany($tender->vendor->id) ?? 'N/A' }}</td>
+                                            <td>{{ $tender->name ?? 'N/A' }}</td>
+                                            <td>{{ $tender->quantity ?? 'N/A' }}</td>
+                                           
+                                            <td>{{ $tender->created_at->format('d M Y') }}</td>
+                                            <td>
+                                                
+                                                @if($tender->duration)
+                                                    @php
+                                                        $entryDate = \Carbon\Carbon::parse($tender->created_at);
+                                                        $expiryDate = $entryDate->copy()->addDays($tender->duration);
+                                                        $now = \Carbon\Carbon::now();
+                                                        $daysLeft = $now->diffInDays($expiryDate, false);
+                                                    @endphp
+                                                    @if($daysLeft >= 0)
+                                                        {{ $daysLeft }} days left
+                                                    @else
+                                                        Expired
+                                                    @endif
+                                                @else
+                                                    N/A
+                                                @endif  
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('admin.tenders.show', $tender->id) }}" 
+                                                   class="btn btn-sm btn-secondary m-1" title="View">
+                                                   <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('admin.tenders.edit', $tender->id) }}" 
+                                                   class="btn btn-sm btn-success m-1" title="Edit">
+                                                   <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('admin.tenders.destroy', $tender->id) }}" 
+                                                      method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger m-1" 
+                                                            title="Delete"
+                                                            onclick="return confirm('Are you sure?')">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
+
+                            <!-- Pagination -->
+                            <div class="mt-2">
+                                {{ $tenders->links() }}
+                            </div>
                         </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
     </div>
 @endsection
+
 @section('custom-js')
-    
-    {{-- <script>
-        $(document).ready(function() {
-            $('input[type="checkbox"]').change(function() {
-                var status = this.checked ? 1 : 0;
-                var id = $(this).attr('id').replace('checkbox', '');
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('admin.update.status.user') }}',
-                    data: {
-                        id: id,
-                        status: status,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(data) {
-                        toastr.success('Status updated successfully');
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error updating status');
-                    }
-                });
-            });
-        });
-    </script> --}}
+<script>
+     
+</script>
 @endsection

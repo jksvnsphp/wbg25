@@ -5,17 +5,17 @@
         <div class="col-md-12 mb-3">
             <div class="card rounded-0">
                 <div class="card-header bg-dark text-light font-weight-bolder">
-                    Buyer Inquiries
+                    Buyer Inquiry`s
                 </div>
                 <div class="card-body pb-0">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
                                     <th>S.No</th>
                                     <th>Buyer Name</th>
-                                    <th>Seller Name</th>
-                                    <th>Email</th>
+                                     
+                                    <th>Buyer Email</th>
                                     <th>Subject</th>
                                     <th>Date</th>
                                     <th>Action</th>
@@ -26,7 +26,7 @@
                                     <tr>
                                         <td>{{ $inquiries->firstItem() + $index }}</td>
                                         <td>{{ $inquiry->sender->name ?? $inquiry->name }}</td>
-                                        <td>{{ $inquiry->receiver->name ?? 'N/A' }}</td>
+                                         
                                         <td>{{ $inquiry->sender->email ?? 'N/A' }}</td>
                                         <td>{{ $inquiry->subject }}</td>
                                         <td>{{ $inquiry->created_at->format('Y-m-d') }}</td>

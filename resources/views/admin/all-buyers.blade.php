@@ -15,12 +15,13 @@
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Name</th>
+                                        <th>Buyer Name</th>
                                         <th>Email</th>
-                                        <th>Country Flag</th>
-                                        <th>Mobile No</th>
+                                        <th>Country</th>
                                         <th>Join Date</th>
-                                        <th>Active/Inactive</th>
+                                        <th>Member Type</th>
+                                        <th>Login Details</th>
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -40,9 +41,15 @@
                                             </td>
 
                                             <td>
-                                                {{ $buyer->phone }}
+                                                {{ $buyer->created_at->format('d M, Y') }} 
                                             </td>
-                                            <td>{{ $buyer->created_at->diffForHumans() }}</td>
+                                            <td>
+                                                
+                                            {{ $buyer->account_type }} </td>
+                                            
+                                            
+                                            <td>Login Deatils: 
+                                                Email {{ $buyer->email }}</td>
                                             <td>
                                                 <label title="Active/Inactive" class="switch round_switch">
                                                     <input @checked($buyer->status) type="checkbox"

@@ -31,7 +31,11 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
             "Srmklive\\PayPal\\": "vendor/srmklive/paypal/src/"
-        }
+        },
+        "files": [
+        "app/Helpers/helpers.php"
+    ]
+
     },
     "autoload-dev": {
         "psr-4": {

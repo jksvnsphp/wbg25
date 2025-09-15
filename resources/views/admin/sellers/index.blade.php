@@ -8,14 +8,15 @@
                     Show Sellers
                 </div>
                 <div class="card-body pb-0">
-
+              @php /* @endphp
                     {{-- Search + Filter --}}
                     <form method="GET" action="">
-                        <div class="row mb-3">
-                            <div class="col-md-3">
+                        <div class="row mb-4">
+                            <div class="col-md-4">
                                 <input type="text" name="search" value="{{ request('search') }}" 
                                     class="form-control" placeholder="Search by name, email, company...">
                             </div>
+                           
                             <div class="col-md-2">
                                 <select name="country" class="form-control">
                                     <option value="">All Countries</option>
@@ -26,21 +27,23 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                          
+                            <div class="col-md-4">
                                 <select name="sort" class="form-control">
                                     <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest</option>
                                     <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest</option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                           
+                            <div class="col-md-4">
                                 <button type="submit" class="btn btn-secondary w-100">Filter</button>
                             </div>
                         </div>
                     </form>
-
+               @php */ @endphp
                     {{-- Table --}}
                     <div class="table-responsive">
-                        <table class="table table-bordered" width="100%" cellspacing="0">
+                       <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
                                     <th>S.No</th>
@@ -49,6 +52,7 @@
                                     <th>Country</th>
                                     <th>Join Date</th>
                                     <th>Member Type</th>
+                                    <th>Login Details</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -57,7 +61,7 @@
                                 @forelse($sellers as $index => $seller)
                                     <tr>
                                         <td>{{ $sellers->firstItem() + $index }}</td>
-                                        <td>{{ $seller->company_name ?? '-' }}</td>
+                                        <td>{{ $seller->company->name ?? '-' }}</td>
                                         <td>{{ $seller->email }}</td>
                                         <td>
                                             @if($seller->countryData)
@@ -66,7 +70,21 @@
                                             @endif
                                         </td>
                                         <td>{{ $seller->created_at->format('d M Y') }}</td>
-                                        <td>{{ $seller->sellerPackage->package_name ?? 'Free' }}</td>
+                                        <td>
+                                         @php  
+                                       
+                                         if(isset($seller->sellerPackage[0]->package_id)){
+                                           
+                                         
+                                         @endphp
+                                           {{getMemberPackageName($seller->sellerPackage[0]->package_id)?? 'Free' }}
+                                        @php } else { echo "Free"; } @endphp
+
+                                    </td>
+                                    <td>
+                                            <strong>Username:</strong> {{ $seller->email }}<br>
+                                            <strong>Password:</strong> (hidden)             
+                                        </td>
                                         <td>
                                             <label class="switch round_switch">
                                                 <input type="checkbox" data-id="{{ $seller->id }}" class="status-toggle" 
@@ -95,7 +113,7 @@
 
                     {{-- Pagination --}}
                     <div class="d-flex justify-content-center">
-                        {{ $sellers->links() }}
+                        {{ $sellers->links('pagination::bootstrap-5') }}
                     </div>
 
                 </div>

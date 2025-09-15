@@ -17,7 +17,8 @@ use App\Http\Controllers\admin\SuppliersSubcategoryController;
 use App\Http\Controllers\admin\TendersController;
 use App\Http\Controllers\admin\StoresController;
 use App\Http\Controllers\admin\ProductVideoShowController;
-
+use App\Http\Controllers\Admin\SellerController;
+use App\Http\Controllers\admin\AdminInboxController;
 
 use App\Http\Controllers\admin\TenderSubcategoryController;
 use App\Http\Controllers\ArticleController;
@@ -59,8 +60,12 @@ use App\Http\Controllers\UserProductController;
 use App\Http\Controllers\UserQuotationController;
 use App\Http\Controllers\SmsController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\TenderController;
+use App\Http\Controllers\Admin\BuyerInquiryController;
+use App\Http\Controllers\Admin\SellerInquiryController;
 
-
+//SellerInquiryController
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -71,6 +76,14 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/update-autoload', function () {
+        // Execute the Composer command
+        exec('composer dump-autoload'); 
+
+        return "Composer autoload dumped successfully!";
+    });
+
 
 Route::get('/send-sms', [SmsController::class, 'sendTest']);
 
@@ -206,12 +219,31 @@ Route::middleware(['role:admin'])->group(function () {
 
 	
 	});
+   
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    Route::resource('sellers', SellerController::class);
+    Route::resource('products', ProductController::class);
+    Route::resource('tenders', TenderController::class);
+    Route::resource('inquiries', BuyerInquiryController::class)->only(['index','show','destroy']);
+    Route::resource('sellerinquiries', SellerInquiryController::class)->only(['index','show','destroy']);
+    //SellerInquiryController
+    Route::get('/product-approval', [ProductController::class, 'index'])->name('product.approval');
+    Route::post('products/approval', [ProductController::class, 'toggleApproval'])->name('products.approval');
+    Route::get('/buy-tender-approval',[TenderController::class, 'index'])->name('buy.tender.approval');
+    Route::post('tenders/approval', [TenderController::class, 'toggleApproval'])->name('tenders.approval');
+
+});
+
+ 
+
+
    Route::controller(DashboardController::class)->prefix('admin')->group(function () {
       Route::get('/dashboard', 'dashboard')->name('admin.dashboard');
       Route::get('/all-seller', 'showSellers')->name('admin.all.sellers');
-      Route::get('/product-approval', 'productApproval')->name('admin.product.approval');
+      
       Route::get('/seller-approval', 'sellerApproval')->name('admin.seller.approval');
-      Route::get('/buy-tender-approval', 'buyTenderApproval')->name('admin.buy.tender.approval');
+
       Route::get('/sell-tender-approval', 'sellTenderApproval')->name('admin.sell.tender.approval');
       Route::get('/payment-center', 'paymentCenter')->name('admin.payment.center');
       Route::get('/product-manager', 'productManagement')->name('admin.product.manager');
