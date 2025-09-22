@@ -28,12 +28,15 @@ class CompanyCertificateController extends Controller
 
     public function updateCompanyCertificate(Request $request)
     {
+
+       
         $request->validate([
             'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
             'certifications' => ['nullable', 'array'],
             'other_certificate' => ['required_if:certifications,Other'],
         ]);
-        if (isset(auth()->user()->id)) {
+
+        if (auth()->user()->id) {
             $id = auth()->user()->id;
             $company = company::where('vendor_id', $id)->first();
             if (!empty($company)) {
@@ -42,7 +45,9 @@ class CompanyCertificateController extends Controller
                 $company->save();
             }
             if ($request->hasFile('images')) {
+              //  die('here');
                 foreach ($request->file('images') as $file) {
+                     //echo "<pre>"; print_r($file); die;
 
                     $certificate = new company_certificate();
                     $certificate->vendor_id = $id;

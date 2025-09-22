@@ -47,7 +47,7 @@
             </div>
         </div>
     </li>
-    <li class="nav-item">
+    <!-- <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFour"
             aria-expanded="true" aria-controls="collapseFour">
             <i class="fas fa-fw fa-envelope "></i>
@@ -63,7 +63,28 @@
                  <a class="collapse-item" href="{{ route('admin.seller.approval') }}">Sellers Approval</a>
             </div>
         </div>
-    </li>
+    </li> -->
+
+     <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFour"
+            aria-expanded="true" aria-controls="collapseFour">
+            <i class="fas fa-fw fa-users "></i>
+            <span>Profile Images</span>
+        </a>
+        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionSidebar">
+            <div class="bg-white  collapse-inner ">
+
+
+                <a class="collapse-item" href="{{ route('admin.company-logos.index') }}">Company logo`s</a>
+                
+                <a class="collapse-item" href="{{ route('admin.profile-pictures.index') }}">Profile Pictures </a>
+                <a class="collapse-item" href="{{ route('admin.profile-banners.index') }}">Profile  Banners</a>
+                <a class="collapse-item" href="{{ route('admin.profile-galleries.index') }}">Profile  Gallery</a>
+                <a class="collapse-item" href="{{ route('admin.certificates.index') }}">Certifications</a>
+            </div>
+
+        </div>
+    </li> 
 
      <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCoupon"
@@ -116,7 +137,7 @@
         </a>
         <div id="collapseVideo" class="collapse" aria-labelledby="headingVideo" data-parent="#accordionSidebar">
             <div class="bg-white  collapse-inner ">
-                <a class="collapse-item" href="#">All Products Videos</a>
+                <a class="collapse-item" href="{{route('admin.videos.index')}}">All Products Videos</a>
  
             </div>
         </div>

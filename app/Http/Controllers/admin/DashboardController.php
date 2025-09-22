@@ -143,7 +143,7 @@ class DashboardController extends Controller
         return view('admin.approval-center.buy-tender-approval',compact('tenders'));
     }
     public function sellTenderApproval(){
-        die('here');
+       // die('here');
                 // Fetch only sell tenders
          $tenders = Tender::with(['vendor']) // eager load seller/buyer
            // ->where('type', 'buy') // assuming you have a type column ('buy'/'sell')

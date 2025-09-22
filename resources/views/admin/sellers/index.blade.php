@@ -93,7 +93,7 @@
                                             </label>
                                         </td>
                                         <td>
-                                            <a title="View" href="{{ route('admin.sellers.show', $seller->id) }}" class="btn m-1 btn-sm btn-secondary"><i class="fas fa-eye"></i></a>
+                                            <!-- <a title="View" href="{{ route('admin.sellers.show', $seller->id) }}" class="btn m-1 btn-sm btn-secondary"><i class="fas fa-eye"></i></a> -->
                                             <a title="Edit" href="{{ route('admin.sellers.edit', $seller->id) }}" class="btn m-1 btn-sm btn-success"><i class="fas fa-edit"></i></a>
                                             <form method="POST" action="{{ route('admin.sellers.destroy', $seller->id) }}" style="display:inline;">
                                                 @csrf

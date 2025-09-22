@@ -62,6 +62,7 @@ use App\Http\Controllers\SmsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\TenderController;
+
 use App\Http\Controllers\Admin\BuyerInquiryController;
 use App\Http\Controllers\Admin\SellerInquiryController;
 
@@ -80,6 +81,10 @@ use App\Http\Controllers\Admin\SellerInquiryController;
 Route::get('/update-autoload', function () {
         // Execute the Composer command
         exec('composer dump-autoload'); 
+         Artisan::call('optimize:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
 
         return "Composer autoload dumped successfully!";
     });
@@ -225,6 +230,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('sellers', SellerController::class);
     Route::resource('products', ProductController::class);
     Route::resource('tenders', TenderController::class);
+   Route::resource('company-logos', App\Http\Controllers\Admin\CompanyLogoController::class);
+   Route::resource('profile-pictures', App\Http\Controllers\Admin\ProfilePictureController::class);
+   Route::resource('profile-banners', App\Http\Controllers\Admin\ProfileBannerController::class);
+   Route::resource('profile-galleries', App\Http\Controllers\Admin\ProfileGalleryController::class);
+   Route::resource('certificates', App\Http\Controllers\Admin\CertificateController::class);
+
     Route::resource('inquiries', BuyerInquiryController::class)->only(['index','show','destroy']);
     Route::resource('sellerinquiries', SellerInquiryController::class)->only(['index','show','destroy']);
     //SellerInquiryController

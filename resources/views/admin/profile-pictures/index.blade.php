@@ -1,0 +1,56 @@
+@extends('admin.main-dashboard-frame')
+@section('admin-content')
+<div class="container-fluid">
+    <div class="d-flex justify-content-between mb-3">
+        <h4>Profile Pictures</h4>
+        <!-- <a href="{{ route('admin.certificates.create') }}" class="btn btn-primary">+ Add Certificate</a> -->
+    </div>
+
+    <table class="table table-bordered">
+        <thead class="bg-dark text-light">
+            <tr>
+                <th>#</th>
+                <th>Company Name</th>
+                <th>Email</th>
+                <th>Profile Picture</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($users as $user)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $users?->company?->name }}  </td>
+                    <td>
+                      {{ $user->email ?? 'N/A' }}      
+                    </td>
+                    <td>
+                        @if ($user->profile_picture)
+                            <img src="{{ asset('uploads/profile/' . $user->profile_picture) }}" width="100">
+                        @else
+                            <span class="text-muted">No Profile Picture</span>
+                        @endif    
+                    </td>
+                   
+                    <td>
+                        <!-- <a href="{{ route('admin.certificates.edit', $users->id) }}" class="btn btn-sm btn-warning">Edit</a> -->
+                        <form action="{{ route('admin.profile-pictures.destroy', $users->id) }}" method="POST" style="display:inline-block;">
+                            @csrf @method('DELETE')
+                            <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="5" class="text-center">No certificates found.</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    
+ <div class="d-flex justify-content-center">
+                            {{ $users->links('pagination::bootstrap-5') }}
+                        </div>
+
+    
+</div>
+@endsection

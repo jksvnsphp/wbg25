@@ -28,9 +28,10 @@
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Title</th>
-                                        <th>Image</th> 
-                                        <th>Video URL</th>
+                                        <th>Company Name </th>
+                                        <th>Product Video Title</th>
+                                        <th>Entry Date</th> 
+                                        <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>

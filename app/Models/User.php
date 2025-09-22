@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\countries;
+use App\Models\company;
 
 class User extends Authenticatable
 {
@@ -52,6 +54,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(company::class, 'vendor_id');
     }
+    
     public function exports()
     {
         return $this->hasOne(export_region::class, 'vendor_id');
@@ -100,4 +103,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(StoreSearchKey::class, 'user_id');
     }
+
+    public function certificates()
+    {
+        return $this->hasMany(company_certificate::class, 'vendor_id');
+    }
+
 }
