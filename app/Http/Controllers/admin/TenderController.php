@@ -23,6 +23,16 @@ class TenderController extends Controller
         return view('admin.approval-center.buy-tender-approval',compact('tenders'));
     }
 
+      public function tender_images(Request $request)
+    {
+         $tenders = Tender::with(['vendor']) // eager load seller/buyer
+           // ->where('type', 'buy') // assuming you have a type column ('buy'/'sell')
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.action-image.tenders',compact('tenders'));
+    }
+
     
 
     /**

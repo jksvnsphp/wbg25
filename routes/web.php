@@ -243,7 +243,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('products/approval', [ProductController::class, 'toggleApproval'])->name('products.approval');
     Route::get('/buy-tender-approval',[TenderController::class, 'index'])->name('buy.tender.approval');
     Route::post('tenders/approval', [TenderController::class, 'toggleApproval'])->name('tenders.approval');
+    Route::get('/product-images', [ProductController::class, 'product_image'])->name('product.product_images');
+     Route::get('/multiply-product-images', [ProductController::class, 'multiply_product_image'])->name('product.multiply_product_images');
+    Route::get('/tender-images', [TenderController::class, 'tender_images'])->name('tender.tender_images');
 
+ 
+    
+
+  // Route::get('/trade-sell-list', 'sellTradeList')->name('admin.sell.trade.list');
 });
 
  
@@ -362,6 +369,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
    Route::controller(StoresController::class)->prefix('admin')->group(function () {
       Route::get('/stores', 'index')->name('admin.stores.index');  
+      Route::get('/stores-images', 'images')->name('admin.stores.images');
+      Route::get('/stores-banners', 'storeBanners')->name('admin.stores.banners');  
+      //
       // Route::get('/delete/{id}/tender-category', 'DeleteCategory')->name('admin.delete.tender.category');
       // Route::get('/edit/{id}/tender-category', 'edit')->name('admin.edit.tender.category');
       // Route::post('/tender-category/status', 'changeStatus')->name('admin.status.tender.category');
@@ -392,6 +402,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
       Route::post('/quotation-category/status', 'changeStatus')->name('admin.status.quotation.category');
       Route::post('/store/quotation-category', 'store')->name('admin.store.quotation.category');
       Route::post('/update/quotation-category', 'update')->name('admin.update.quotation.category');
+
+      Route::get('/quotation-images','allQuotations')->name('admin.quotation.images');
+   
    });
    Route::controller(QuotationsSubcategoryController::class)->prefix('admin')->group(function () {
       Route::get('/quotations-subcategory/{id}', 'index')->name('admin.quotations.subcategory');
@@ -444,6 +457,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
    });
    Route::controller(NewsBlogController::class)->prefix('admin')->group(function () {
       Route::get('/all-news', 'allNews')->name('admin.all.news');
+      Route::get('/all-news-images', 'allNewsImages')->name('admin.all.newsImages');
       Route::get('/add-news', 'addNews')->name('admin.add.news');
       Route::get('/delete-news/{id}', 'deleteNews')->name('admin.delete.news');
       Route::get('/edit-news/{id}', 'editNews')->name('admin.edit.news');

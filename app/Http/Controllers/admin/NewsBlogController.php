@@ -21,6 +21,14 @@ class NewsBlogController extends Controller
 
         return view('admin.news.all-news', compact('newss'));
     }
+
+     public function allNewsImages()
+    {
+        
+        $news = news::latest()->with('user')->paginate(10);
+
+        return view('admin.action-image.news', compact('news'));
+    }
     public function addNews()
     {
 

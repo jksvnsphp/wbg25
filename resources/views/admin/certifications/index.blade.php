@@ -6,7 +6,7 @@
         <!-- <a href="{{ route('admin.certificates.create') }}" class="btn btn-primary">+ Add Certificate</a> -->
     </div>
 
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="dataTable">
         <thead class="bg-dark text-light">
             <tr>
                 <th>#</th>
@@ -24,16 +24,20 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $cert->user?->company?->name }}  </td>
                     <td>
-                      @if ($cert->user?->company?->other_certificate)
-                            @php
-                                $others = json_decode($cert->user?->company?->other_certificate);
-                                
-                            @endphp
-                      @endif    
-                    <img src="{{ asset('uploads/certificates/' . $others[1]) }}" width="100"></td>
-                    <td> <img src="{{ asset('uploads/certificates/' . $others[2]) }}" width="100"></td>
-                    <td> <img src="{{ asset('uploads/certificates/' . $others[3]) }}" width="100"></td>
-                    <td> <img src="{{ asset('uploads/certificates/' . $others[4]) }}" width="100"></td>
+                        @php 
+                           //echo "<pre/>";
+                           $certificatesD=  getCertificatesList( ($cert->user?->company?->vendor_id) ?? 0 );
+                           //print_r($certificates );die;
+                           $image1= $certificatesD[0]['image'] ?? '';
+                           $image2= $certificatesD[1]['image'] ?? '';
+                           $image3= $certificatesD[2]['image'] ?? '';
+                           $image4= $certificatesD[3]['image'] ?? '';
+                        @endphp
+
+                    <img src="{{ asset('uploads/certificates/' . $image1) }}" width="100"></td>
+                    <td> <img src="{{ asset('uploads/certificates/' . $image2) }}" width="100"></td>
+                    <td> <img src="{{ asset('uploads/certificates/' . $image3) }}" width="100"></td>
+                    <td> <img src="{{ asset('uploads/certificates/' .$image1) }}" width="100"></td>
                     <td>
                         <!-- <a href="{{ route('admin.certificates.edit', $cert->id) }}" class="btn btn-sm btn-warning">Edit</a> -->
                         <form action="{{ route('admin.certificates.destroy', $cert->id) }}" method="POST" style="display:inline-block;">

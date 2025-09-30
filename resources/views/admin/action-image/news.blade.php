@@ -2,8 +2,8 @@
 @section('admin-content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between mb-3">
-        <h4>Profile Pictures</h4>
-        <!-- <a href="{{ route('admin.certificates.create') }}" class="btn btn-primary">+ Add Certificate</a> -->
+        <h4>News Images</h4>
+  
     </div>
 
     <table class="table table-bordered" id="dataTable">
@@ -11,32 +11,44 @@
             <tr>
                 <th>#</th>
                 <th>Company Name</th>
+                <th>News Title</th>
                 <th>Email</th>
-                <th>Profile Picture</th>
+                <th>Images</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($users as $user)
+            @forelse ($news as $new)
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
+                    <td>
+                       @php 
+                        //echo "<pre>";    
+                        //print_r($new->toArray()); die;
+                          $user = \App\Models\User::find($new->author_id);
+                       @endphp
+                        {{ $loop->iteration }}</td>
                     <td>
                     
                     {{ $user?->company?->name }}  </td>
+                     <td>
+                    
+                    {{ $new?->title }}  </td>
                     <td>
                       {{ $user->email ?? 'N/A' }}      
                     </td>
                     <td>
-                        @if ($user->profile)
-                            <img src="{{ asset('uploads/profile/' . $user->profile) }}" width="100">
+
+                        @if($new->image)
+                            <img src="{{ asset('uploads/news/' . $new?->image) }}" style="height:50px" alt="">
                         @else
-                            <span class="text-muted">No Profile Picture</span>
-                        @endif    
+                            <span>No Image</span>
+                        @endif 
+                     
                     </td>
                    
                     <td>
                        
-                        <form action="{{ route('admin.profile-pictures.destroy', $user->id) }}" method="POST" style="display:inline-block;">
+                        <form action ="#" method="POST" style="display:inline-block;">
                             @csrf @method('DELETE')
                             <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>
                         </form>
@@ -50,7 +62,7 @@
 
     
  <div class="d-flex justify-content-center">
-                            {{ $users->links('pagination::bootstrap-5') }}
+                            {{ $news->links('pagination::bootstrap-5') }}
                         </div>
 
     

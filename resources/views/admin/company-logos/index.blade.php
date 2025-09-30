@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <h4 class="mb-3">Company Logos</h4>
 
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="dataTable">
         <thead>
             <tr>
                 <th>S.No</th>

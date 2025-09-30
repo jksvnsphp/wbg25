@@ -929,12 +929,22 @@ if (! function_exists('getCountriesList')) {
         return \App\Models\countries::orderBy('name')->pluck('name', 'id')->toArray();
     }
 }   
+
+if (! function_exists('getCertificatesList')) {
+    function getCertificatesList($id)
+    {
+        
+        return \App\Models\company_certificate::where('vendor_id', $id)->get();
+    }
+} 
+ 
 if (! function_exists('getStatesList')) {
     function getStatesList($countryId)
     {
         return \App\Models\states::where('country_id', $countryId)->orderBy('name')->pluck('name', 'id')->toArray();
     }       
 }
+
 if (! function_exists('getCitiesList')) {
     function getCitiesList($stateId)
     {

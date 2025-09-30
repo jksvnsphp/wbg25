@@ -6,7 +6,7 @@
         <!-- <a href="{{ route('admin.certificates.create') }}" class="btn btn-primary">+ Add Certificate</a> -->
     </div>
 
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="dataTable">
         <thead class="bg-dark text-light">
             <tr>
                 <th>#</th>
@@ -23,47 +23,45 @@
             @forelse ($users as $user)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $users?->company?->name }}  </td>
+                    <td>{{ $user?->company?->name }}</td>
                     <td>
                       {{ $user->email ?? 'N/A' }}      
                     </td>
                     <td>
-                        @if ($user->->company?->image_1)
-                            <img src="{{ asset('uploads/profile/' . $user->->company?->image_1) }}" width="100">
+                        @if ($user->company?->image_1)
+                            <img src="{{ asset('uploads/profile/' . $user->company?->image_1) }}" width="100">
                         @else
                             <span class="text-muted">No Profile  Banner</span>
                         @endif    
                     </td>
 
                     <td>
-                        @if ($user->->company?->image_2)
-                            <img src="{{ asset('uploads/profile/' . $user->->company?->image_2) }}" width="100">
+                        @if ($user->company?->image_2)
+                            <img src="{{ asset('uploads/profile/' . $user->company?->image_2) }}" width="100">
                         @else
                             <span class="text-muted">No Profile  Banner</span>
                         @endif    
                     </td>
                     <td>
-                        @if ($user->->company?->image_3)
-                            <img src="{{ asset('uploads/profile/' . $user->->company?->image_3) }}" width="100">
+                        @if ($user->company?->image_3)
+                            <img src="{{ asset('uploads/profile/' . $user->company?->image_3) }}" width="100">
                         @else
                             <span class="text-muted">No Profile  Banner</span>
                         @endif  
                    
-                    <td>
+                    </td>
 
-                       <td>
-                        @if ($user->->company?->image_4)
-                            <img src="{{ asset('uploads/profile/' . $user->->company?->image_4) }}" width="100">
+                    <td>
+                        @if ($user->company?->image_4)
+                            <img src="{{ asset('uploads/profile/' . $user->company?->image_4) }}" width="100">
                         @else
                             <span class="text-muted">No Profile  Banner</span>
                         @endif  
                    
+                    </td> 
                     <td>
-
-
-
-                        <!-- <a href="{{ route('admin.certificates.edit', $users->id) }}" class="btn btn-sm btn-warning">Edit</a> -->
-                        <form action="{{ route('admin.profile-banners.destroy', $users->id) }}" method="POST" style="display:inline-block;">
+ 
+                        <form action="{{ route('admin.profile-banners.destroy', $user->id) }}" method="POST" style="display:inline-block;">
                             @csrf @method('DELETE')
                             <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>
                         </form>

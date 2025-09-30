@@ -162,6 +162,20 @@ class QuotationController extends Controller
         }
     }
 
+      public function allQuotations()
+    {
+        
+            $quotations = Quotation::latest()
+               // ->where('user_id', auth()->user()->id)
+                //->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
+                ->with('category')->paginate(10); 
+                //echo "<pre/>";
+                //print_r($quotations);die;
+            return view('admin.action-image.quotations', compact('quotations'));
+        
+    }
+
+
     public function myExpiredQuotations()
     {
         if (isset(auth()->user()->id)) {

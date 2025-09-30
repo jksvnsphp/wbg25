@@ -86,6 +86,50 @@
         </div>
     </li> 
 
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFour21"
+            aria-expanded="true" aria-controls="collapseFour">
+            <i class="fas fa-fw fa-users "></i>
+            <span>Action Images</span>
+        </a>
+        <div id="collapseFour21" class="collapse" aria-labelledby="headingFour" data-parent="#accordionSidebar">
+            <div class="bg-white  collapse-inner ">
+
+
+                <a class="collapse-item" href="{{ route('admin.product.product_images') }}">Product Images</a>
+                
+                <a class="collapse-item" href="{{ route('admin.product.multiply_product_images') }}"> Multiply product images</a>
+                <a class="collapse-item" href="{{ route('admin.tender.tender_images') }}">Tendor Images</a>
+                <a class="collapse-item" href="{{ route('admin.quotation.images') }}">Quotation Images</a>
+                <a class="collapse-item" href="{{ route('admin.all.newsImages') }}">news Images</a>
+            </div>
+
+        </div>
+    </li> 
+<li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseStore"
+            aria-expanded="true" aria-controls="collapseFour">
+            <i class="fas fa-fw fa-users "></i>
+            <span>Store Images</span>
+        </a>
+        <div id="collapseStore" class="collapse" aria-labelledby="headingFour" data-parent="#accordionSidebar">
+            <div class="bg-white  collapse-inner ">
+
+
+                <a class="collapse-item" href="{{ route('admin.stores.images') }}">Store logos </a>
+                
+                <a class="collapse-item" href="{{ route('admin.stores.banners') }}"> Store Banners</a>
+                <a class="collapse-item" href="#">Store Product Images</a>
+                
+               
+            </div>
+
+        </div>
+    </li> 
+
+
+    
+
      <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCoupon"
             aria-expanded="true" aria-controls="collapseCoupon">

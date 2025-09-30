@@ -45,6 +45,19 @@ class UserQuotationController extends Controller
 
         return view('external-user.get-quote', compact('categories'));
     }
+
+
+     public function getAllQuotePage()
+    {
+        $categories = CustomeCategory::where('status', 1)
+            ->where('deleted', '0')
+            ->where('parent_id', '0')
+            ->orderBy('category_name', 'ASC')
+            ->get();
+
+        return view('external-user.get-quote', compact('categories'));
+    }
+    ///getAllQuotePage
     
     public function editQuotation($quotation_id)
     {

@@ -37,6 +37,59 @@ class ProductController extends Controller
 
         return view('admin.products.index', compact('products'));
     }
+ //product_image
+     public function product_image(Request $request)
+    {
+        $query = products::with('vendor','gallery');
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhereHas('seller', function ($q) use ($search) {
+                    $q->where('company_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+        }
+
+        // Sort
+        if ($request->filled('sort') && $request->sort == 'latest') {
+            $query->latest();
+        } else {
+            $query->orderBy('id', 'asc');
+        }
+
+        $products = $query->paginate(10)->withQueryString();
+
+        return view('admin.action-image.products', compact('products'));
+    }
+
+
+      public function multiply_product_image(Request $request)
+    {
+        $query = products::with('vendor','gallery')->where('isMultiple', 1);
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhereHas('seller', function ($q) use ($search) {
+                    $q->where('company_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+        }
+
+        // Sort
+        if ($request->filled('sort') && $request->sort == 'latest') {
+            $query->latest();
+        } else {
+            $query->orderBy('id', 'asc');
+        }
+
+        $products = $query->paginate(10)->withQueryString();
+
+        return view('admin.action-image.multiple_products', compact('products'));
+    }
 
     /**
      * Show form for creating a new product.

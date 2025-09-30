@@ -122,6 +122,91 @@ public function index(Request $request)
         return view('admin.stores_management.index', compact('spotlights', 'countries', 'categories'));
     }
 
+    public function images(Request $request)
+    {
+        $countries = countries::orderBy('name', 'ASC')->get();
+        $query = User::where('account_type', 'seller')
+           // ->where('isComplete', 1)
+           // ->where('status', 1)
+            ->with('company', 'sellerPackage');
+             
+           
+        if ($request->has('q') && !empty($request->q)) {
+            $searchTerm = $request->q;
+
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('first_name', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('last_name', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('ref_no', 'LIKE', "%{$searchTerm}%")
+                    ->orWhereHas('company', function ($subQuery) use ($searchTerm) {
+                        $subQuery->where('name', 'LIKE', "%{$searchTerm}%");
+                    })
+                    ->orWhereHas('store_keys', function ($StoreKeyQuery) use ($searchTerm) {
+                        for ($i = 1; $i <= 10; $i++) {
+                            $StoreKeyQuery->orWhere("key{$i}", 'LIKE', "%{$searchTerm}%");
+                        }
+                    })
+                    ->orWhereHas('store_meta', function ($metaQuery) use ($searchTerm) {
+                        $metaQuery->where('title', 'LIKE', "%{$searchTerm}%")
+                            ->orWhere('keywords', 'LIKE', "%{$searchTerm}%")
+                            ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                    });
+            });
+        }
+        if ($request->has('country') && $request->input('country') != "") {
+            $country = $request->input('country');
+            $countryData = countries::where('name', $country)->first();
+            if ($countryData != null) {
+                $query->where('country', $countryData->id);
+            }
+        }
+
+        if ($request->has('category') && !empty($request->category)) {
+            $query->whereHas('company', function ($q) use ($request) {
+                $q->where('category_1', $request->category);
+            });
+        }
+
+        if ($request->has('subcategory') && !empty($request->subcategory)) {
+            $query->whereHas('company', function ($q) use ($request) {
+                $q->where('category_2', $request->subcategory);
+            });
+        }
+
+        if ($request->has('business_type') && !empty($request->business_type)) {
+            $query->whereHas('company', function ($q) use ($request) {
+                $q->where('business_type', $request->business_type);
+            });
+        }
+        $pageItem = 10;
+        if ($request->has('pageItem') && $request->filled('pageItem')) {
+            $pageItem = $request->pageItem ?? 10;
+        }
+       
+        $spotlights = $query->orderByRaw("
+        (CASE 
+            WHEN EXISTS (SELECT 1 FROM seller_packages sp 
+                        JOIN member_packages p ON sp.package_id = p.id 
+                        WHERE users.id = sp.seller_id AND p.type = 'platinum') THEN 1
+            WHEN EXISTS (SELECT 1 FROM seller_packages sp 
+                        JOIN member_packages p ON sp.package_id = p.id 
+                        WHERE users.id = sp.seller_id AND p.type = 'gold') THEN 2
+            ELSE 3
+        END)
+        ")->paginate($pageItem);
+        foreach ($spotlights ?? [] as $spotlight) {
+            $spotlight->country = countries::find($spotlight->country);
+            $spotlight->sold = DB::table('order_items')
+                ->join('products', 'order_items.product_id', '=', 'products.id')
+                ->where('products.vendor_id', $spotlight->id)
+                ->sum('order_items.quantity');
+            $averageRating = $spotlight->ratings()->avg('rate');
+            $spotlight->average_rating = $averageRating !== null ? number_format($averageRating, 2) : '0.00';
+        }
+        $categories = CustomeCategory::where('status', "1")->where('deleted', "0")->where('parent_id', "0")->orderBy('category_name', 'ASC')->get();
+        return view('admin.store-image.images', compact('spotlights', 'countries', 'categories'));
+    }
+
     public function changeStatus(Request $request)
     {
         // dd($request->all());
@@ -132,6 +217,103 @@ public function index(Request $request)
         } else {
             return response()->json(['error' => 'Something went wrong']);
         }
+    }
+
+   public function storeBanners(Request $request)
+    {
+        $countries = countries::orderBy('name', 'ASC')->get();
+        $query = User::where('account_type', 'seller')
+            ->where('isComplete', 1)
+            ->where('status', 1)
+            ->with('company', 'sellerPackage')
+            ->whereHas('company', function ($companyQuery) {
+                $companyQuery->whereNotNull('spotlight_banner')
+                    ->whereNotNull('spotlight_preview1');
+            })
+            ->whereHas('sellerPackage', function ($query) {
+                $query->whereHas('package', function ($subQuery) {
+                    $subQuery->whereIn('type', ['gold', 'platinum']);
+                })
+                    ->where(function ($expireQuery) {
+                        $expireQuery->whereNull('expire_at')
+                            ->orWhere('expire_at', '>', now());
+                    });
+            });
+        if ($request->has('q') && !empty($request->q)) {
+            $searchTerm = $request->q;
+
+
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('first_name', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('last_name', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('ref_no', 'LIKE', "%{$searchTerm}%")
+                    ->orWhereHas('company', function ($subQuery) use ($searchTerm) {
+                        $subQuery->where('name', 'LIKE', "%{$searchTerm}%");
+                    })
+                    ->orWhereHas('store_keys', function ($StoreKeyQuery) use ($searchTerm) {
+                        for ($i = 1; $i <= 10; $i++) {
+                            $StoreKeyQuery->orWhere("key{$i}", 'LIKE', "%{$searchTerm}%");
+                        }
+                    })
+                    ->orWhereHas('store_meta', function ($metaQuery) use ($searchTerm) {
+                        $metaQuery->where('title', 'LIKE', "%{$searchTerm}%")
+                            ->orWhere('keywords', 'LIKE', "%{$searchTerm}%")
+                            ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                    });
+            });
+        }
+        if ($request->has('country') && $request->input('country') != "") {
+            $country = $request->input('country');
+            $countryData = countries::where('name', $country)->first();
+            if ($countryData != null) {
+                $query->where('country', $countryData->id);
+            }
+        }
+
+        if ($request->has('category') && !empty($request->category)) {
+            $query->whereHas('company', function ($q) use ($request) {
+                $q->where('category_1', $request->category);
+            });
+        }
+
+        if ($request->has('subcategory') && !empty($request->subcategory)) {
+            $query->whereHas('company', function ($q) use ($request) {
+                $q->where('category_2', $request->subcategory);
+            });
+        }
+
+        if ($request->has('business_type') && !empty($request->business_type)) {
+            $query->whereHas('company', function ($q) use ($request) {
+                $q->where('business_type', $request->business_type);
+            });
+        }
+        $pageItem = 10;
+        if ($request->has('pageItem') && $request->filled('pageItem')) {
+            $pageItem = $request->pageItem ?? 10;
+        }
+       
+        $spotlights = $query->orderByRaw("
+        (CASE 
+            WHEN EXISTS (SELECT 1 FROM seller_packages sp 
+                        JOIN member_packages p ON sp.package_id = p.id 
+                        WHERE users.id = sp.seller_id AND p.type = 'platinum') THEN 1
+            WHEN EXISTS (SELECT 1 FROM seller_packages sp 
+                        JOIN member_packages p ON sp.package_id = p.id 
+                        WHERE users.id = sp.seller_id AND p.type = 'gold') THEN 2
+            ELSE 3
+        END)
+        ")->paginate($pageItem);
+        foreach ($spotlights ?? [] as $spotlight) {
+            $spotlight->country = countries::find($spotlight->country);
+            $spotlight->sold = DB::table('order_items')
+                ->join('products', 'order_items.product_id', '=', 'products.id')
+                ->where('products.vendor_id', $spotlight->id)
+                ->sum('order_items.quantity');
+            $averageRating = $spotlight->ratings()->avg('rate');
+            $spotlight->average_rating = $averageRating !== null ? number_format($averageRating, 2) : '0.00';
+        }
+        $categories = CustomeCategory::where('status', "1")->where('deleted', "0")->where('parent_id', "0")->orderBy('category_name', 'ASC')->get();
+        return view('admin.store-image.banners', compact('spotlights', 'countries', 'categories'));
     }
 
     public function store(Request $request)
@@ -244,3 +426,6 @@ public function index(Request $request)
         }
     }
 }
+
+
+//images
