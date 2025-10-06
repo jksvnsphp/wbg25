@@ -2,7 +2,7 @@
 @section('admin-content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between mb-3">
-        <h4>Products Images</h4>
+        <h4>Quotations Deals</h4>
   
     </div>
 
@@ -10,53 +10,67 @@
         <thead class="bg-dark text-light">
             <tr>
                 <th>#</th>
+                <th>Product Name</th>
                 <th>Company Name</th>
-                <th>Product Title</th>
-                <th>Email</th>
-                <th>Images</th>
+                <th>Quantity</th>
+                <th>Start Date</th>
+                <th>End Date</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($products as $product)
+            @forelse ($quotations as $quotation)
                 <tr>
                     <td>
                        @php 
-                          $user = \App\Models\User::find($product->vendor_id);
+                    //   echo "<pre>";    
+                      // print_r($quotation->toArray()); die;
+                          $user = \App\Models\User::find($quotation->user_id);
                        @endphp
                         {{ $loop->iteration }}</td>
                     <td>
                     
-                    {{ $user?->company?->name }}  </td>
+                    {{ $quotation?->product_service }}  </td>
                      <td>
                     
-                    {{ $product?->name }}  </td>
+                    {{ $user?->company?->name }}  </td>
                     <td>
-                      {{ $user->email ?? 'N/A' }}      
+                      {{ $quotation->quantity ?? 'N/A' }}      
                     </td>
                     <td>
-                         @php
-
-                           $gallery= $product->gallery->toArray(); 
-                           // echo "<pre>";
-                           // print_r($gallery[0]['image']); die;
-                         
                           
-                        @endphp
-                        @if($gallery && isset($gallery['0']['image']))
-                            <img src="{{ asset('uploads/products/gallery/' . $gallery[0]['image']) }}" style="height:50px" alt="">
-                        @else
-                            <span>No Image</span>
-                        @endif 
+                        {{ $quotation->created_at->format('d M Y') }}   
+                     
                     </td>
+                      <td>
+                       
+
+                          @if($quotation->duration)
+                                                    @php
+                                                        $entryDate = \Carbon\Carbon::parse($quotation->created_at);
+                                                        $expiryDate = $entryDate->copy()->addDays($quotation->duration);
+                                                        $now = \Carbon\Carbon::now();
+                                                        $daysLeft = $now->diffInDays($expiryDate, false);
+                                                    @endphp
+                                                    @if($daysLeft >= 0)
+                                                        {{ $expiryDate->format('d M Y') }} 
+                                                    @else
+                                                        Expired
+                                                    @endif
+                                                @else
+                                                    N/A
+                                                @endif  
+                           
+                     
+                    </td> 
                    
                     <td>
-                        <label title="Active/Inactive" class="switch round_switch">
+                         <label title="Active/Inactive" class="switch round_switch">
                                                 <input type="checkbox" id="id9" checked value="1">
                                                 <div class="slider round"></div>
                                             </label>
-
-                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline-block;">
+                       
+                        <form action ="#" method="POST" style="display:inline-block;">
                             @csrf @method('DELETE')
                             <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>
                         </form>
@@ -70,14 +84,13 @@
 
     
  <div class="d-flex justify-content-center">
-                            {{ $products->links('pagination::bootstrap-5') }}
+                            {{ $quotations->links('pagination::bootstrap-5') }}
                         </div>
 
     
 </div>
 @endsection
-
-
+ 
 @section('custom-js')
     <script>
         function toggleAddCategory() {

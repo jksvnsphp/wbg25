@@ -61,6 +61,12 @@
                                                  
                                                  {{ $item->video->video_url ?? 'N/A' }}
                                             </td>
+                                            <td>
+                         <label title="Active/Inactive" class="switch round_switch">
+                                                <input type="checkbox" id="id9" checked value="1">
+                                                <div class="slider round"></div>
+                                            </label>
+                                            </td>
                                             <td class="align-middle">
                                                 <a href="#" class="btn m-1 btn-sm btn-success"> <i
                                                         class="fas fa-edit    "></i> </a>

@@ -60,11 +60,12 @@ use App\Http\Controllers\UserProductController;
 use App\Http\Controllers\UserQuotationController;
 use App\Http\Controllers\SmsController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\TenderController;
+use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\TenderController;
 
-use App\Http\Controllers\Admin\BuyerInquiryController;
-use App\Http\Controllers\Admin\SellerInquiryController;
+use App\Http\Controllers\admin\BuyerInquiryController;
+use App\Http\Controllers\admin\SellerInquiryController;
+use App\Http\Controllers\admin\UserInquiryController;
 
 //SellerInquiryController
 /*
@@ -230,16 +231,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('sellers', SellerController::class);
     Route::resource('products', ProductController::class);
     Route::resource('tenders', TenderController::class);
-   Route::resource('company-logos', App\Http\Controllers\Admin\CompanyLogoController::class);
-   Route::resource('profile-pictures', App\Http\Controllers\Admin\ProfilePictureController::class);
-   Route::resource('profile-banners', App\Http\Controllers\Admin\ProfileBannerController::class);
-   Route::resource('profile-galleries', App\Http\Controllers\Admin\ProfileGalleryController::class);
-   Route::resource('certificates', App\Http\Controllers\Admin\CertificateController::class);
+   Route::resource('company-logos', App\Http\Controllers\admin\CompanyLogoController::class);
+   Route::resource('profile-pictures', App\Http\Controllers\admin\ProfilePictureController::class);
+   Route::resource('profile-banners', App\Http\Controllers\admin\ProfileBannerController::class);
+   Route::resource('profile-galleries', App\Http\Controllers\admin\ProfileGalleryController::class);
+   Route::resource('certificates', App\Http\Controllers\admin\CertificateController::class);
 
     Route::resource('inquiries', BuyerInquiryController::class)->only(['index','show','destroy']);
     Route::resource('sellerinquiries', SellerInquiryController::class)->only(['index','show','destroy']);
+    Route::resource('userinquiries', UserInquiryController::class)->only(['index','show','destroy']);
     //SellerInquiryController
     Route::get('/product-approval', [ProductController::class, 'index'])->name('product.approval');
+    Route::get('/product-managment', [ProductController::class, 'productmanagment'])->name('product.productmanagment');
+    Route::get('/product-sellout-managment', [ProductController::class, 'productselloutmanagment'])->name('product.productselloutmanagment');
+    Route::get('/product-store-managment', [ProductController::class, 'storeproductmanagment'])->name('product.storeproductmanagment');
+    Route::get('/product-store-sellout-managment', [ProductController::class, 'storeselloutproductmanagment'])->name('product.storeselloutproductmanagment');
+
+    //
     Route::post('products/approval', [ProductController::class, 'toggleApproval'])->name('products.approval');
     Route::get('/buy-tender-approval',[TenderController::class, 'index'])->name('buy.tender.approval');
     Route::post('tenders/approval', [TenderController::class, 'toggleApproval'])->name('tenders.approval');
@@ -404,6 +412,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
       Route::post('/update/quotation-category', 'update')->name('admin.update.quotation.category');
 
       Route::get('/quotation-images','allQuotations')->name('admin.quotation.images');
+      Route::get('/quotations','allListedQuotations')->name('admin.quotations');
    
    });
    Route::controller(QuotationsSubcategoryController::class)->prefix('admin')->group(function () {

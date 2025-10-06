@@ -5,7 +5,7 @@
         <div class="col-md-12 mb-3">
             <div class="card rounded-0">
                 <div class="card-header bg-dark text-light font-weight-bolder">
-                    Seller Inquiry`s
+                    User Inquiry`s
                 </div>
                 <div class="card-body pb-0">
                     <div class="table-responsive">
@@ -13,9 +13,9 @@
                             <thead>
                                 <tr>
                                     <th>S.No</th>
-                                    <th>Seller Name</th>
+                                    <th>User Name</th>
                                      
-                                    <th>Seller Email</th>
+                                    <th>User Email</th>
                                     <th>Subject</th>
                                     <th>Date</th>
                                     <th>Action</th>
@@ -31,11 +31,11 @@
                                         <td>{{ $inquiry->subject }}</td>
                                         <td>{{ $inquiry->created_at->format('Y-m-d') }}</td>
                                         <td>
-                                            <a href="{{ route('admin.sellerinquiries.show', $inquiry->id) }}"
+                                            <a href="{{ route('admin.userinquiries.show', $inquiry->id) }}"
                                                class="btn btn-sm btn-secondary">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <form action="{{ route('admin.sellerinquiries.destroy', $inquiry->id) }}"
+                                            <form action="{{ route('admin.userinquiries.destroy', $inquiry->id) }}"
                                                   method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')

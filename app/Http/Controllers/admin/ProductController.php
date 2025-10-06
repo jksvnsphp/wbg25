@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Products;
@@ -34,9 +34,125 @@ class ProductController extends Controller
         }
 
         $products = $query->paginate(10)->withQueryString();
-
+       die;
         return view('admin.products.index', compact('products'));
     }
+    //productmanagment
+
+    public function productmanagment(Request $request)
+    {
+      
+        // $query = products::with('vendor','gallery');
+         $query = products::with('vendor','gallery')->where('totalQty','>', 0);
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhereHas('seller', function ($q) use ($search) {
+                    $q->where('company_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+        }
+
+        // Sort
+        if ($request->filled('sort') && $request->sort == 'latest') {
+            $query->latest();
+        } else {
+            $query->orderBy('id', 'asc');
+        }
+
+        $products = $query->paginate(10)->withQueryString();
+      // die;
+        return view('admin.product_managment.product-manager', compact('products'));
+    }
+
+       public function productselloutmanagment(Request $request)
+    {
+      
+        // $query = products::with('vendor','gallery');
+         $query = products::with('vendor','gallery')->where('totalQty','<=', 0);
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhereHas('seller', function ($q) use ($search) {
+                    $q->where('company_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+        }
+
+        // Sort
+        if ($request->filled('sort') && $request->sort == 'latest') {
+            $query->latest();
+        } else {
+            $query->orderBy('id', 'asc');
+        }
+
+        $products = $query->paginate(10)->withQueryString();
+      // die;
+        return view('admin.product_managment.product-manager-sellout', compact('products'));
+    }
+
+
+        public function storeproductmanagment(Request $request)
+    {
+      
+        // $query = products::with('vendor','gallery');
+         $query = products::with('vendor','gallery')->where('totalQty','>', 0)
+         ->where('isListingType', 'spotlight');
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhereHas('seller', function ($q) use ($search) {
+                    $q->where('company_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+        }
+
+        // Sort
+        if ($request->filled('sort') && $request->sort == 'latest') {
+            $query->latest();
+        } else {
+            $query->orderBy('id', 'asc');
+        }
+
+        $products = $query->paginate(10)->withQueryString();
+        return view('admin.product_managment.product-manager-store', compact('products'));
+    }
+    
+       public function storeselloutproductmanagment(Request $request)
+    {
+      
+        // $query = products::with('vendor','gallery');
+         $query = products::with('vendor','gallery')->where('totalQty','<=', 0)
+         ->where('isListingType', 'spotlight');
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhereHas('seller', function ($q) use ($search) {
+                    $q->where('company_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+        }
+
+        // Sort
+        if ($request->filled('sort') && $request->sort == 'latest') {
+            $query->latest();
+        } else {
+            $query->orderBy('id', 'asc');
+        }
+
+        $products = $query->paginate(10)->withQueryString();
+        //product-manager-sellout.blade
+        return view('admin.product_managment.product-manager-sellout', compact('products'));
+    }
+    // $query = products::with('vendor','gallery')->where('totalQty','<=', 0);
  //product_image
      public function product_image(Request $request)
     {

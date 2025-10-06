@@ -159,7 +159,16 @@ class DashboardController extends Controller
         return view('admin.product_managment.product-manager');
     }
     public function buyTradeList(){
-        return view('admin.tenders_management.buy-trades');
+         $quotations = Quotation::where('isDeal',1)->latest()
+               // ->where('user_id', auth()->user()->id)
+                //->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
+                ->with('category')->paginate(10); 
+                //echo "<pre/>";
+                //print_r($quotations);die;
+             
+ 
+        return view('admin.quotation_management.quotationl', compact('quotations'));
+
     }
     public function sellTradeList(){
  

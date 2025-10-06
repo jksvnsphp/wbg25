@@ -140,7 +140,7 @@
             <div class="bg-white  collapse-inner ">
                 <a class="collapse-item" href="{{ route('admin.inquiries.index') }}">Buyer Inquiry`s</a>
                 <a class="collapse-item" href="{{ route('admin.sellerinquiries.index') }}">Seller Inquiry`s</a> 
-                 <a class="collapse-item" href="#">Users Communications</a>
+                 <a class="collapse-item" href="{{ route('admin.userinquiries.index') }}">Users Communications</a> 
             </div>
         </div>
     </li>
@@ -152,22 +152,26 @@
         </a>
         <div id="collapseProduct" class="collapse" aria-labelledby="headingProduct" data-parent="#accordionSidebar">
             <div class="bg-white  collapse-inner ">
-                <a class="collapse-item" href="{{ route('admin.product.manager') }}">All listed normal Products</a>
-                <a class="collapse-item" href="#">All Normal sell out Products</a>
+                <a class="collapse-item" href="{{ route('admin.product.productmanagment') }}">All listed normal Products</a>
+                
+
+                 
+                 <a class="collapse-item" href="{{ route('admin.product.productselloutmanagment') }}">All Sellout Products</a>
             </div>
         </div>
     </li>
 
     <li class="nav-item "> 
-       <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseStore"
-            aria-expanded="true" aria-controls="collapseStore">
+       <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseStorem"
+            aria-expanded="true" aria-controls="collapseStorem">
             <i class="fas fa-fw fa-store"></i>
             <span>Store Management</span>
         </a>
-        <div id="collapseStore" class="collapse" aria-labelledby="headingStore" data-parent="#accordionSidebar">
+        <div id="collapseStorem" class="collapse" aria-labelledby="headingStore" data-parent="#accordionSidebar">
             <div class="bg-white  collapse-inner ">
-                <a class="collapse-item" href="#">All listed  multiply Products</a>
-                <a class="collapse-item" href="#">Multiply sell out Products</a>
+                <a class="collapse-item" href="{{route('admin.product.storeproductmanagment') }}">All listed  multiply Products</a>
+                <a class="collapse-item" href="{{route('admin.product.storeselloutproductmanagment') }}">Multiply sell out Products</a>
+                
                  <a class="collapse-item" href="{{route('admin.stores.index')}}">All Store</a>
             </div>
         </div>
@@ -214,7 +218,7 @@
         <div id="collapseQuotation" class="collapse " aria-labelledby="headingFour" data-parent="#accordionSidebar">
             <div class="bg-white  collapse-inner ">
 
-                <a class="collapse-item " href="{{ route('admin.all.buy.quotations') }}">All listed  FRQ`s </a>
+                <a class="collapse-item " href="{{ route('admin.quotations.category') }}">All listed  FRQ`s </a>
                 <a class="collapse-item" href="{{ route('admin.buy.trade.list') }}">All Quotation Deals</a>
 
 
