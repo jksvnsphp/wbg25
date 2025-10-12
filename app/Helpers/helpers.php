@@ -93,8 +93,9 @@ if (! function_exists('getCountryName')) {
 if (! function_exists('getUserName')) {
     function getUserName($id)
     {
+        //echo "ID=>>>".$id; die;
         $user = User::find($id);
-        return $user ? $user->name : null;
+        return $user ? $user->first_name." ".$user->last_name : null;
     }
 }
 if (! function_exists('getUserEmail')) {

@@ -7,9 +7,7 @@
                 <div class="card rounded-0">
                     <div
                         class="card-header d-flex justify-content-between align-items-center rounded-0 py-2 bg-dark text-light font-weight-bolder">
-                          Stores Management
-                        
-                            
+                          All Stores
                     </div>
 
                     <div class="card-body pb-0">
@@ -64,10 +62,14 @@
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Name</th>
-                                         <th>Image</th> 
-                                        <th>Active / Inactive </th>
-                                        <th>Action</th>
+                                        <th>Company Name</th>
+                                         <th>Email </th> 
+                                         <th>Country </th>
+                                         <th>Join Date </th>
+                                         <th>Member Type </th>
+                                         <th>Subdomain</th>
+                                         <th>Status</th>
+                                         <th>Action</th>
                                     </tr>
                                 </thead>
 
@@ -75,9 +77,9 @@
                                     @foreach ($spotlights as $key => $item)
                                         <tr>
                                             <td class="align-middle">{{ $key + 1 }}
-
-                                        
-
+                                                @php
+                                                   
+                                                @endphp
                                             </td>
                                             <td class="align-middle">
                                                 <a href="">
@@ -86,7 +88,7 @@
                                             </td>
 
                                             <td class="align-middle ">
-                                                <div style="height: 4rem; width:4rem;">
+                                                <!-- <div style="height: 4rem; width:4rem;">
                                                     @if (isset($item->company->company_logo) && !empty($item->company->company_logo))
                                                         <img src="{{ asset('uploads/profile/' . $item->company->company_logo) }}"
                                                             class="h-100 w-100" alt="">
@@ -94,9 +96,23 @@
                                                         <img src="{{ asset('dashboard/img/imgnotfound.jpg') }}"
                                                             class="h-100 w-100" alt="">
                                                     @endif
-                                                </div>
+                                                </div> -->
+                                                {{ $item->email }}
                                             </td>
+                                            <td class="align-middle">
+                                                @if ($item->countryData->image ?? '')
+                                                    <img src="{{ asset('uploads/country_flags/' . $item->countryData->image) }}"
+                                                        style="height: 30px;" alt="">
+
+                                                @endif
+                                                <small class="mt-2"> {{ $item->countryData->name ?? '' }} </small>
+                                                </td>
+                                                <td>
+                                                    {{ $item->created_at->format('d M, Y') }}      </td>
+                                                    <td> {{ $item->account_type }} </td>
+                                                    <td> {{ $item->subdomain }} </td>
                                             <td>
+                                            
                                                 <label title="Active/Inactive" class="switch round_switch">
                                                     <input @checked($item->status) type="checkbox"
                                                         id="id{{ $item->id }}" value="1">
@@ -105,7 +121,7 @@
                                             </td>
                                             <td class="align-middle">
                                                 <a href="#" class="btn m-1 btn-sm btn-success"> <i
-                                                        class="fas fa-edit    "></i> </a>
+                                                        class="fas fa-eye"></i> </a>
                                                 <a href="#" id="delete" class="btn m-1 btn-sm btn-danger"> <i class="fa fa-trash"
                                                         aria-hidden="true"></i> </a>
 

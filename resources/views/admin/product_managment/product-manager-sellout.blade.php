@@ -7,7 +7,7 @@
             <div class="col-md-12 mb-3">
                 <div class="card rounded-0">
                     <div class="card-header d-flex justify-content-between align-items-center rounded-0 py-2 bg-dark text-light font-weight-bolder">
-                        All SellOut Products
+                         All normal sell out Products
 
                     </div>
 
@@ -33,14 +33,12 @@
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Image</th>
-                                        <th class="nowrap">Product Details</th>
-                                        <th>Approved</th>
-                                        <th>Wholesale</th>
-                                        <th>Bulk</th>
-                                        <th>Daily</th>
-                                        <th>Hot</th>
-                                        <th>Limit Offer</th>
+                                        <th>Company name</th>
+                                        <th>Product Title</th>
+                                        <th>Quantity</th>
+                                        <th>Entry Date</th>
+                                        <th>Duration letf Time </th> 
+                                         <th>Status</th> 
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -51,18 +49,13 @@
                                             <td>
                                                
                                             {{ $products->firstItem() + $index }}</td>
-                                           <td>
-                           @php
-                         //  echo "<pre/>";
-                           // print_r($product);die;
-
-                           $gallery= $product->gallery->toArray();  
-                           @endphp
-                        @if($gallery && isset($gallery['0']['image']))
-                            <img src="{{ asset('uploads/products/gallery/' . $gallery[0]['image']) }}" style="height:50px" alt="">
-                        @else
-                            <span>No Image</span>
-                        @endif
+                                            <td>
+                                                    @php 
+                                                    $gallery= $product->gallery->toArray();  
+                                                    //echo "<pre>"; print_r($product->vendor->company->name); die;
+                                                    @endphp
+                                                    {{$product->vendor->company->name ?? 'N/A'}}
+                       
                                             </td> 
 
                                             <td>
@@ -74,51 +67,33 @@
                                                     @endphp
                                                <!-- <p class="text-primary pb-0 mb-0 font-weight-bolder fs-3 text-capitalize" title="MacBook Pro"><a href="#" target="_blank">MacBook Pro</a></p> -->
                                             <div class="text-capitalize fs-2 font-weight-bold">{{ $product->name }}</div>
-                                            <div class="text-muted">
-                                                <span class="badge badge-success" style="font-size:13px;">Price: {{ $product->price }}</span>
-                                                <span class="badge badge-warning" style="font-size:13px;">Qty: >{{ $product->totalQty ?? 'N/A' }}</span>
-                                            </div>
-                                            <small class="text-muted fs-1 nowrap">Entry Date: {{$expiryDate}}</small>    
+                                            
+                                             
+                                          
                                             </td>
                                            
-                                            <td>  @if($product->isList) <a href="" class="btn btn-sm btn-success"> <i class="fa fa-check" aria-hidden="true"></i> </a> @endif</td>
+                                            <td> {{ $product->totalQty ?? 'N/A' }}</td>
                                          
-                                            <td>  <label class="switch round_switch">
-                                                <input type="checkbox" id="proId" name="wholesale_pro" value="N" checked>
-                                                <div class="slider round"></div>
-                                            </label></td>
+                                            <td> {{$entryDate}} </td>
                                             <td>
-                                                 <label class="switch round_switch">
-                                                <input type="checkbox" id="bulkId" name="bulk" value="N">
-                                                <div class="slider round"></div>
-                                            </label>
-                                            </td>
-
-                                            <td>
-                                                 <label class="switch round_switch">
-                                                <input type="checkbox" id="bulkId" name="bulk" value="N">
-                                                <div class="slider round"></div>
-                                            </label>
-                                            </td>
-
-                                            <td>
-                                                 <label class="switch round_switch">
-                                                <input type="checkbox" id="bulkId" name="bulk" value="N">
-                                                <div class="slider round"></div>
-                                            </label>
-                                            </td>
-
-                                            <td>
-                                                 <label class="switch round_switch">
-                                                <input type="checkbox" id="bulkId" name="bulk" value="N">
-                                                <div class="slider round"></div>
-                                            </label>
+                                                @if ($daysLeft >= 0)
+                                                    {{ $daysLeft }} days left
+                                                @else
+                                                    Expired
+                                                @endif
+                                            </td>  
+                                             <td>
+                                                <label title="Active/Inactive" class="switch round_switch">
+                                                    <input @checked($product->status) type="checkbox"
+                                                        id="checkbox{{ $product->id }}">
+                                                    <div class="slider round"></div>
+                                                </label>
                                             </td>
                                             <td>
                                                 
-                                                <!-- <a title="View" href="{{ route('admin.products.show', $product->id) }}"
+                                                 <a title="View" href="{{ route('admin.products.show', $product->id) }}"
                                                    class="btn btn-sm btn-secondary"> <i class="fas fa-eye"></i> </a>
-                                                <a title="Edit" href="{{ route('admin.products.edit', $product->id) }}"
+                                                <!--<a title="Edit" href="{{ route('admin.products.edit', $product->id) }}"
                                                    class="btn btn-sm btn-success"> <i class="fas fa-edit"></i> </a> -->
                                                 <form action="{{ route('admin.products.destroy', $product->id) }}"
                                                       method="POST" class="d-inline">
@@ -213,15 +188,20 @@
     
 @endsection
 @section('custom-js')
-    
     {{-- <script>
+        function toggleAddCategory() {
+            $('#category_card').toggleClass('d-none');
+        }
+    </script> --}}
+
+    <script>
         $(document).ready(function() {
             $('input[type="checkbox"]').change(function() {
                 var status = this.checked ? 1 : 0;
                 var id = $(this).attr('id').replace('checkbox', '');
                 $.ajax({
                     type: 'POST',
-                    url: '{{ route('admin.update.status.user') }}',
+                    url: '{{ route('admin.product.approval') }}',
                     data: {
                         id: id,
                         status: status,
@@ -236,5 +216,5 @@
                 });
             });
         });
-    </script> --}}
+    </script>
 @endsection

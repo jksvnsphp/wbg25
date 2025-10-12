@@ -252,12 +252,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/buy-tender-approval',[TenderController::class, 'index'])->name('buy.tender.approval');
     Route::post('tenders/approval', [TenderController::class, 'toggleApproval'])->name('tenders.approval');
     Route::get('/product-images', [ProductController::class, 'product_image'])->name('product.product_images');
-     Route::get('/multiply-product-images', [ProductController::class, 'multiply_product_image'])->name('product.multiply_product_images');
+    Route::get('/multiply-product-images', [ProductController::class, 'multiply_product_image'])->name('product.multiply_product_images');
     Route::get('/tender-images', [TenderController::class, 'tender_images'])->name('tender.tender_images');
-
+    Route::post('product/toggleApproval', [ProductController::class, 'toggleApproval'])->name('product.approval');
  
     
-
+  Route::get('/trade-sell-list', [TenderController::class, 'allIndex'])->name('sell.trade.list');
+ 
+ Route::get('/all-tender-deal', [TenderController::class, 'allDealIndex'])->name('sell.trade.deal_list'); //
   // Route::get('/trade-sell-list', 'sellTradeList')->name('admin.sell.trade.list');
 });
 
@@ -274,7 +276,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
       Route::get('/payment-center', 'paymentCenter')->name('admin.payment.center');
       Route::get('/product-manager', 'productManagement')->name('admin.product.manager');
       Route::get('/trade-buy-list', 'buyTradeList')->name('admin.buy.trade.list');
-      Route::get('/trade-sell-list', 'sellTradeList')->name('admin.sell.trade.list');
+      //Route::get('/trade-sell-list', 'sellTradeList')->name('admin.sell.trade.list');
       Route::get('/ads-banners', 'adsBanners')->name('admin.ads.banners');
       Route::get('/all-buy-quotations', 'allBuyQuotation')->name('admin.all.buy.quotations');
       Route::get('/add-new-ads-banner', 'addNewBanner')->name('admin.add.new.banner');
@@ -378,7 +380,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
    Route::controller(StoresController::class)->prefix('admin')->group(function () {
       Route::get('/stores', 'index')->name('admin.stores.index');  
       Route::get('/stores-images', 'images')->name('admin.stores.images');
-      Route::get('/stores-banners', 'storeBanners')->name('admin.stores.banners');  
+      Route::get('/stores-banners', 'storeBanners')->name('admin.stores.banners'); 
+      Route::post('/change-status', 'storeChangeStatus')->name('admin.stores.change_status');  
       //
       // Route::get('/delete/{id}/tender-category', 'DeleteCategory')->name('admin.delete.tender.category');
       // Route::get('/edit/{id}/tender-category', 'edit')->name('admin.edit.tender.category');

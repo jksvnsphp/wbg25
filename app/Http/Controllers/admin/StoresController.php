@@ -119,6 +119,8 @@ public function index(Request $request)
             $spotlight->average_rating = $averageRating !== null ? number_format($averageRating, 2) : '0.00';
         }
         $categories = CustomeCategory::where('status', "1")->where('deleted', "0")->where('parent_id', "0")->orderBy('category_name', 'ASC')->get();
+       
+          //die('dsad');
         return view('admin.stores_management.index', compact('spotlights', 'countries', 'categories'));
     }
 
@@ -424,6 +426,36 @@ public function index(Request $request)
         } else {
             return back()->with(['alert-type' => 'error', 'message' => 'Category not found!']);
         }
+    }
+
+    public function storeChangeStatus(Request $request)
+    {
+        // dd($request->all());
+        $supplier = TenderCategory::where('id', $request->id)->first();
+        $supplier->status = $request->status;
+        if ($supplier->save()) {
+            return response()->json(['success' => 'Status Changed Successfully']);
+        } else {
+            return response()->json(['error' => 'Something went wrong']);
+        }
+    }
+
+        /**
+     * Show details of a product.
+     */
+    public function show(Request $request, $id)
+    {
+        $product = products::with('vendor', 'gallery', 'category', 'subcategory', 'childcategory', 'brand', 'unit')->where('id', $id)->firstOrFail();
+        $product->country = countries::find($product->vendor->country);
+        $averageRating = $product->reviews()->avg('rating');
+        $product->average_rating = $averageRating !== null ? number_format($averageRating, 2) : '0.00';
+        $product->sold = DB::table('order_items')
+            ->where('order_items.product_id', $product->id)
+            ->sum('order_items.quantity');
+        $product->totalReviews = $product->reviews()->count();
+    
+       // echo '<pre>'; print_r($product->toArray()); die;
+        return view('admin.store.show', compact('product'));
     }
 }
 

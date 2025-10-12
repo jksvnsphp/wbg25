@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Tender;
 use App\Models\User;
 use App\Models\Inbox;
+use App\Models\ChatMessage;
 
 use Illuminate\Http\Request;
 
@@ -29,8 +30,24 @@ class SellerInquiryController extends Controller
 
     public function show($id)
     {
+           $messages = ChatMessage::where(function ($query) use ($id) {
+            //$query->where('sender_id', auth()->user()->id)
+               // ->where('receiver_id', $request->receiver_id)
+                $query->where('message_id', $id);
+        })
+            ->orWhere(function ($query) use ($id) {
+              //  $query->where('sender_id', $request->receiver_id)
+                    //->where('receiver_id', auth()->user()->id)
+                    $query->where('message_id', $id);
+            })
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(function ($message) {
+                $message->created_at_human = $message->created_at->diffForHumans();
+                return $message;
+            });
         $inquiry = Inbox::with(['sender', 'receiver'])->findOrFail($id);
-        return view('admin.inquiries.seller.show', compact('inquiry'));
+        return view('admin.inquiries.seller.show', compact('messages', 'inquiry'));
     }
 
     public function destroy($id)

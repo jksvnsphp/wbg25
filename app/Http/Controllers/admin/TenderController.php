@@ -69,8 +69,9 @@ class TenderController extends Controller
     /**
      * Show details of a product.
      */
-    public function show(Tender $product)
+    public function show(Tender $tender)
     {
+      // echo '<pre>'; print_r($tender->toArray()); die;
         return view('admin.tenders.show', compact('tender'));
     }
 
@@ -130,4 +131,27 @@ class TenderController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+
+     public function allIndex(Request $request)
+    {
+         $tenders = Tender::with(['vendor']) // eager load seller/buyer
+           // ->where('type', 'buy') // assuming you have a type column ('buy'/'sell')
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.tenders_management.all-tender',compact('tenders'));
+    }
+
+
+     public function allDealIndex(Request $request)
+    {
+         $tenders = Tender::with(['vendor']) // eager load seller/buyer
+           // ->where('type', 'buy') // assuming you have a type column ('buy'/'sell')
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.tenders_management.all-deal-tender',compact('tenders'));
+    }
+
 }

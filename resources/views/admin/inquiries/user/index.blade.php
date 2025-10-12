@@ -13,9 +13,8 @@
                             <thead>
                                 <tr>
                                     <th>S.No</th>
-                                    <th>User Name</th>
-                                     
-                                    <th>User Email</th>
+                                    <th>Sender </th>  
+                                    <th>Receiver  </th>
                                     <th>Subject</th>
                                     <th>Date</th>
                                     <th>Action</th>
@@ -27,7 +26,7 @@
                                         <td>{{ $inquiries->firstItem() + $index }}</td>
                                         <td>{{ $inquiry->sender->name ?? $inquiry->name }}</td>
                                          
-                                        <td>{{ $inquiry->sender->email ?? 'N/A' }}</td>
+                                        <td>{{  getUserName($inquiry->receiver_id) ?? 'N/A' }}</td>
                                         <td>{{ $inquiry->subject }}</td>
                                         <td>{{ $inquiry->created_at->format('Y-m-d') }}</td>
                                         <td>

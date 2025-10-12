@@ -7,7 +7,7 @@
             <div class="col-md-12 mb-3">
                 <div class="card rounded-0">
                     <div class="card-header rounded-0 py-2 bg-dark text-light font-weight-bolder">
-                        Show Sell List
+                        All  listed tenders
                     </div>
                     <div class="card-body pb-0">
                         <div class="table-responsive">

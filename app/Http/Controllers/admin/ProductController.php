@@ -150,7 +150,7 @@ class ProductController extends Controller
 
         $products = $query->paginate(10)->withQueryString();
         //product-manager-sellout.blade
-        return view('admin.product_managment.product-manager-sellout', compact('products'));
+        return view('admin.product_managment.product-manager-store-multiply', compact('products'));
     }
     // $query = products::with('vendor','gallery')->where('totalQty','<=', 0);
  //product_image
@@ -243,6 +243,7 @@ class ProductController extends Controller
      */
     public function show(products $product)
     {
+       // echo '<pre>'; print_r($product->toArray()); die;
         return view('admin.products.show', compact('product'));
     }
 
@@ -256,7 +257,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Update a product.
+     * Update a product. isList
      */
     public function update(Request $request, products $product)
     {
@@ -297,7 +298,7 @@ class ProductController extends Controller
     public function toggleApproval(Request $request)
     {
         $product = products::findOrFail($request->id);
-        $product->is_approved = $request->approved;
+        $product->isList = $request->status;
         $product->save();
 
         return response()->json(['success' => true]);

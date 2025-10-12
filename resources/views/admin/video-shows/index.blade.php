@@ -8,7 +8,7 @@
             <div class="col-md-12 mb-3">
                 <div class="card rounded-0 ">
                     <div class="card-header rounded-0 py-2 bg-dark text-light font-weight-bolder">
-                        Show  Videos
+                         All Product  Videos
                     </div>
                     <div class="card-body pb-0">
                         <style>
@@ -46,7 +46,9 @@
                                             </td>
 
                                             <td class="align-middle ">
-                                                <div style="height: 4rem; width:4rem;">
+                                                @php $videoTitle = $item->video->title ?? 'N/A'; @endphp
+                                                {{ \Illuminate\Support\Str::limit($videoTitle, 50) }}
+                                                <!-- <div style="height: 4rem; width:4rem;">
                                                     @if (isset($item->image) && !empty($item->image))
                                                         <img src="{{ asset('uploads/tender_category/' . $item->image) }}"
                                                             class="h-100 w-100" alt="">
@@ -54,22 +56,22 @@
                                                         <img src="{{ asset('dashboard/img/imgnotfound.jpg') }}"
                                                             class="h-100 w-100" alt="">
                                                     @endif
-                                                </div>
+                                                </div> -->
                                             </td>
                                              
                                             <td>
                                                  
-                                                 {{ $item->video->video_url ?? 'N/A' }}
+                                                {{ \Carbon\Carbon::parse($item->created_at)->format('m/d/Y') }}
                                             </td>
                                             <td>
-                         <label title="Active/Inactive" class="switch round_switch">
-                                                <input type="checkbox" id="id9" checked value="1">
+                                              <label title="Active/Inactive" class="switch round_switch">
+                                                <input type="checkbox" id="id{{$item->id}}" checked value="1">
                                                 <div class="slider round"></div>
                                             </label>
                                             </td>
                                             <td class="align-middle">
                                                 <a href="#" class="btn m-1 btn-sm btn-success"> <i
-                                                        class="fas fa-edit    "></i> </a>
+                                                        class="fas fa-eye"></i> </a>
                                                 <a href="#" id="delete" class="btn m-1 btn-sm btn-danger"> <i class="fa fa-trash"
                                                         aria-hidden="true"></i> </a>
 

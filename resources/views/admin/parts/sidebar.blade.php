@@ -201,7 +201,7 @@
             <div class="bg-white  collapse-inner ">
 
                 <a class="collapse-item " href="{{ route('admin.sell.trade.list') }}">All listed Tenders</a>
-                <a class="collapse-item" href="{{ route('admin.buy.trade.list') }}">All Tender Deals</a>
+                <a class="collapse-item" href="{{ route('admin.sell.trade.deal_list') }}">All Tender Deals</a>
 
 
             </div>

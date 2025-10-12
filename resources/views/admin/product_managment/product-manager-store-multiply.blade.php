@@ -7,7 +7,7 @@
             <div class="col-md-12 mb-3">
                 <div class="card rounded-0">
                     <div class="card-header d-flex justify-content-between align-items-center rounded-0 py-2 bg-dark text-light font-weight-bolder">
-                         All listed multiply Products
+                          Multiply sell out Products
 
                     </div>
 
@@ -36,9 +36,9 @@
                                         <th>Company name</th>
                                         <th>Product Title</th>
                                         <th>Quantity</th>
-                                        <th>Entry Date</th>
-                                      
-                                         <th>Status</th> 
+                                        <th>Sell on</th>
+                                        <th>Selling Price</th>
+                                        <th>Status</th> 
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -74,8 +74,8 @@
                                            
                                             <td> {{ $product->totalQty ?? 'N/A' }}</td>
                                          
-                                            <td> {{$entryDate}} </td>
-                                            
+                                            <td> {{ \Carbon\Carbon::parse($product->created_at)->format('m/d/Y') }} </td>
+                                             <td> {{$product->price}} </td>
                                              <td>
                                                 <label title="Active/Inactive" class="switch round_switch">
                                                     <input @checked($product->status) type="checkbox"
