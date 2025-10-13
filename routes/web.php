@@ -275,7 +275,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
       Route::get('/sell-tender-approval', 'sellTenderApproval')->name('admin.sell.tender.approval');
       Route::get('/payment-center', 'paymentCenter')->name('admin.payment.center');
       Route::get('/product-manager', 'productManagement')->name('admin.product.manager');
-      Route::get('/trade-buy-list', 'buyTradeList')->name('admin.buy.trade.list');
+      //Route::get('/trade-buy-list', 'buyTradeList')->name('admin.buy.trade.list');
       //Route::get('/trade-sell-list', 'sellTradeList')->name('admin.sell.trade.list');
       Route::get('/ads-banners', 'adsBanners')->name('admin.ads.banners');
       Route::get('/all-buy-quotations', 'allBuyQuotation')->name('admin.all.buy.quotations');
@@ -417,6 +417,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
       Route::get('/quotation-images','allQuotations')->name('admin.quotation.images');
       Route::get('/quotations','allListedQuotations')->name('admin.quotations');
       Route::get('/quotations/{id}','showQuotations')->name('admin.quotations.show');
+      Route::get('/trade-buy-list', 'allListedDealQuotations')->name('admin.buy.trade.list');
    
    });
    Route::controller(QuotationsSubcategoryController::class)->prefix('admin')->group(function () {

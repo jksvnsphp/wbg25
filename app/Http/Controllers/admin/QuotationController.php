@@ -188,6 +188,19 @@ class QuotationController extends Controller
         
     }
 
+      public function allListedDealQuotations()
+    {
+        
+            $quotations = Quotation::latest()
+               // ->where('user_id', auth()->user()->id)
+                //->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
+                ->with('category')->paginate(10); 
+                //echo "<pre/>";
+                //print_r($quotations);die;
+            return view('admin.quotation_management.quotationlDeal', compact('quotations'));
+        
+    }
+
 
     public function myExpiredQuotations()
     {
