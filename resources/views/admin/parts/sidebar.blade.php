@@ -218,7 +218,7 @@
         <div id="collapseQuotation" class="collapse " aria-labelledby="headingFour" data-parent="#accordionSidebar">
             <div class="bg-white  collapse-inner ">
 
-                <a class="collapse-item " href="{{ route('admin.quotations.category') }}">All listed  FRQ`s </a>
+                <a class="collapse-item " href="{{ route('admin.quotations') }}">All listed  FRQ`s </a>
                 <a class="collapse-item" href="{{ route('admin.buy.trade.list') }}">All Quotation Deals</a>
 
 

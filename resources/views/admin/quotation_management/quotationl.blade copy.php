@@ -15,7 +15,6 @@
                 <th>Quantity</th>
                 <th>Entry Date</th>
                 <th>Duration Left Time</th>
-                <th>Status </th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -30,11 +29,11 @@
                        @endphp
                         {{ $loop->iteration }}</td>
                     <td>
-                     {{ $user?->company?->name }} 
-                    </td>
+                    
+                    {{ $quotation?->product_service }}  </td>
                      <td>
-                     {{ $quotation?->product_service }} 
-                   </td>
+                    
+                    {{ $user?->company?->name }}  </td>
                     <td>
                       {{ $quotation->quantity ?? 'N/A' }}      
                     </td>
@@ -54,7 +53,7 @@
                                                         $daysLeft = $now->diffInDays($expiryDate, false);
                                                     @endphp
                                                     @if($daysLeft >= 0)
-                                                        {{ $daysLeft }}     days left
+                                                        {{ $expiryDate->format('d M Y') }} 
                                                     @else
                                                         Expired
                                                     @endif
@@ -65,16 +64,12 @@
                      
                     </td> 
                    
-                     <td> <label title="Active/Inactive" class="switch round_switch">
+                    <td>
+                         <label title="Active/Inactive" class="switch round_switch">
                                                 <input type="checkbox" id="id9" checked value="1">
                                                 <div class="slider round"></div>
-                                            </label> </td>
-                    <td>
-                         
-                                    <a href="{{ route('admin.quotations.show', $quotation->id) }}"
-                                               class="btn btn-sm btn-secondary">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
+                                            </label>
+                       
                         <form action ="#" method="POST" style="display:inline-block;">
                             @csrf @method('DELETE')
                             <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>

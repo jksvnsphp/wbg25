@@ -202,6 +202,18 @@ class QuotationController extends Controller
             return back()->with(['alert-type' => 'unauth', 'message' => 'You must be logged in to access this page!']);
         }
     }
+
+    //showQuotations
+     public function showQuotations($id)
+    {
+        
+            $inquiry = Quotation::where('id', $id)
+                ->with('category','vendor','vendor.company')
+                ->first(); 
+                
+            return view('admin.quotation_management.show_quotation', compact('inquiry'));
+        
+    }
     public function editQuotation($quotation_id)
     {
         $quotation = Quotation::where('id', $quotation_id)->where('user_id', Auth::user()->id)->first();

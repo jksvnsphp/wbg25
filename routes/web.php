@@ -416,6 +416,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
       Route::get('/quotation-images','allQuotations')->name('admin.quotation.images');
       Route::get('/quotations','allListedQuotations')->name('admin.quotations');
+      Route::get('/quotations/{id}','showQuotations')->name('admin.quotations.show');
    
    });
    Route::controller(QuotationsSubcategoryController::class)->prefix('admin')->group(function () {
