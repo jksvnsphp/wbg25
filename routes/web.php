@@ -17,9 +17,8 @@ use App\Http\Controllers\admin\SuppliersSubcategoryController;
 use App\Http\Controllers\admin\TendersController;
 use App\Http\Controllers\admin\StoresController;
 use App\Http\Controllers\admin\ProductVideoShowController;
-use App\Http\Controllers\Admin\SellerController;
+use App\Http\Controllers\admin\SellerController;
 use App\Http\Controllers\admin\AdminInboxController;
-
 use App\Http\Controllers\admin\TenderSubcategoryController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
