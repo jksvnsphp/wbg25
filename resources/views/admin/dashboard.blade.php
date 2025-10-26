@@ -20,7 +20,7 @@
               </div>
             </div>
           </div>
-          <a href="{{ route('admin.product.approval') }}" class="card-footer py-2 bg-white">
+          <a href="{{ route('admin.product.productmanagment') }}" class="card-footer py-2 bg-white">
             <div class="d-flex align-items-center justify-content-between text-dark-success">
               <span class="font-weight-bold fs-2">View Details</span>
               <i class="fa fa-arrow-circle-right fs-3"></i>
