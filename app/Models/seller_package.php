@@ -14,4 +14,8 @@ class seller_package extends Model
     public function package_services(){
         return $this->hasMany(packageService::class,'package_id');
     }
+	public function user()
+    {
+        return $this->belongsTo(User::class, 'seller_id');
+    }
 }

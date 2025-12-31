@@ -17,6 +17,7 @@ use App\Models\packageService;
 use App\Models\Quotation;
 use App\Models\seller_package;
 use App\Models\User;
+use App\Models\SeoMeta;
 use App\Models\Tender;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -36,7 +37,6 @@ class DashboardController extends Controller
     }
 
     
-
 
 
 
@@ -151,10 +151,99 @@ class DashboardController extends Controller
             ->paginate(10);
         return view('admin.approval-center.sell-tender-approval',   compact('tenders'));
     }
-    public function paymentCenter(){
-      //  die( 'here');
-        return view('admin.payment.payment-center');
+    public function paymentCenter1(Request $request)
+{
+    $query = seller_package::with(['user', 'package']);
+
+    if ($request->filled('payment')) {
+        if ($request->payment == 1) {
+            $query->where('payment_status', 'paid');
+        } elseif ($request->payment == 2) {
+            $query->where('payment_status', 'pending');
+        }
     }
+
+    if ($request->filled('package')) {
+        $query->whereHas('package', function ($q) use ($request) {
+            $q->where('type', $request->package);
+        });
+    }
+
+    $records = $query->orderBy('id', 'desc')
+                     ->paginate(10)
+                     ->appends($request->all());
+					 
+	//print_r($records);				 
+
+    return view('admin.payment.payment-center', compact('records'));
+}
+
+public function paymentCenter()
+{
+    $packages = memberPackage::orderBy('name', 'asc')->get();
+
+    // Optionally, get all payment statuses if you want dynamic status select
+    $paymentStatuses = [
+        ['id' => 1, 'name' => 'Complete'],
+        ['id' => 2, 'name' => 'Pending']
+    ];
+
+    return view('admin.payment.payment-center', compact('packages', 'paymentStatuses'));
+
+}
+
+public function destroyPackage($id)
+{
+    $record = seller_package::findOrFail($id);
+    $record->delete();
+
+    return response()->json(['status' => true, 'message' => 'Payment deleted successfully']);
+}
+
+
+
+
+public function paymentCenterAjax(Request $request)
+{
+    // Use query with package join for proper filtering
+    $query = seller_package::with(['user', 'package']);
+
+    // FILTER PAYMENT STATUS
+    if ($request->filled('payment')) {
+        if ($request->payment == 1) {
+            $query->where('payment_status', 'paid');
+        } elseif ($request->payment == 2) {
+            $query->where('payment_status', 'pending');
+        }
+    }
+
+    // FILTER PACKAGE TYPE
+    if ($request->filled('package')) {
+        $packageId = $request->package; // select value should be package id
+        $query->where('package_id', $packageId);
+    }
+
+    // SEARCH
+    if ($request->filled('search')) {
+        $query->whereHas('user', function ($q) use ($request) {
+            $q->where('first_name', 'like', "%{$request->search}%")
+              ->orWhere('last_name', 'like', "%{$request->search}%")
+              ->orWhere('email', 'like', "%{$request->search}%")
+              ->orWhere('phone', 'like', "%{$request->search}%");
+        });
+    }
+
+    // PAGINATION
+    $records = $query->orderBy('id','desc')->paginate(10)->appends($request->all());
+
+    // RETURN TABLE HTML ONLY
+    return response()->json([
+        'html' => view('admin.payment.ajax-table', compact('records'))->render()
+    ]);
+}
+
+
+
     public function productManagement(){
         return view('admin.product_managment.product-manager');
     }
@@ -187,11 +276,80 @@ class DashboardController extends Controller
         return view('admin.ads-banners.show-banners');
     }
     public function seoManagements(){
-        return view('admin.seo.seo-management');
+		$seo = SeoMeta::all();
+        return view('admin.seo.seo-management', compact('seo'));
     }
-    public function addNewSeo(){
+   
+public function seo_show($id)
+{
+    $seo = SeoMeta::findOrFail($id);
+    return view('admin.seo.view', compact('seo'));
+}
+
+public function seo_edit($id)
+    {
+        $seo = SeoMeta::findOrFail($id);
+        return view('admin.seo.edit', compact('seo'));
+    }
+public function seo_update(Request $request, $id)
+    {
+        $seo = SeoMeta::findOrFail($id);
+
+        $request->validate([
+            'page' => 'required|unique:seo_meta,page,' . $seo->id,
+            'title' => 'required',
+            'keywords' => 'required',
+            'description' => 'required',
+        ]);
+
+        $seo->update($request->all());
+
+        return redirect()->route('admin.seo.manager')->with('success', 'SEO updated successfully');
+    }
+	
+	
+	public function seo_destroy($id)
+    {
+        SeoMeta::destroy($id);
+
+        return response()->json(['message' => 'SEO entry deleted successfully']);
+    }
+
+
+public function addNewSeo(){
         return view('admin.seo.add-new-seo');
     }
+
+public function seo_store(Request $request)
+{
+    $request->validate([
+        'page' => 'required',
+        'title' => 'required',
+        'keywords' => 'required',
+        'description' => 'required'
+    ]);
+
+    SeoMeta::updateOrCreate(
+        ['page' => $request->page],
+        [
+            'title' => $request->title,
+            'keywords' => $request->keywords,
+            'description' => $request->description,
+        ]
+    );
+return redirect()->route('admin.seo.manager')->with([
+        'alert-type' => 'success',
+        'message' => 'SEO Meta Information Saved Successfully'
+    ]);
+    
+}
+
+
+
+	
+	
+
+   
     public function enquiryBox(){
       // Get only buyer inquiries (filter by message_type if needed)
         $inquiries = Inbox::with(['sender', 'receiver'])

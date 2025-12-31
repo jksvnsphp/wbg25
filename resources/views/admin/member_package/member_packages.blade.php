@@ -20,9 +20,9 @@
                                         <th>Valid Days</th>
                                         <th>No. Of Product Limit</th>
                                         <th>Sell Tender Limit</th>
-                                        <th>Buy Tender Limit</th>
+                                        <th>RFQ</th>
                                         <th>News Limit</th>
-                                        <th>Trade Leads Included</th>
+                                        <th>Sell Provision included</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>

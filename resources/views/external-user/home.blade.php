@@ -1,5 +1,5 @@
 @extends('external-user.external-frame')
-
+<?php /*
 @section('meta_data')
     @if (isset(auth()->user()->account_type) && auth()->user()->account_type == 'seller')
         <title>For Sellers – World Business Guide – Your international Market</title>
@@ -20,7 +20,9 @@
         <meta name="keywords" content="Trade, Manufacturer, Wholesaler, Retailer, B2B, B2C, International Market">
         <meta name="author" content="WBG24.com">
     @endif
-@endsection
+@endsection 
+
+*/ ?>
 
 @section('external-main-content')
  
@@ -252,22 +254,25 @@
                         <h3 class="mid-card-heading">
                             <a href="#">
                                 <img src="{{ asset('uploads/icons/icon2.png') }}" class="rfq_img" />
-                                <span class>New Members </span>
+                                <span class>New Suppliers </span>
                             </a>
                         </h3>
                         <div class="describe">
                             <a class="text-primary" href="">Global Brands Converge Here</a>
                         </div>
                         @foreach ($wholesalerUsers as $wholesalerUser)
-                            <a class="small_product_card mt-2 p-2 row"
+                          @php
+                            
+                           $ISO = getCountryISO2($wholesalerUser->country);
+                          @endphp
+
+						                            <a class="small_product_card mt-2 p-2 row"
                                 href="{{ route('seller.profile.view', $wholesalerUser->company->slug) }}"
                                 title="{{ isset($wholesalerUser->company->name) ? $wholesalerUser->company->name : 'NA' }}">
                                 <div class="col-3">
                                     <span class="round_img">
                                         <img style="height:2rem; width:auto;"
-                                            src="@if (isset($wholesalerUser->company->company_logo) && $wholesalerUser->company->company_logo != '') {{ asset('uploads/profile/' . $wholesalerUser->company->company_logo) }}
-                                                    @else
-                                                    {{ asset('uploads/logo/default-logo.png') }} @endif"
+                                            src="https://flagcdn.com/48x36/{{ strtolower($ISO) }}.png"
                                             class="lazyloaded" />
                                     </span>
                                 </div>
@@ -350,7 +355,7 @@
                                             {{ $latestProduct->name }}
                                         </p>
                                         <span class="text-primary product-price d-block">
-                                            Price at: $
+                                            Price: $
 
                                             {{ number_format($latestProduct->minPrice, 2) }}
 
@@ -389,7 +394,7 @@
                                             {{ $ltender->name }}
                                         </p>
                                         <span class="text-primary product-price d-block">
-                                            Price at: ${{ $ltender->price }}
+                                            Price: ${{ $ltender->price }}
                                         </span>
                                     </div>
                                 </div>
@@ -415,22 +420,42 @@
                     <div class="owl-carousel" id="top_suppliers">
                         @if (isset($top_suppliers))
                             @foreach ($top_suppliers as $tsupplier)
-                                <a href="{{ route('seller.profile.view', $tsupplier->company->slug) }}"
-                                    class="card p-2 border-0"  >
-                                    <div class="w-100 d-flex justify-content-center">
-                                        <img src="@if (isset($tsupplier->company->company_logo) && $tsupplier->company->company_logo != '') {{ asset('uploads/profile/' . $tsupplier->company->company_logo) }}
-                                                    @else
-                                                    {{ asset('uploads/logo/default-logo.png') }} @endif"
-                                            class="card-img-top" style="height: 8rem; width: 8rem" alt="" />
-                                    </div>
-                                    <div class="card-body px-2">
-                                        <p>{{ $tsupplier->company->name ?? $tsupplier->first_name }}</p>
-                                        <span
-                                            class="text-secondary mt-2 d-block fw-bold fs-6">{{ $tsupplier->total_sold }}+
-                                            Products sold</span>
-                                    </div>
+						
+						<?php
+						//echo '<pre>';
+						//print_r($tsupplier);						
+						//echo '</pre>';
+						
+						?>
+@php  
+if(isset($tsupplier->sellerPackage[0]->package_id)){
+    $pktype = getMemberPackageName($tsupplier->sellerPackage[0]->package_id) ?? 'Free';
+} else {
+    $pktype = "Free";
+}
+@endphp
 
-                                </a>
+@if(in_array($pktype, ['Platinum Package', 'Gold Package']))
+    <a href="{{ route('seller.profile.view', $tsupplier->company->slug) }}"
+       class="card p-2 border-0">
+        <div class="w-100 d-flex justify-content-center">
+            <img src="@if(isset($tsupplier->company->company_logo) && $tsupplier->company->company_logo != '')
+                        {{ asset('uploads/profile/' . $tsupplier->company->company_logo) }}
+                     @else
+                        {{ asset('uploads/logo/default-logo.png') }}
+                     @endif"
+                 class="card-img-top" style="height: 8rem; width: 8rem" alt="" />
+        </div>
+        <div class="card-body px-2">
+            <p>{{ $tsupplier->company->name ?? $tsupplier->first_name }}</p>
+            <span class="text-secondary mt-2 d-block fw-bold fs-6">
+                {{ $tsupplier->total_sold }}+ Products sold
+            </span>
+        </div>
+    </a>
+@endif
+
+								
                             @endforeach
                         @endif
                     </div>
@@ -504,7 +529,7 @@
             {{ $LimitedProduct->name }}
         </p>
         <span class="text-primary product-price d-block text-center">
-            Price at: ${{ number_format($LimitedProduct->minPrice, 2) }}
+            Price: ${{ number_format($LimitedProduct->minPrice, 2) }}
         </span>
     </div>
 </a>
@@ -589,7 +614,7 @@
                                                     {{ $BulkProduct->name }}
                                                 </p>
                                                 <span class="text-primary product-price d-block text-center">
-                                                    Price at: $
+                                                    Price: $
 
                                                     {{ number_format($BulkProduct->minPrice, 2) }}
 
@@ -665,7 +690,7 @@
                                                     {{ $DailyProduct->name }}
                                                 </p>
                                                 <span class="text-primary product-price d-block">
-                                                    Price at: $
+                                                    Price: $
 
                                                     {{ number_format($DailyProduct->minPrice, 2) }}
 
@@ -740,7 +765,7 @@
                                                     {{ $HotsProduct->name }}
                                                 </p>
                                                 <span class="text-primary product-price d-block">
-                                                    Price at: $
+                                                    Price: $
 
                                                     {{ number_format($HotsProduct->minPrice, 2) }}
 

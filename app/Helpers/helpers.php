@@ -24,6 +24,9 @@ use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DynamicMail;
 
 if (! function_exists('generateSlug')) {
     function generateSlug($string)
@@ -1019,3 +1022,179 @@ if (! function_exists('getUserPermissions')) {
         return [];
     }
 }   
+
+if (! function_exists('getCountryISO2')) {
+    function getCountryISO2($id)
+    {
+        $country = countries::find($id);
+        return $country ? $country->iso2 : null;
+    }
+}  
+
+if (! function_exists('getOrderPriceWithoutTax')) {
+    function getOrderPriceWithoutTax($orderId)
+    {
+         $orderPrice = \App\Models\Order::where('id', $orderId)
+            // ->where('status', 2) // Completed orders
+            ->select('total_amount')
+            ->first();
+        return $orderPrice ? $orderPrice->total_amount : 0;
+    }
+}
+
+if (! function_exists('getWalletBalance')) {
+    function getWalletBalance($userId)
+    {
+        $credit = \App\Models\Wallet::where('user_id', $userId)->sum('credit');
+        $debit = \App\Models\Wallet::where('user_id', $userId)->sum('debit');
+        return $credit - $debit;
+    }
+}
+
+if (! function_exists('getNewWalletBalance')) {
+    function getNewWalletBalance($userId, $walletId)
+{
+     $credit = \App\Models\Wallet::where('user_id', $userId)
+                ->where('id', '<=', $walletId)
+                ->sum('credit');
+
+    $debit = \App\Models\Wallet::where('user_id', $userId)
+                ->where('id', '<=', $walletId)
+                ->sum('debit');
+
+    return $credit - $debit;
+    
+}
+
+}
+
+if (! function_exists('getProductId')) {
+    function getProductId($Id)
+{
+     $OrderItem = \App\Models\OrderItem::where('id', $Id)->select('product_id')->first();
+ 
+    return $OrderItem->product_id??0;
+    
+}
+}
+
+if (! function_exists('sendBronzeWelcomeMail')) {
+
+  function sendBronzeWelcomeMail($userId, $plainPassword = null)
+{
+    // Get user
+    $user = DB::table('users')->where('id', $userId)->first();
+
+    if (!$user) {
+        return;
+    }
+
+    // Fetch email template
+    $template = DB::table('email_templates')
+        ->where('type', 'Welcome Mail - Bronce Package')
+        ->first();
+
+    if (!$template) {
+        return;
+    }
+
+    // Replace placeholders
+    $body = str_replace(
+        [
+            '[User’s Name]',
+            'Username:',
+            'Password:',
+        ],
+        [
+            $user->name,
+            'Username: ' . $user->email,
+            $plainPassword ? 'Password: ' . $plainPassword : 'Password: ********',
+        ],
+        $template->body
+    );
+
+    // Send mail
+    Mail::to($user->email)->send(
+        new DynamicMail($template->subject, $body)
+    );
+}
+}
+
+
+if (! function_exists('sendWelcomeMail')) {
+
+  function sendWelcomeMail($userId, $type,$plainPassword = null)
+{
+    // Get user
+    $user = DB::table('users')->where('id', $userId)->first();
+
+    if (!$user) {
+        return;
+    }
+
+    // Fetch email template
+    $template = DB::table('email_templates')
+        ->where('type',  $type)
+        ->first();
+
+    if (!$template) {
+        return;
+    }
+
+    // Replace placeholders
+    $body = str_replace(
+        [
+            '[User’s Name]',
+            'Username:',
+            'Password:',
+        ],
+        [
+            $user->name,
+            'Username: ' . $user->email,
+            $plainPassword ? 'Password: ' . $plainPassword : 'Password: ********',
+        ],
+        $template->body
+    );
+
+    // Send mail
+    Mail::to($user->email)->send(
+        new DynamicMail($template->subject, $body)
+    );
+}
+}
+
+//member_packages
+if (! function_exists('getMemberPackageServices')) {
+    function getMemberPackageServices($id)
+    {
+        $package = memberPackage::find($id);
+        if ($package && $package->services) {
+            $serviceIds = explode(',', $package->services);
+            $services = memberPackageService::whereIn('id', $serviceIds)->pluck('name')->toArray();
+            return implode(', ', $services);
+        }
+        return null;
+    }
+}
+if (! function_exists('getMemberPackageType')) {
+    function getMemberPackageType($id)
+    {
+        $package = memberPackage::find($id);
+        return $package ? $package->type : null;
+    }
+}
+if (!function_exists('seo')) {
+
+    function seo($page)
+    {
+        $seo = DB::table('seo_meta')
+            ->where('page', $page)
+            ->first();
+
+        return [
+            'title'       => $seo->title ?? config('app.name'),
+            'keywords'    => $seo->keywords ?? '',
+            'description' => $seo->description ?? '',
+        ];
+    }
+}

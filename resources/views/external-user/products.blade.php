@@ -263,12 +263,57 @@
                                             <p class="text-center fw-bolder pt-1 mt-0 fs-6">
                                                 Min. Order 1 Pieces
                                             </p>
-                                            <h5 class="text-center fw-bolder fs-6 mt-2 text-primary">
+                                            <h5 class="text-center fw-bolder fs-6 mt-2 text-primary ">
                                                 {{ preg_replace('/([a-z])([A-Z])/', '$1 $2', $product->item_condition) }}
                                             </h5>
-                                            <h5 class="text-center fw-bolder fs-6 mt-2 text-primary">
-                                                {{ isset($product->vendor->company->name) ? $product->vendor->company->name : '' }}
-                                            </h5>
+											<h5 class="text-center fw-bolder fs-6 mt-2 text-primary1">
+											@if($product->totalQty>0){{$product->totalQty.' available';}}@else {{'soldout'}}@endif
+@php 
+if($product->duration>0)											
+
+$start = \Carbon\Carbon::parse($product->created_at);
+$end   = $start->copy()->addDays($product->duration);
+$now   = \Carbon\Carbon::now();
+
+if ($now->gte($end)) {
+    $expired = true;
+} else {
+    $expired = false;
+    $remainingSeconds = $now->diffInSeconds($end);
+
+    $days = intdiv($remainingSeconds, 86400);
+    $remainingSeconds %= 86400;
+
+    $hours = intdiv($remainingSeconds, 3600);
+    $remainingSeconds %= 3600;
+
+    $minutes = intdiv($remainingSeconds, 60);
+    $seconds = $remainingSeconds % 60;
+}
+@endphp
+
+@if($expired)
+    /<span class="expired">Expired</span>
+@else
+    /<span class="time-left">
+<strong>Ends in</strong>
+        @if($days > 0)
+            {{ $days }}d {{ $hours }}h
+        @elseif($hours > 0)
+            {{ $hours }}h {{ $minutes }}m
+        @elseif($minutes > 0)
+            {{ $minutes }}m {{ $seconds }}s
+        @else
+            {{ $seconds }}s
+        @endif
+    </span>
+@endif
+
+
+											
+											</h5>
+											
+                                            
                                             <div class="text-center flex-wrap icon_product">
                                                 @php
                                                     $icons = isset($product->vendor->symbols)
@@ -338,7 +383,19 @@
                                                     <i class="fas fa-star " style="color:gray;"></i>
                                                 @endfor
                                             </div>
+											<h5 class="text-center fw-bolder fs-6 mt-2 text-primary">
+                                                {{ isset($product->vendor->company->name) ? $product->vendor->company->name : '' }}
+                                            </h5>
+											
+											
                                         </div>
+
+
+
+
+
+
+
 
                                         <div class="position-absolute"
                                             style="bottom: 30px;right: 50%;transform: translateX(50%);">
@@ -348,6 +405,7 @@
                                                 </span>
                                             </p>
                                         </div>
+										
                                     </div>
                                 </div>
                             </div>
@@ -356,7 +414,7 @@
                         @if (request('q') != '')
                             <h4 class="text-danger fw-bold text-center mt-3">Sorry! search products not found!</h4>
                         @else
-                            <h4 class="text-danger fw-bold text-center mt-3">Sorry! products not found!</h4>
+                            <h4 class="text-danger fw-bold text-center mt-3">No Products have been listed in this Category up to yet … <br>If you`re a matched Product Seller for this Category, use it and be one Step ahead of your Competitors …</h4>
                         @endif
                     @endforelse
 

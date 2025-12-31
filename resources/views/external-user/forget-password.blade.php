@@ -30,7 +30,7 @@
                                 <h4 class="fw-bold fs-5">Forget Password</h4>
                             </div>
                             <div class="card-body p-4 pb-0 pt-2">
-                                <form action="" id="sendotp" method="post"
+                                <form action="{{ route('forget.sendPasswordResetLink') }}"   method="post"
                                     class="h-100 w-100 d-flex align-items-center justify-content-center">
                                     @csrf
                                     <div class="row w-100">
@@ -43,7 +43,7 @@
                                                     placeholder="Enter your Registered eMail Id.." id="email" />
                                             </div>
                                             <div class="my-4 mb-0">
-                                                <button id="sendotpbtn" type="submit" class="btn me-3 btn-primary">
+                                                <button   type="submit" class="btn me-3 btn-primary">
                                                     Send Code
                                                 </button>
 

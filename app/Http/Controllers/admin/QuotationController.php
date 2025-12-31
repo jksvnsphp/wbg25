@@ -166,6 +166,8 @@ class QuotationController extends Controller
     {
         
             $quotations = Quotation::latest()
+            ->whereNotNull('image_1')
+              ->where('image_1', '!=', '')   
                // ->where('user_id', auth()->user()->id)
                 //->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
                 ->with('category')->paginate(10); 
@@ -369,6 +371,29 @@ class QuotationController extends Controller
             return view('buyer-vendor.quotation-management.my-submitted-quotes', compact('quotations'));
         } else {
             return redirect()->route('login')->with(['alert-type' => 'error', 'message' => 'Please login first.']);
+        }
+    }
+
+       public function deleteQuotation(Request $request)
+    {
+        if (isset($request->quotation_id)) {
+            $quotation = Quotation::where('id', $request->quotation_id)->first();
+            if ($quotation->id == $request->quotation_id) {
+                for ($i = 1; $i <= 4; $i++) {
+                    $imagePath = public_path('uploads/quotation/' . $quotation->image . '_' . $i);
+                    if (File::exists($imagePath)) {
+                        File::delete($imagePath);
+                    }
+                }
+                $quotation->delete();
+                //return response()->json(['success' => true, 'message' => 'Successfully deleted your quotation!']);
+                 return redirect()->back()->with(['alert-type' => 'error', 'message' => 'Successfully deleted your quotation!']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'You are not authorized to delete this quotation!']);
+                 return redirect()->back()->with(['alert-type' => 'error', 'message' => 'Successfully deleted your quotation!']);
+            }
+        } else {
+            return response()->json(['success' => false,  'message' => 'You must be logged in to access this page!']);
         }
     }
 }

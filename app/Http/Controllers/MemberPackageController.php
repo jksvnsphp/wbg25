@@ -59,7 +59,9 @@ class MemberPackageController extends Controller
         $data = array('packages' => $memberPackages, 'services' => $packageServices);
         return view('admin.member_package.member_packages', $data);
     }
-    public function indexClient()
+    
+	
+	public function indexClientold()
     {
         $memberPackages = memberPackage::get();
         $packageServices = packageService::get();
@@ -67,6 +69,48 @@ class MemberPackageController extends Controller
         $data = array('packages' => $memberPackages, 'services' => $packageServices);
         return view('external-user.join-membership.membership-packages', $data);
     }
+	public function indexClient()
+{
+    $packageServices = packageService::get();
+
+    // 🔹 If user is not logged in → show all packages
+    if (!auth()->check()) {
+        $memberPackages = memberPackage::where('status', 1)->get();
+
+        return view('external-user.join-membership.membership-packages', [
+            'packages' => $memberPackages,
+            'services' => $packageServices
+        ]);
+    }
+
+    // 🔹 Logged-in user
+    $userId = auth()->user()->id;
+
+    // Get latest purchased package of user
+    $sellerPackage = seller_package::where('seller_id', $userId)
+        ->latest()
+        ->with('package')
+        ->first();
+
+    // 🔹 If user has NOT purchased any package
+    if (!$sellerPackage) {
+        $memberPackages = memberPackage::where('status', 1)->get();
+    } else {
+        // 🔹 Exclude purchased package
+        $memberPackages = memberPackage::where('status', 1)
+            ->where('id', '!=', $sellerPackage->package_id)
+            ->get();
+    }
+
+    return view('external-user.join-membership.membership-packages', [
+        'packages' => $memberPackages,
+        'services' => $packageServices,
+        'activePackage' => $sellerPackage?->package
+    ]);
+}
+
+	
+	
     public function upgradeMembership()
     {
         $memberPackages = memberPackage::get();
@@ -97,7 +141,76 @@ class MemberPackageController extends Controller
             return back()->with(['alert-type' => 'warning', 'message' => 'This Package service is no more!']);
         }
     }
-    public function updatePackage(Request $request)
+	
+	public function updatePackage(Request $request)
+{
+    $validator = Validator::make(
+        $request->all(),
+        [
+            'id' => 'required|numeric',
+            'package_name' => 'required',
+            'price' => 'required|numeric',
+            'validDays' => 'required|numeric',
+            'productLimit' => 'required|numeric',
+            'tenderLimit' => 'required|numeric',
+            'newsLimit' => 'required|numeric',
+            'sellProvisionInclude' => 'required|numeric',
+            'status' => 'required|numeric',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]
+    );
+
+    if ($validator->fails()) {
+        return back()
+            ->withErrors($validator->errors())
+            ->with(['alert-type' => 'warning', 'message' => 'Please fill all the fields!']);
+    }
+
+    $package = memberPackage::where('id', $request->id)->first();
+
+    if (!$package) {
+        return back()->with([
+            'alert-type' => 'warning',
+            'message' => 'This Package is no more!'
+        ]);
+    }
+
+    // ✅ Image Upload
+    if ($request->hasFile('image')) {
+
+        // Delete old image
+        if ($package->image && file_exists(public_path('uploads/member_packages/' . $package->image))) {
+            unlink(public_path('uploads/member_packages/' . $package->image));
+        }
+
+        $image = $request->file('image');
+        $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('uploads/member_packages'), $imageName);
+
+        $package->image = $imageName;
+    }
+
+    // ✅ Update Fields
+    $package->name = $request->package_name;
+    $package->price = $request->price;
+    $package->validDays = $request->validDays;
+    $package->productLimit = $request->productLimit;
+    $package->sellTenderLimit = $request->tenderLimit;
+    $package->newsLimit = $request->newsLimit;
+    $package->tradeLeadsInclude = $request->sellProvisionInclude;
+    $package->code = uniqid();
+    $package->status = $request->status;
+
+    $package->save();
+
+    return back()->with([
+        'alert-type' => 'success',
+        'message' => 'Package Updated Successfully!'
+    ]);
+}
+
+	
+    public function updatePackageold(Request $request)
     {
 
         $validator = Validator::make(
@@ -328,5 +441,64 @@ class MemberPackageController extends Controller
         } else {
             return redirect()->route('seller.upgrade.member.package')->with(['alert-type' => 'error', 'message' => $response['message'] ?? 'Payment failed.']);
         }
+    }
+
+     public function saleProvisionInclude(Request $request)
+    {
+      
+        
+         $query = Wallet::where('user_id','>', 0);
+
+        // Search filter
+        
+ // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhereHas('seller', function ($q) use ($search) {
+                    $q->where('company_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+        }
+
+        // Sort
+        if ($request->filled('sort') && $request->sort == 'oldest') {
+            $query->orderBy('id', 'desc');
+        } else {
+             $query->latest();
+           
+        }
+
+        $wallets = $query->paginate(10)->withQueryString();
+      // die;
+        return view('admin.member_package.sale-provision-include', compact('wallets'));
+    }
+
+    public function additionalSaleProvision(Request $request)
+    {
+      
+        // $query = products::with('vendor','gallery');
+         $query = Wallet::where('user_id','>', 0)->where('balance','<',0); 
+               // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhereHas('seller', function ($q) use ($search) {
+                    $q->where('company_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+        }
+
+        // Sort
+        if ($request->filled('sort') && $request->sort == 'oldest') {
+            $query->orderBy('id', 'desc');
+        } else {
+             $query->latest();
+           
+        }
+
+        $wallets = $query->paginate(10)->withQueryString();
+      // die;
+        return view('admin.member_package.additional-sale-provision', compact('wallets'));
     }
 }

@@ -65,8 +65,8 @@
                                         <td>{{ $seller->email }}</td>
                                         <td>
                                             @if($seller->countryData)
-                                                <img src="https://flagcdn.com/24x18/{{ strtolower($seller->countryData->iso2) }}.png" alt="">
-                                                {{ $seller->countryData->name }}
+                                                <img src="https://flagcdn.com/24x18/{{ strtolower(getCountryISO2($seller->country)) }}.png" alt="">
+                                                {{ getCountryName($seller->country) }}
                                             @endif
                                         </td>
                                         <td>{{ $seller->created_at->format('d M Y') }}</td>

@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\countries;
 use App\Models\company;
+use App\Notifications\CustomResetPassword;
 
 class User extends Authenticatable
 {
@@ -107,6 +108,10 @@ class User extends Authenticatable
     public function certificates()
     {
         return $this->hasMany(company_certificate::class, 'vendor_id');
+    }
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPassword($token));
     }
 
 }

@@ -12,20 +12,24 @@
                     </div>
                     <div class="card-body pb-0">
                         <div class="row">
+                              <form action="{{ route('admin.bulk-mail.send') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="type" class=" font-weight-bold fs-2">Selected User Type <span
                                             class="text-danger">*</span></label>
-                                    <select name="type" id="type" class="form-control">
+                                        <select name="recipient" id="recipient" class="form-control">
                                         <option value="">Select</option>
-                                        <option value="">All Seller</option>
-                                        <option value="">All Active Seller</option>
-                                        <option value="">All Inactive Seller</option>
-                                        <option value="">All Buyer</option>
-                                        <option value="">All Active Buyer</option>
-                                        <option value="">All Inactive Buyer</option>
 
+                                        <option value="all_seller">All Seller</option>
+                                        <option value="active_seller">All Active Seller</option>
+                                        <option value="inactive_seller">All Inactive Seller</option>
+
+                                        <option value="all_buyer">All Buyer</option>
+                                        <option value="active_buyer">All Active Buyer</option>
+                                        <option value="inactive_buyer">All Inactive Buyer</option>
                                     </select>
+
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -44,8 +48,10 @@
                                 </div>
                             </div>
                             <div class="col-12 mb-3">
-                                <button class="btn btn-sm btn-primary">Send</button>
+                                 
+                                 <button type="submit" class="btn btn-sm btn-primary">Send Mail</button>
                             </div>
+                             </form>
                         </div>
                     </div>
                 </div>

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\bank_details;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BankDetailsUpdatedMail;
+
 
 class BankDetailsController extends Controller
 {
@@ -83,6 +86,15 @@ class BankDetailsController extends Controller
                     $icons->other_value = $request->other_value;
                     $icons->save();
                 }
+				
+				try {
+            $user = auth()->user();
+            Mail::to($user->email)->send(new BankDetailsUpdatedMail($user));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send bank details update email: ' . $e->getMessage());
+        }
+				
+				
                 session()->flash('success', 'Congratulation, Your bank details has updated successfully!');
                 return redirect()->route('seller.success.gallery');
             }

@@ -1,6 +1,7 @@
 @extends('seller-vendor.seller-frame')
 
 @section('seller-main-content')
+
     <style>
         #imagePreview .preview-img {
             position: relative;
@@ -181,8 +182,30 @@
                                             style="display: none;">Generate Combinations</button>
                                     </div>
                                     <div class="col-md-2 col-lg-4 position-relative">
-                                        <img style="border: 3px solid #ff7300;" src="{{ asset('uploads/ppic.png') }}"
-                                            class="img-fluid rounded-2" alt="">
+                                        <!-- <img style="border: 3px solid #ff7300;" src="{{ asset('uploads/ppic.png') }}"
+                                            class="img-fluid rounded-2" alt=""> -->
+                                              <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <h6 class="fw-bold mb-3">How to set Characteristic</h6>
+
+                <div class="ratio ratio-16x9">
+                   
+
+                      <video 
+    controls 
+    preload="metadata"
+    style="width:100%; border-radius:6px;"
+>
+    <source src="{{ asset('uploads/member_packages/How-to-set-Characteristics.mp4') }}" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+                </div>
+
+                <small class="text-muted d-block mt-2">
+                    Watch this video to understand How to set Characteristics
+                </small>
+            </div>
+        </div>
                                     </div>
                                 </div>
 
@@ -367,8 +390,8 @@
                                                             </div>
                                                         </div>
                                                         <!-- Shipping Table -->
-                                                        <div class="col-md-12 mb-3">
-                                                            <h6 class="fs-6 fw-bold py-3 pb-1">Set Region Or Country</h6>
+                                                        <div class="col-md-8 mb-3">
+                                                            <h6 class="fs-6 fw-bold py-3 pb-1">Shipping Cost</h6>
                                                             <div class="table-responsive">
                                                                 <table class="table table-bordered table-striped">
                                                                     <thead>
@@ -397,7 +420,29 @@
                                                                 </table>
                                                             </div>
                                                         </div>
+                                                         <!-- RIGHT: VIDEO GUIDE -->
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <h6 class="fw-bold mb-3">How to set Shipping Cost</h6>
 
+                <div class="ratio ratio-16x9">
+                       <video 
+    controls 
+    preload="metadata"
+    style="width:100%; border-radius:6px;"
+>
+    <source src="{{ asset('uploads/member_packages//How-to-set-Shipping-Cost.mp4') }}" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+                </div>
+
+                <small class="text-muted d-block mt-2">
+                    Watch this video to understand region & country based shipping
+                </small>
+            </div>
+        </div>
+    </div>
                                                         <style>
                                                             .plus-circle {
                                                                 height: 30px;
@@ -608,7 +653,7 @@
                                                                             true,
                                                                         );
                                                                     @endphp
-                                                                    @foreach (range(0, 11) as $index)
+                                                                    @foreach (range(0, 0) as $index)
                                                                         @php
                                                                             $image = $gallery[$index]['image'] ?? '';
                                                                             $label =
@@ -624,7 +669,7 @@
                                                                                     src="
                                                                                     @if ($image != '') {{ asset('uploads/products/' . $image) }}
                                                                                     @else
-                                                                                      https://placehold.co/400 @endif
+                                                                                      https://placehold.co/500 @endif
                                                                                     "
                                                                                     class="img-thumbnail p-0"
                                                                                     style="width: 100px; height: 100px;">
@@ -854,9 +899,15 @@
         </td>
         <td>
             <div class="input-group">
-                                    <span class="input-group-text">
-                                        USD $
-                                    </span>
+                                    
+                                             <select name="currency[]"
+                                                            style="width: 5rem !important;flex:unset;"
+                                                            class="form-select input-group-addon">
+                                                            <option @selected($product->currency0 == 'USD') value="USD">USD
+                                                            </option>
+                                                            <option @selected($product->currency0 == 'EUR') value="EUR">EUR
+                                                            </option>
+                                                        </select>
                                     <input type="number" class="form-control" placeholder="Enter Cost" name="shipping_cost[${index}]" value="${cost}">
                                 </div>
                                 <small class="text-danger mt-2">Set 0 if shipping cost free</small> 
@@ -1233,7 +1284,7 @@
                         :
                         `${gImage}` // Use filename path
                         :
-                        "https://placehold.co/400"; // Placeholder if no image
+                        "https://placehold.co/500"; // Placeholder if no image
 
                     var imageTag =
                         `<img id="preview-${i}" src="${imageSrc}" class="img-thumbnail p-0 mt-2" style="width: 100px; height: 100px;">`;

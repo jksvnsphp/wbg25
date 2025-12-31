@@ -55,10 +55,10 @@
                   @endforeach
               </div>
               <hr />
-              <div class="footer_sec py-3 pt-1">
+              <!--<div class="footer_sec py-3 pt-1">
                   <a href="">Advertisements With Us</a> | <a href=""> Job</a> |
                   <a href="">Franchisee</a>
-              </div>
+              </div>-->
           </div>
       </div>
   </section>
@@ -74,8 +74,8 @@
               </a>
           </div>
           <div class="col-md-3 text-md-end text-center">
-              <a href="" class="fs-5 text-primary me-2"><i class="fa-brands fa-square-facebook"></i></a>
-              <a href="" class="fs-5 text-primary"><i class="fa-brands fa-square-instagram"></i></a>
+              <a href="https://www.facebook.com/wbg24/" class="fs-5 text-primary me-2"><i class="fa-brands fa-square-facebook"></i></a>
+              <a href="https://www.instagram.com/worldbusinessguideofficial/" class="fs-5 text-primary"><i class="fa-brands fa-square-instagram"></i></a>
           </div>
       </div>
   </footer>

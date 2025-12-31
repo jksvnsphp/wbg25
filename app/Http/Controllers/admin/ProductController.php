@@ -27,10 +27,11 @@ class ProductController extends Controller
         }
 
         // Sort
-        if ($request->filled('sort') && $request->sort == 'latest') {
-            $query->latest();
-        } else {
+        if ($request->filled('sort') && $request->sort == 'oldest') {
             $query->orderBy('id', 'asc');
+        } else {
+             $query->latest();
+            
         }
 
         $products = $query->paginate(10)->withQueryString();
@@ -56,10 +57,11 @@ class ProductController extends Controller
         }
 
         // Sort
-        if ($request->filled('sort') && $request->sort == 'latest') {
-            $query->latest();
+        if ($request->filled('sort') && $request->sort == 'oldest') {
+            $query->orderBy('id', 'desc');
         } else {
-            $query->orderBy('id', 'asc');
+             $query->latest();
+           
         }
 
         $products = $query->paginate(10)->withQueryString();
@@ -84,10 +86,11 @@ class ProductController extends Controller
         }
 
         // Sort
-        if ($request->filled('sort') && $request->sort == 'latest') {
-            $query->latest();
+        if ($request->filled('sort') && $request->sort == 'oldtest') {
+           
         } else {
-            $query->orderBy('id', 'asc');
+             $query->latest();
+              //$query->orderBy('id', 'desc');
         }
 
         $products = $query->paginate(10)->withQueryString();
@@ -100,7 +103,8 @@ class ProductController extends Controller
     {
       
         // $query = products::with('vendor','gallery');
-         $query = products::with('vendor','gallery')->where('totalQty','>', 0)
+        //->where('totalQty','>', 0)
+         $query = products::with('vendor','gallery')
          ->where('isListingType', 'spotlight');
 
         // Search filter
@@ -154,36 +158,50 @@ class ProductController extends Controller
     }
     // $query = products::with('vendor','gallery')->where('totalQty','<=', 0);
  //product_image
-     public function product_image(Request $request)
-    {
-        $query = products::with('vendor','gallery');
+    public function product_image(Request $request)
+{
+    $query = products::with([
+        'vendor.company',   // load vendor & company
+        'gallery'           // load images
+    ])
+    ->where('isMultiple', 0)
+    ->whereHas('gallery'); // only products with images
+    // Always require image
+        //->whereNotNull('mainGallery')
 
-        // Search filter
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhereHas('seller', function ($q) use ($search) {
-                    $q->where('company_name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
-                });
-        }
+    // Search filter
+    if ($request->filled('search')) {
+        $search = $request->search;
 
-        // Sort
-        if ($request->filled('sort') && $request->sort == 'latest') {
-            $query->latest();
-        } else {
-            $query->orderBy('id', 'asc');
-        }
-
-        $products = $query->paginate(10)->withQueryString();
-
-        return view('admin.action-image.products', compact('products'));
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhereHas('seller', function ($sellerQuery) use ($search) {
+                    $sellerQuery->where('company_name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+              });
+        });
     }
+
+    // Sort
+    if ($request->filled('sort') && $request->sort == 'oldtest') {
+         $query->orderBy('id', 'asc');
+    } else {
+         $query->latest();
+    }
+
+    $products = $query->paginate(10)->withQueryString();
+
+    return view('admin.action-image.products', compact('products'));
+}
+
 
 
       public function multiply_product_image(Request $request)
     {
-        $query = products::with('vendor','gallery')->where('isMultiple', 1);
+        $query = products::with([
+        'vendor.company',   // load vendor & company
+        'gallery'           // load images
+        ])->where('isMultiple', 1)->whereHas('gallery');
 
         // Search filter
         if ($request->filled('search')) {
@@ -196,10 +214,11 @@ class ProductController extends Controller
         }
 
         // Sort
-        if ($request->filled('sort') && $request->sort == 'latest') {
-            $query->latest();
+        if ($request->filled('sort') && $request->sort == 'oldest') {
+             $query->orderBy('id', 'asc');
         } else {
-            $query->orderBy('id', 'asc');
+            $query->latest();
+           
         }
 
         $products = $query->paginate(10)->withQueryString();

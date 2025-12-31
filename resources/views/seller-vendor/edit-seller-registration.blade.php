@@ -87,7 +87,7 @@
                                     <input type="hidden" name="phone" id="phone" value="{{ $user->phone }}">
                                 </div>
                             </div>
-                            <div class="col-md-6 position-relative">
+                            <!--<div class="col-md-6 position-relative">
                                 <div class="form-group mb-3 d-flex flex-column">
                                     <label for="" class="form-label">Password<span
                                             class="text-danger fs-5">*</span></label>
@@ -109,7 +109,7 @@
                                         <span class="text-danger"> {{ $message }} </span>
                                     @enderror
                                 </div>
-                            </div>
+                            </div>--->
                             <div class="col-md-4">
                                 <div class="form-group mb-3">
                                     <label for="registration_year" class="form-label">Company Registration Year <span
@@ -630,9 +630,9 @@
                 });
 
                 const countryData = iti.getSelectedCountryData();
-                const countryCode = calCode;ountryData.iso2; // This will give you the ISO 2-letter country code (e.g., "us", "gb")
-                const dialCode = countryData.di // This will give you the country dial code (e.g., "1", "44")alCode; // This will give you the country dial code (e.g., "1", "44")  
-                console.log('Selected country code:', countryCode);
+               // const countryCode = calCodeountryData.iso2; // This will give you the ISO 2-letter country code (e.g., "us", "gb")
+                const dialCode = '+91';// countryData.di; // This will give you the country dial code (e.g., "1", "44")alCode; // This will give you the country dial code (e.g., "1", "44")  
+               // console.log('Selected country code:', countryCode);
                 console.log('Dial code:', dialCode);             
                 button.prop('disabled', true).prepend(spinner);
                 

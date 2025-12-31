@@ -65,6 +65,8 @@ use App\Http\Controllers\admin\TenderController;
 use App\Http\Controllers\admin\BuyerInquiryController;
 use App\Http\Controllers\admin\SellerInquiryController;
 use App\Http\Controllers\admin\UserInquiryController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\admin\EmailTemplateController;
 
 //SellerInquiryController
 /*
@@ -121,12 +123,12 @@ Route::controller(UIProductVideoShowController::class)->group(function () {
 });
 Route::controller(UINewsController::class)->group(function () {
 
-   Route::get('/news/{slug?}', 'readNews')->name('read.news');
+    Route::get('/news', 'index')->name('all.news.show');
+
+    Route::get('/news/{slug}', 'readNews')
+        ->name('read.news');
 });
 
-Route::controller(UINewsController::class)->group(function () {
-    Route::get('/news', 'index')->name('all.news.show'); 
-});
 Route::controller(UserProductController::class)->group(function () {
    Route::post('/get-subcategories', 'getSubCategories')->name('public.get.subcategory');
    Route::post('/get-sub-subcategories', 'getSubSubCategories')->name('public.get.subsubcategory');
@@ -192,8 +194,16 @@ Route::middleware('auth')->group(function () {
       Route::get('paypal/status/order', 'payPalStatus')->name('order.paypal.status');
    });
 });
+
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::get('/forget-password', [AuthController::class, 'forgetPassword'])->name('forget.password');
+Route::get('/forget-password', [AuthController::class, 'forgetPassword'])->name('forget.password');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])
+     ->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'updatePassword'])
+     ->name('password.update');
+Route::post('/send-password-reset-link', [AuthController::class, 'sendPasswordResetLink'])->name('forget.sendPasswordResetLink');
+
 Route::post('/login/verify', [AuthController::class, 'loginNow'])->name('login.now');
 Route::post('/send-otp', [AuthController::class, 'sendOtp'])->name('buyer.send.otp');
 Route::post('/forget/send-otp', [AuthController::class, 'sendOtpForget'])->name('forget.send.otp');
@@ -224,6 +234,15 @@ Route::middleware(['role:admin'])->group(function () {
 
 	
 	});
+
+    Route::prefix('admin')->middleware(['role:admin'])->group(function () {
+    Route::get('/all-email-templates', [EmailTemplateController::class, 'index'])->name('admin.email_templates.index');
+    Route::get('/all-email-templates/create', [EmailTemplateController::class, 'create'])->name('admin.email_templates.create');
+    Route::post('/all-email-templates/store', [EmailTemplateController::class, 'store'])->name('admin.email_templates.store');
+    Route::get('/all-email-templates/{id}/edit', [EmailTemplateController::class, 'edit'])->name('admin.email_templates.edit');
+    Route::put('/all-email-templates/{id}', [EmailTemplateController::class, 'update'])->name('admin.email_templates.update');
+    Route::delete('/all-email-templates/{id}', [EmailTemplateController::class, 'destroy'])->name('admin.email_templates.destroy');
+});
    
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -231,6 +250,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('products', ProductController::class);
     Route::resource('tenders', TenderController::class);
    Route::resource('company-logos', App\Http\Controllers\admin\CompanyLogoController::class);
+   Route::post('company-logos/change-status', [App\Http\Controllers\admin\CompanyLogoController::class,'changeStatus'])->name('company_logo.change_status');
    Route::resource('profile-pictures', App\Http\Controllers\admin\ProfilePictureController::class);
    Route::resource('profile-banners', App\Http\Controllers\admin\ProfileBannerController::class);
    Route::resource('profile-galleries', App\Http\Controllers\admin\ProfileGalleryController::class);
@@ -273,6 +293,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
       Route::get('/sell-tender-approval', 'sellTenderApproval')->name('admin.sell.tender.approval');
       Route::get('/payment-center', 'paymentCenter')->name('admin.payment.center');
+	  Route::get('/payment-center/ajax', 'paymentCenterAjax')->name('admin.payment.center.ajax');
+	  Route::delete('/payment-center/{id}', [DashboardController::class, 'destroyPackage'])
+    ->name('admin.payment.center.delete');
+
       Route::get('/product-manager', 'productManagement')->name('admin.product.manager');
       //Route::get('/trade-buy-list', 'buyTradeList')->name('admin.buy.trade.list');
       //Route::get('/trade-sell-list', 'sellTradeList')->name('admin.sell.trade.list');
@@ -282,10 +306,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
       Route::get('/show-ads-banner', 'showBanner')->name('admin.show.ads.banner');
       Route::get('/seo-management', 'seoManagements')->name('admin.seo.manager');
       Route::get('/add-seo', 'addNewSeo')->name('admin.seo.add');
+	  Route::post('/seo/save', 'seo_store')->name('admin.seo.save');
+  
+  Route::get('/seo/view/{id}', 'seo_show')->name('admin.seo.view');
+
+  Route::get('/seo/edit/{id}', 'seo_edit')->name('admin.seo.edit');
+    Route::post('/seo/update/{id}', 'seo_update')->name('admin.seo.update');
+    Route::delete('/seo/delete/{id}', 'seo_destroy')->name('admin.seo.delete');
+	  
+	  
       Route::get('/all-enquiry', 'enquiryBox')->name('admin.all.enquiries');
       Route::get('/all-advertisement-enquiry', 'advertisementEnquiry')->name('admin.advertisement.enquiries');
       Route::get('/all-admin-enquiry', 'adminEnquiryBox')->name('admin.all.enquiries.admin');
-      Route::get('/all-email-templates', 'adminEmailTemplates')->name('admin.all.email.templates');
+     // Route::get('/all-email-templates', 'adminEmailTemplates')->name('admin.all.email.templates');
       Route::get('/add-new-email-template', 'adminAddEmailTemplate')->name('admin.add.email.template');
       Route::get('/bulk-mail-send', 'adminBulkMailSend')->name('admin.bulk.email.send');
       Route::get('/video-show', 'adminVideoShow')->name('admin.video.show');
@@ -380,6 +413,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
       Route::get('/stores', 'index')->name('admin.stores.index');  
       Route::get('/stores-images', 'images')->name('admin.stores.images');
       Route::get('/stores-banners', 'storeBanners')->name('admin.stores.banners'); 
+      Route::post('stores-images/delete', 'deletImage')->name('admin.delete.images');
       Route::post('/change-status', 'storeChangeStatus')->name('admin.stores.change_status');  
       //
       // Route::get('/delete/{id}/tender-category', 'DeleteCategory')->name('admin.delete.tender.category');
@@ -414,6 +448,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
       Route::post('/update/quotation-category', 'update')->name('admin.update.quotation.category');
 
       Route::get('/quotation-images','allQuotations')->name('admin.quotation.images');
+       Route::post('/quotation-images/delete','deleteQuotation')->name('admin.quotation.deleteQuotation');
+      //deleteQuotation
       Route::get('/quotations','allListedQuotations')->name('admin.quotations');
       Route::get('/quotations/{id}','showQuotations')->name('admin.quotations.show');
       Route::get('/trade-buy-list', 'allListedDealQuotations')->name('admin.buy.trade.list');
@@ -447,6 +483,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
    });
    Route::controller(MemberPackageController::class)->prefix('admin')->group(function () {
       Route::get('/member-packages', 'index')->name('admin.member.package');
+      Route::get('/sale-provision-include', 'saleProvisionInclude')->name('admin.member.saleProvisionInclude');
+      Route::get('/additional-sale-provision', 'additionalSaleProvision')->name('admin.member.additionalSaleProvision');
       Route::get('/member-package/{id}/edit', 'editPackage')->name('admin.member.edit.package');
       Route::get('/member-package-service/{id}/delete', 'DeletePackageService')->name('admin.member.delete.package');
       Route::get('/member-package-service/{id}/edit', 'editPackageService')->name('admin.edit.package.service');
@@ -505,6 +543,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
    Route::controller(BulkMailController::class)->prefix('admin')->group(function () {
       Route::get('/bulk-mail', 'bulkMail')->name('admin.send.bulk.mail');
       Route::post('/send/bulk-mail', 'sendbulkMail')->name('bulk-mail.send');
+      Route::post('/send/admin-bulk-mail','sendAdminBulkMail')->name('admin.bulk-mail.send');
    });
 });
 Route::middleware(['role:buyer'])->group(function () {
@@ -630,9 +669,11 @@ Route::controller(InboxController::class)->prefix('main')->group(function () {
 Route::controller(SellerAuthController::class)->prefix('seller')->group(function () {
    Route::get('/{code}/seller-registration', 'quickRegistration')->name('seller.registration');
    Route::get('/{code}/seller-complete-registration', 'completeRegistration')->name('seller.complete.registration');
+   //Route::get('/seller-complete-registrations', 'completeRegistration')->name('seller.complete.registrations');
    Route::post('/copon-verify', 'verifyCode')->name('apply.coupon');
    Route::post('/seller-send-otp', 'sendOtp')->name('seller.send.otp');
-    Route::post('/seller-send-reg-otp', 'sendRegOtp')->name('seller.sendreg.otp');
+   Route::post('/seller-reg-step1', 'regStep1')->name('seller.reg.step1');
+   Route::post('/seller-send-reg-otp', 'sendRegOtp')->name('seller.sendreg.otp');
    Route::post('/seller/verifyreg/otp', 'verifyRegOtp')->name('seller.verify.regotp');
    
    //verifyRegOtp
@@ -650,8 +691,11 @@ Route::middleware(['role:seller'])->group(function () {
       Route::get('/dashboard/new-state/tenders', 'newStateTender')->name('seller.newstate.tender');
       Route::get('/dashboard/new-state/quotation', 'newStateQuotation')->name('seller.newstate.quotation');
       Route::get('/{code}/seller-edit-profile', 'editRegistration')->name('seller.edit.registration');
+	  Route::get('/{code}/change-password', 'change_password')->name('seller.change.password');
+	  
       Route::get('/{code}/seller-profile-edit', 'editSellerProfile')->name('seller.edit.profile');
       Route::get('/{code}/profile-preview', 'profilePreview')->name('seller.profile.preview');
+	  
       Route::get('/my-business-profile', 'companyProfile')->name('seller.company.profile');
       Route::get('/my-shipment-methods', 'shipmentMethods')->name('seller.shipment.methods');
       Route::get('/my-search-key', 'searchKeys')->name('seller.search.keys');
@@ -749,6 +793,9 @@ Route::middleware(['role:seller'])->group(function () {
    Route::controller(SellerNewsController::class)->prefix('seller')->group(function () {
       Route::get('/add-news', 'addNews')->name('seller.add.news');
       Route::get('/my-news', 'mynews')->name('seller.my.news');
+	  Route::get('/my-inactive-news', 'myinactivenews')->name('seller.my.inactivenews');
+	  
+	  
       Route::get('/edit-news/{slug}', 'editNews')->name('seller.edit.news');
       Route::post('/save-news', 'saveNews')->name('seller.save.news');
       Route::post('/status-change-news', 'statusChange')->name('seller.status.news');
@@ -818,5 +865,12 @@ Route::middleware(['role:seller'])->group(function () {
    });
 });
 
-Route::get('paypal/pay', [PayPalController::class, 'payWithPayPal'])->name('paypal.pay');
-Route::get('paypal/status', [PayPalController::class, 'payPalStatus'])->name('paypal.status');
+Route::get('paypal/pay', [PayPalController::class, 'payWithPayPal'])
+    ->name('paypal.pay');
+
+Route::get('paypal/status', [PayPalController::class, 'payPalStatus'])
+    ->name('paypal.status');
+
+Route::get('paypal/free/success', [PayPalController::class, 'paypalFreeSuccess'])
+    ->name('paypal.free.success');
+

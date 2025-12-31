@@ -374,6 +374,11 @@
                                     href="{{ route('seller.profile.preview', auth()->user()->ref_no) }}"><i
                                         class="fa-solid me-2 fa-id-card-clip"></i>View Profile</a>
                             </li>
+							<li>
+                                <a class="dropdown-item mx-0 px-0"
+                                    href="{{ route('seller.change.password', auth()->user()->ref_no) }}"><i
+                                        class="fa-solid me-2 fa-id-card-clip"></i>Change Password</a>
+                            </li>
                         </ul>
                     </li>
 
@@ -410,6 +415,12 @@
                             <i class="fa-solid fa-link"></i> Spotlight Store
                         </a>
                         <ul class="dropdown-menu p-2">
+						
+						<li>
+                                <a class="dropdown-item mx-0 px-0" href="{{ route('create.spotlight.store') }}"><i
+                                        class="fa-solid me-2 fa-gift"></i>Set Store</a>
+                            </li>
+						
                             <li>
                                 <a class="dropdown-item mx-0 px-0" href="{{ route('seller.multiple-listing') }}"><i
                                         class="fa-solid me-2 fa-gift"></i>List Multiply Products</a>

@@ -52,8 +52,9 @@
                                                 <div class="slider round"></div>
                                             </label>
                        
-                        <form action ="#" method="POST" style="display:inline-block;">
-                            @csrf @method('DELETE')
+                        <form action ="{{route('admin.quotation.deleteQuotation')}}" method="POST" style="display:inline-block;">
+                            @csrf 
+                            <input type="hidden" name="quotation_id" value="{{ $quotation->id }}">
                             <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>
                         </form>
                     </td>

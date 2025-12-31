@@ -233,7 +233,7 @@ class UserProductController extends Controller
   
   public function allproducts(Request $request, $slug = null)
 {
-    $pageItem = 10;
+    $pageItem = 25;
     if ($slug != '' && $slug != null) {
         $result = $this->findCategoryBySlug($slug);
         if ($result != null) {
@@ -412,6 +412,10 @@ class UserProductController extends Controller
 
     $products = $paginatedResults;
     $premiumProducts = $this->premiumProducts($request);
+
+//echo '<pre>';
+//print_r($products);
+//echo '</pre>';
 
     return view('external-user.products', compact('categories', 'countries', 'products', 'premiumProducts'));
 }
@@ -851,34 +855,54 @@ public function allTypeProducts(Request $request, $type)
             $shippingData = $this->getShippingData($product->rate_table_id);
             $yourShippingCost = $this->getShippingCostByIp($product->rate_table_id);
             // dd($yourShippingCost);
-            if ($product->isMultiple == 0) {
-                $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
-                // Check if expired
-                $isExpired = now()->greaterThanOrEqualTo($expiryDate);
+            //use Carbon\Carbon;
 
-                $remainingTime = $isExpired
-                    ? $expiryDate->diffForHumans([
-                        'parts' => 3,
-                        'short' => true,
-                        'absolute' => true,
-                    ])
-                    : now()->diffForHumans($expiryDate, [
-                        'parts' => 3,
-                        'short' => true,
-                        'absolute' => true,
-                    ]);
+if ($product->isMultiple == 0) {
 
-                // Update product status if expired
-                if ($isExpired && $product->isList !== 0) {
-                    $product->isList = 0;
-                    $product->save();
-                    return back()->with(['alert-type' => 'error', 'message' => 'This product is no more avialable in list.']);
-                }
-                $product->expiry_date = $expiryDate->format('Y M d h:i:s A');
-                $product->is_expired = $isExpired;
-                $remainingTime = str_replace(['before', 'after'], '', $remainingTime);
-                $product->remaining_time = $remainingTime;
-            } elseif ($product->isMultiple == 1) {
+    $start = Carbon::parse($product->created_at);
+    $end   = $start->copy()->addDays($product->duration);
+    $now   = Carbon::now();
+
+    $isExpired = $now->greaterThanOrEqualTo($end);
+
+    // Auto unlist if expired
+    if ($isExpired && $product->isList !== 0) {
+        $product->update(['isList' => 0]);
+    }
+
+    // Remaining time calculation
+    if ($isExpired) {
+        $product->remaining_time = 'Expired';
+    } else {
+
+        $remainingSeconds = $now->diffInSeconds($end);
+
+        $days = intdiv($remainingSeconds, 86400);
+        $remainingSeconds %= 86400;
+
+        $hours = intdiv($remainingSeconds, 3600);
+        $remainingSeconds %= 3600;
+
+        $minutes = intdiv($remainingSeconds, 60);
+        $seconds = $remainingSeconds % 60;
+
+        if ($days > 0) {
+            $time = "{$days}d {$hours}h";
+        } elseif ($hours > 0) {
+            $time = "{$hours}h {$minutes}m";
+        } elseif ($minutes > 0) {
+            $time = "{$minutes}m {$seconds}s";
+        } else {
+            $time = "{$seconds}s";
+        }
+
+        $product->remaining_time = "Ends in {$time}";
+    }
+
+    $product->expiry_date = $end->format('Y M d h:i:s A');
+    $product->is_expired  = $isExpired;
+}
+ elseif ($product->isMultiple == 1) {
                 $variants = json_decode($product->variants, true);
                 foreach ($variants as &$variant) {
                     $combination = $variant['attributes'];
@@ -934,6 +958,10 @@ public function allTypeProducts(Request $request, $type)
 
             $product->shippingData = $shippingData;
             $product->average_rating = number_format($product->ratings()->avg('rate'));
+
+//echo '<pre>';
+//print_r($shippingData);
+//echo '</pre>';
 
             return view('external-user.product-detail', compact('product', 'yourShippingCost'));
         } else {

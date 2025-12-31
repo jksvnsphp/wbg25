@@ -1,6 +1,7 @@
 @extends('seller-vendor.seller-frame')
 
 @section('seller-main-content')
+ 
     <style>
         #imagePreview .preview-img {
             position: relative;
@@ -194,16 +195,16 @@
                                                     <div class="col-12 d-flex flex-wrap ">
                                                         @if (isset($product->gallery[0]))
                                                             @foreach ($product->gallery as $gimage)
-                                                                <div class="preview-img" data-image-id="{{ $gimage->id }}"
-                                                                    style="width: 100px; height: 100px; position: relative; margin: 5px;">
-                                                                    <img src="{{ asset('uploads/products/gallery/' . $gimage->image) }}"
-                                                                        alt="image preview"
-                                                                        style="width: 100%; height: 100%; object-fit: cover;" />
-                                                                    <span class="delete-gimage"
-                                                                        style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
-                                                                        <i class="fa-solid fa-trash "></i>
-                                                                    </span>
-                                                                </div>
+<div class="preview-img" data-image-id="{{ $gimage->id }}"
+style="width: 100px; height: 100px; position: relative; margin: 5px;">
+<img src="{{ asset('uploads/products/gallery/' . $gimage->image) }}"
+	alt="image preview"
+	style="width: 100%; height: 100%; object-fit: cover;" />
+<span class="delete-gimage"
+	style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
+	<i class="fa-solid fa-trash "></i>
+</span>
+</div>
                                                             @endforeach
                                                         @endif
                                                     </div>
@@ -270,7 +271,7 @@
                                             </div>
                                         </div>
                                         <div class="row mt-3">
-                                            <div class="col-md-7">
+                                            <div class="col-md-8">
                                                 <h6 class="text-uppercase fw-bold ">Set Pricing</h6>
                                                 <div class="form-check mb-3 d-flex px-0">
                                                     <input type="checkbox" class="me-2" name="ispcs[]"
@@ -352,6 +353,31 @@
                                                 </div>
 
                                             </div>
+                                             <!-- RIGHT: VIDEO GUIDE -->
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <h6 class="fw-bold mb-3">How to set Pricing Cost</h6>
+
+                <div class="ratio ratio-16x9">
+                    
+                    <video 
+    controls 
+    preload="metadata"
+    style="width:100%; border-radius:6px;"
+>
+    <source src="{{ asset('uploads/member_packages/How-to-set-Shipping-Cost.mp4') }}" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+                </div>
+
+                <small class="text-muted d-block mt-2">
+                    Watch this video to understand  how set Pricing
+                </small>
+            </div>
+        </div>
+    </div>
                                             <div class="col-12"></div>
 
                                         </div>
@@ -454,36 +480,66 @@
                                                             </div>
                                                         </div>
                                                         <!-- Shipping Table -->
-                                                        <div class="col-md-12 mb-3">
-                                                            <h6 class="fs-6 fw-bold py-3 pb-1">Set Region Or Country</h6>
-                                                            <div class="table-responsive">
-                                                                <table class="table table-bordered table-striped">
-                                                                    <thead>
-                                                                        <tr class="align-middle">
-                                                                            <th class="col-4">Region</th>
-                                                                            <th class="col-4">Country</th>
-                                                                            <th class="col-3">Shipping Cost</th>
-                                                                            <th class="col">Delete</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody id="expeditedTableBody">
-                                                                        <tr>
-                                                                            <td colspan="4">
-                                                                                <button type="button"
-                                                                                    class="btnsem d-flex align-items-center"
-                                                                                    onclick="addRow('expeditedTableBody','expedited')">
-                                                                                    <span class="plus-circle"><i
-                                                                                            class="fa fa-plus"
-                                                                                            aria-hidden="true"></i></span>
-                                                                                    <span class="btntext">Add Region /
-                                                                                        Country</span>
-                                                                                </button>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
+                                                       <div class="row mt-3">
+    <!-- LEFT: Shipping Table -->
+    <div class="col-md-8">
+        <h6 class="fs-6 fw-bold py-3 pb-1">Set Region Or Country</h6>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr class="align-middle">
+                        <th class="col-4">Region</th>
+                        <th class="col-4">Country</th>
+                        <th class="col-3">Shipping Cost</th>
+                        <th class="col">Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="expeditedTableBody">
+                    <tr>
+                        <td colspan="4">
+                            <button type="button"
+                                class="btnsem d-flex align-items-center"
+                                onclick="addRow('expeditedTableBody','expedited')">
+                                <span class="plus-circle">
+                                    <i class="fa fa-plus"></i>
+                                </span>
+                                <span class="btntext">Add Region / Country</span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- RIGHT: VIDEO GUIDE -->
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <h6 class="fw-bold mb-3">How to set Shipping Cost</h6>
+
+                <div class="ratio ratio-16x9">
+                    
+
+                     <video 
+    controls 
+    preload="metadata"
+    style="width:100%; border-radius:6px;"
+>
+    <source src="{{ asset('uploads/member_packages//How-to-set-Shipping-Cost.mp4') }}" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+                </div>
+
+                <small class="text-muted d-block mt-2">
+                    Watch this video to understand region & country based shipping
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
 
                                                         <style>
                                                             .plus-circle {
@@ -678,7 +734,12 @@
 
                                                 </div>
                                                 <button type="submit" class="btn btn-secondary mt-3">
-                                                    Save Changes
+                                                   
+												   @if($product->isExpired)
+												   {{'Re-List & Sell'}}
+											   @else
+												 {{'Save Changes'}}  
+											   @endif
                                                 </button>
                                             </div>
                                         </div>

@@ -14,7 +14,7 @@ class ProfilePictureController extends Controller
     public function index()
     {
         // profile-pictures where('account_type', 'seller')
-         $users = User::where('account_type', 'seller','company' )
+         $users = User::where('account_type', 'seller','company' )->where('profile','!=',NULL)
                         ->latest()
                         ->paginate(10); 
         return view('admin.profile-pictures.index', compact('users'));

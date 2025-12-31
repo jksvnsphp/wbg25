@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
 use App\Services\TwilioService;
+use Illuminate\Support\Facades\DB;
 
 class SellerAuthController extends Controller
 {
@@ -91,11 +92,29 @@ class SellerAuthController extends Controller
                 return response()->json(['status' => false, 'message' => 'Phone number is already exist.']);
             } else {
                 
-                session(['otp' => $otp, 'name' => $request->name, 'phone' => $request->phone,'coupon_code'=>$request->coupon_code]);
-                return response()->json(['status' => true, 'message' => 'OTP sent successfully']);
+                session(['otp' => $otp, 'name' => $request->name, 'phone' => $request->phone,'coupon_code'=>$request->coupon_code,'package_code'=>$request->code]);
+                 if($request->phone)
+                  $this->twilio->sendSms( trim($request->phone), 'Your OTP is '.$otp); 
+
+                  Cache::put('otp_' .$request->phone, $otp, now()->addMinutes(10));
+                return response()->json(['status' => true, 'message' => 'OTP sent successfully','url'=>route('seller.complete.registration', $request->code)]);
             }
         }
     }
+
+    public function sendSms($to, $message)
+    {
+        $client = new \Twilio\Rest\Client($this->sid, $this->token);
+
+        return $client->messages->create(
+            $to,
+            [
+                "from" => "MYCOMPANY",   // 👈 YOUR SENDER NAME HERE
+                "body" => $message
+            ]
+        );
+    }
+
 
     public function sendRegOtp(Request $request)
     {
@@ -105,13 +124,15 @@ class SellerAuthController extends Controller
             return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
         } else {
             $otp = rand(10000, 99999);
-            $isUserExist = User::where('phone', $request->phone)->count();
-            if ($isUserExist > 0) {
+             //$phone =session('phone');
+             //echo 'phone'.$request->phone;die;
+            //$isUserExist = User::where('phone', $request->phone)->count();
+            if ($request->phone) {
                  if($request->phone)
-                  $this->twilio->sendSms( trim($request->phone), 'Your OTP is '.$otp); 
+                  $this->twilio->sendSms( trim($request->phone), 'Your WBG24.com Verification Code is '.$otp); 
 
                   Cache::put('otp_' .$request->phone, $otp, now()->addMinutes(10));
-                  session(['otp' => $otp, 'name' => $request->name, 'phone' => $request->phone,'coupon_code'=>$request->coupon_code]);
+                  session(['otp' => $otp,  'phone' => $request->phone]);
                 return response()->json(['status' => true, 'message' => 'OTP sent successfully']);
                
             } else {
@@ -251,15 +272,31 @@ class SellerAuthController extends Controller
             return response()->json(['status' => false, 'message' => 'Please fill Coupon Code.']);
         } else {
             $coupon_code = $request->code;
-            if ($coupon_code!="") {
-                $coupon = Coupon::where('code', $coupon_code)
-                    ->where('start_date', '<=', now())
-                    ->where('end_date', '>=', now())
-                    ->where('is_active',1)
-                    ->first();
+            if ($coupon_code!="") { 
+               $coupon = Coupon::where('code', $coupon_code)
+                        ->whereDate('start_date', '<=', now()->toDateString())
+                        ->whereDate('end_date', '>=', now()->toDateString())
+                        ->where('is_active', 1)
+                        ->first();
+                $package = memberPackage::where('code', $request->package_code)->first();
+                    
                 if ($coupon) {
                     $discount=$coupon->discount ?? 0;
-                    return response()->json(['status'=>true,'message'=>'Coupon applied successfully!','discount'=>$discount]);
+                        if ($coupon->percent_type == 'percentage') {
+                            // e.g., 10% off
+                            $discount = ($package->price * $coupon->discount) / 100;
+                        } else {
+                            // flat discount, e.g., ₹100 off
+                            $discount = $coupon->discount;
+                        }
+                    if( $discount <= $package->price){
+                        $paybleAmount = $package->price - $discount;
+                       session(['discount' =>  $discount,'coupon_code'=>$coupon_code,'paybleAmount'=>$paybleAmount]);
+                       return response()->json(['status'=>true,'message'=>'Coupon applied successfully!','discount'=>$discount]);
+                    }else{
+                       return response()->json(['status' => false, 'message' => 'Coupon discount exceeds package price']);
+                    }
+                    
                 }else{
                     return response()->json(['status' => false, 'message' => 'Coupon code invalid']);
                 }
@@ -270,27 +307,32 @@ class SellerAuthController extends Controller
     }
 
     public function completeRegistration($code)
+{
+    // Find package by code
+    $package = memberPackage::where('code', $code)->first();
+
+    if ($package) {
+
+        // Store package code in session
+        session(['package_code' => $code]);
+
+        // Fetch top-level active categories
+        $categories = CustomeCategory::where('status', "1")
+            ->where('deleted', "0")
+            ->where('parent_id', "0")
+            ->orderBy('category_name', 'ASC')
+            ->get();
+
+        return view('external-user.complete-seller-registration', compact('categories', 'code'));
+    } 
+    else 
     {
-        $user = User::where('ref_no', $code)->with('company')->first();
-        // dd($user);
-        if ($user) {
-            if (isset($user->isComplete) && $user->isComplete == 0) {
-                $package = memberPackage::where('code', $user->package_code)->first();
-                session(['package_code' => $user->package_code]);
-                session(['user_id' => $user->id]);
-                $categories = CustomeCategory::where('status', "1")->where('deleted', "0")->where('parent_id', "0")->orderBy('category_name', 'ASC')->get();
-                if ($package) {
-                    return view('external-user.complete-seller-registration', compact('user', 'categories','code'));
-                } else {
-                    return redirect()->route('home')->with(['alert-type' => 'error', 'message' => 'Something went to wrong']);
-                }
-            } else {
-                return redirect()->route('home')->with(['alert-type' => 'error', 'message' => 'This profile is done.']);
-            }
-        } else {
-            return redirect()->route('home')->with(['alert-type' => 'error', 'message' => 'Something went to wrong']);
-        }
+        return back()->with([
+            'alert-type' => 'error',
+            'message' => 'Something went wrong'
+        ]);
     }
+}
 
     public function editRegistration($code, Request $request)
     {
@@ -307,7 +349,25 @@ class SellerAuthController extends Controller
             return redirect()->route('home')->with(['alert-type' => 'error', 'message' => 'Something went to wrong']);
         }
     }
-    public function editSellerProfile($code)
+    
+	public function change_password($code, Request $request)
+    {
+       
+        $user = User::where('ref_no', $code)->with('company')->first();
+        if ($user) {
+            if (isset($user->isComplete) && $user->isComplete == 1) {
+                $categories = CustomeCategory::where('status', "1")->where('deleted', "0")->where('parent_id', "0")->orderBy('category_name', 'ASC')->get();
+                return view('seller-vendor.edit-seller-password', compact('user', 'categories'));
+            } else {
+                return redirect()->route('home')->with(['alert-type' => 'error', 'message' => 'This profile is not done.']);
+            }
+        } else {
+            return redirect()->route('home')->with(['alert-type' => 'error', 'message' => 'Something went to wrong']);
+        }
+    }
+    
+	
+	public function editSellerProfile($code)
     {
         $user = User::where('ref_no', $code)->first();
         if ($user) {
@@ -321,18 +381,67 @@ class SellerAuthController extends Controller
             return redirect()->route('home')->with(['alert-type' => 'error', 'message' => 'Something went to wrong']);
         }
     }
-    public function completeMyProfile(Request $request)
+	
+	
+	public function completeMyProfile(Request $request)
+{
+    $validate = Validator::make($request->all(), [
+        'company_name' => ['required', 'string'],
+        'first_name' => ['required', 'string'],
+        'last_name' => ['nullable', 'string'],
+        'email' => ['required', 'email', 'unique:users,email'],
+        'phone' => ['required', 'unique:users,phone'],
+        'password' => ['required', 'min:8', 'confirmed'],
+        'registration_year' => ['required', 'numeric', 'max:3000', "min:1900"],
+        'number_of_employees' => ['required', 'string'],
+        'business_type' => ['required', 'string'],
+        'certifications' => ['nullable', 'array'],
+        'other_certificate' => ['required_if:certifications,Other'],
+        'country' => 'required|string',
+        'state' => 'required|string',
+        'city' => 'required|string',
+        'zip' => 'required',
+        'street' => 'nullable|string',
+        'house_no' => 'nullable|string',
+        'company_category' => 'nullable|numeric',
+        'company_sub_category' => 'nullable|numeric',
+    ]);
+
+    if ($validate->fails()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Please fill all required fields.',
+            'error' => $validate->errors()
+        ]);
+    }
+
+    // Store in session
+    session(['signup_data' => $request->all()]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Data saved. Proceed to payment.'
+    ]);
+}
+
+	
+	
+	
+    public function completeMyProfile_old(Request $request)
     {
+
+        // 'email' => ['required', 'email', 'unique:users,email,' . $request->user_id],
+        //         'phone' => ['required', 'unique:users,phone,' . $request->user_id],
 
         $validate = Validator::make(
             $request->all(),
             [
-                'user_id' => ['required', 'exists:users,id'],
+                //'user_id' => ['required', 'exists:users,id'],
                 'company_name' => ['required', 'string'],
                 'first_name' => ['required', 'string'],
                 'last_name' => ['nullable', 'string'],
-                'email' => ['required', 'email', 'unique:users,email,' . $request->user_id],
-                'phone' => ['required', 'unique:users,phone,' . $request->user_id],
+                'email' => ['required', 'email', 'unique:users,email'],
+                'phone' => ['required', 'unique:users,phone'],
                 'password' => ['required', 'min:8', 'confirmed'],
                 'registration_year' => ['required', 'numeric', 'max:3000', "min:1900"],
                 'number_of_employees' => ['required', 'string'],
@@ -352,8 +461,9 @@ class SellerAuthController extends Controller
         if ($validate->fails()) {
             return response()->json(['status' => false, 'message' => 'Please fill all required filled.', 'error' => $validate->errors()]);
         } else {
-            $user = User::find($request->user_id);
-            if (!empty($user)) {
+           
+            if ($request->phone) {
+                $user = new User();
                 $user->first_name = $request->first_name;
                 $user->last_name = $request->last_name;
                 $user->phone = $request->phone;
@@ -368,27 +478,17 @@ class SellerAuthController extends Controller
                 $user->street = $request->street;
                 $user->house_no = $request->house_no;
                 $user->isComplete = 0;
+                $user->account_type = 'seller';
+                $user->ref_no = uniqid(true);
                 $user->save();
                 $user->fpassword = $password;
-                // check company profile is created or not
-                $company = company::where('vendor_id', $request->user_id)->first();
-                $slug    = $this->createUniqueSlug($request->company_name, $company->id ?? null);
-                if (!empty($company)) {
-                    $company->name = $request->company_name;
-                    $company->slug = $slug;
-                    $company->company_registeration_year = $request->registration_year;
-                    $company->key_personnal = $request->number_of_employees;
-                    $company->business_type = $request->business_type;
-                    $company->certifications = json_encode($request->certifications);
-                    $company->other_certificate = json_encode($request->other_certificate);
-                    $company->category_1 = $request->company_category;
-                    $company->category_2 = $request->company_sub_category;
-                    $company->save();
-                } else {
+                 $slug    = $this->createUniqueSlug($request->company_name, $company->id ?? null);
+                
+                session(['user_id' => $user->id]);
                     $company = new company();
                     $company->name = $request->company_name;
                     $company->slug = $slug;
-                    $company->vendor_id = $request->user_id;
+                    $company->vendor_id = $user->id;
                     $company->company_registeration_year = $request->registration_year;
                     $company->key_personnal = $request->number_of_employees;
                     $company->business_type = $request->business_type;
@@ -397,7 +497,7 @@ class SellerAuthController extends Controller
                     $company->category_1 = $request->company_category;
                     $company->category_2 = $request->company_sub_category;
                     $company->save();
-                }
+               // }
                 event(new UserCreated($user));
                 return response()->json(['status' => true, 'message' => 'Successfully complete your profile.']);
             } else {
@@ -1206,6 +1306,28 @@ $mySubmittedOfferTender = OfferTender::where('user_id', $id)
             return redirect()->route('seller.success.gallery');
         } else {
             return redirect()->route('login')->with(['alert-type' => 'error', 'message' => 'Please login first.']);
+        }
+    }
+
+
+     public function regStep1(Request $request)
+    {
+        $validator = Validator::make($request->all(), ['name' => ['required', 'string'], 'phone' => ['required'],'coupon_code'=>['nullable','exists:coupons,code']]);
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+        } else {
+            
+            $isUserExist = User::where('phone', $request->phone)->count();
+            if ($isUserExist > 0) {
+                return response()->json(['status' => false, 'message' => 'Phone number is already exist.']);
+            } else {
+                 $code = $request->code;
+                // echo "code",$code;die;
+                
+                session([ 'name' => $request->name, 'phone' => $request->phone,'coupon_code'=>$request->coupon_code,'package_code'=>$code]);
+                  
+                return response()->json(['status' => true, 'message' => 'OTP sent successfully','url'=>route('seller.complete.registration', $code)]);
+            }
         }
     }
 }

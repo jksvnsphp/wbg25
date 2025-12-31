@@ -2,7 +2,7 @@
 @section('admin-content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between mb-3">
-        <h4>Tenders Images</h4>
+        <h4>Tenders Images </h4>
   
     </div>
 
@@ -37,9 +37,9 @@
                       {{ $user->email ?? 'N/A' }}      
                     </td>
                     <td>
-
-                        @if($tender->image1)
-                            <img src="{{ asset('uploads/tender/' . $tender?->image1) }}" style="height:50px" alt="">
+                     
+                        @if($tender->image_1)
+                            <img src="{{ asset('uploads/tender/' . $tender?->image_1) }}" style="height:50px" alt="">
                         @else
                             <span>No Image</span>
                         @endif 

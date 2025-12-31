@@ -32,20 +32,20 @@ public function index(Request $request)
         $query = User::where('account_type', 'seller')
             ->where('isComplete', 1)
             ->where('status', 1)
-            ->with('company', 'sellerPackage')
-            ->whereHas('company', function ($companyQuery) {
-                $companyQuery->whereNotNull('spotlight_banner')
-                    ->whereNotNull('spotlight_preview1');
-            })
-            ->whereHas('sellerPackage', function ($query) {
-                $query->whereHas('package', function ($subQuery) {
-                    $subQuery->whereIn('type', ['gold', 'platinum']);
-                })
-                    ->where(function ($expireQuery) {
-                        $expireQuery->whereNull('expire_at')
-                            ->orWhere('expire_at', '>', now());
-                    });
-            });
+            ->with('company', 'sellerPackage');
+            // ->whereHas('company', function ($companyQuery) {
+            //     $companyQuery->whereNotNull('spotlight_banner')
+            //         ->whereNotNull('spotlight_preview1');
+            // });
+            // ->whereHas('sellerPackage', function ($query) {
+            //     $query->whereHas('package', function ($subQuery) {
+            //         $subQuery->whereIn('type', ['gold', 'platinum']);
+            //     })
+            //         ->where(function ($expireQuery) {
+            //             $expireQuery->whereNull('expire_at')
+            //                 ->orWhere('expire_at', '>', now());
+            //         });
+            // });
         if ($request->has('q') && !empty($request->q)) {
             $searchTerm = $request->q;
 
@@ -93,7 +93,7 @@ public function index(Request $request)
                 $q->where('business_type', $request->business_type);
             });
         }
-        $pageItem = 10;
+        $pageItem = 15;
         if ($request->has('pageItem') && $request->filled('pageItem')) {
             $pageItem = $request->pageItem ?? 10;
         }
@@ -120,19 +120,26 @@ public function index(Request $request)
         }
         $categories = CustomeCategory::where('status', "1")->where('deleted', "0")->where('parent_id', "0")->orderBy('category_name', 'ASC')->get();
        
-          //die('dsad');
+        // echo "<pre/>";
+        // print_r($spotlights->toArray());
+        // die('dsad');
         return view('admin.stores_management.index', compact('spotlights', 'countries', 'categories'));
     }
 
     public function images(Request $request)
     {
         $countries = countries::orderBy('name', 'ASC')->get();
-        $query = User::where('account_type', 'seller')
-           // ->where('isComplete', 1)
-           // ->where('status', 1)
-            ->with('company', 'sellerPackage');
+        // $query = User::where('account_type', 'seller')
+        //    // ->where('isComplete', 1)
+        //    // ->where('status', 1)
+        //     ->with('company', 'sellerPackage');
              
-           
+          $query = User::where('account_type', 'seller')
+        ->with('company', 'sellerPackage')
+        ->whereHas('company', function ($q) {
+            $q->whereNotNull('company_logo')
+              ->where('company_logo', '!=', '');
+        });  
         if ($request->has('q') && !empty($request->q)) {
             $searchTerm = $request->q;
 
@@ -456,6 +463,25 @@ public function index(Request $request)
     
        // echo '<pre>'; print_r($product->toArray()); die;
         return view('admin.store.show', compact('product'));
+    }
+    
+     public function deletImage()
+    {
+        $category_id = request()->spotlight_id;
+        $TenderCategory = TenderCategory::where('id', $category_id)->first();
+        if (!empty($TenderCategory)) {
+            if ($TenderCategory->image != '') {
+                $oldfile = public_path('/uploads/supplier_category/' . $TenderCategory->image);
+                if (File::exists($oldfile)) {
+                    File::delete($oldfile);
+                }
+            }
+
+            $TenderCategory->delete();
+            return back()->with(['alert-type' => 'success', 'message' => 'Successfully deleted']);
+        } else {
+            return back()->with(['alert-type' => 'error', 'message' => 'Store not found!']);
+        }
     }
 }
 

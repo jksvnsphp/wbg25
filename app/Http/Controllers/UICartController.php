@@ -217,7 +217,7 @@ class UICartController extends Controller
         return view('external-user.shoping-cart-quotation', compact('groupedCarts', 'tenderOffers','cartOffers'));
     }
 
-    public function addToCart(Request $request)
+    public function addToCartold(Request $request)
     {
         if (isset(auth()->user()->id)) {
             //  dd($request->all());
@@ -272,6 +272,95 @@ class UICartController extends Controller
             return response()->json(['success' => false, 'message' => 'Please logged in to use this!']);
         }
     }
+	
+	public function addToCart(Request $request)
+{
+    if (!auth()->check()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Please login to use this feature'
+        ]);
+    }
+
+    $request->validate([
+        'product_id'    => 'required|exists:products,id',
+        'quantity'      => 'required|integer|min:1',
+        'variant'       => 'nullable|array',
+        'priceMultiply' => 'nullable|numeric',
+    ]);
+
+    $product = products::findOrFail($request->product_id);
+    $qty     = (int) $request->quantity;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Calculate Price
+    |--------------------------------------------------------------------------
+    */
+    if ($product->isMultiple == 0) {
+
+        $price = match (true) {
+            $qty >= $product->qtymin0 && $qty <= $product->qtymax0 => $product->price0,
+            $qty >= $product->qtymin1 && $qty <= $product->qtymax1 => $product->price1,
+            $qty >= $product->qtymin2 && $qty <= $product->qtymax2 => $product->price2,
+            default => 0,
+        };
+
+    } else {
+        $price = (float) $request->priceMultiply;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Find Existing Cart
+    |--------------------------------------------------------------------------
+    */
+    $query = Cart::where('user_id', auth()->id())
+        ->where('product_id', $product->id);
+
+    if ($product->isMultiple == 1) {
+        $query->where('variant', json_encode($request->variant));
+    }
+
+    $cart = $query->first();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create or Update Cart
+    |--------------------------------------------------------------------------
+    */
+    if ($cart) {
+        $cart->update([
+            'quantity' => $qty,
+            'qtyPrice' => $price,
+            'price'    => $price * $qty,
+        ]);
+    } else {
+        Cart::create([
+            'user_id'   => auth()->id(),
+            'product_id' => $product->id,
+            'variant'   => $request->variant ? json_encode($request->variant) : null,
+            'quantity'  => $qty,
+            'qtyPrice'  => $price,
+            'price'     => $price * $qty,
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cart Count
+    |--------------------------------------------------------------------------
+    */
+    $cartCount = Cart::where('user_id', auth()->id())->sum('quantity');
+
+    return response()->json([
+        'success'   => true,
+        'message'   => 'Product added to cart successfully',
+        'cartCount' => $cartCount,
+    ]);
+}
+
+	
     public function checkoutNow(Request $request)
     {
         if (isset(auth()->user()->id)) {

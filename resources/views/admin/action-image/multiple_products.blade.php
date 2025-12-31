@@ -2,7 +2,7 @@
 @section('admin-content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between mb-3">
-        <h4>Products Images</h4>
+        <h4>Multiply Product Images</h4>
   
     </div>
 
@@ -17,55 +17,53 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody>
-            @forelse ($products as $product)
-                <tr>
-                    <td>
-                       @php 
-                          $user = \App\Models\User::find($product->vendor_id);
-                       @endphp
-                        {{ $loop->iteration }}</td>
-                    <td>
-                    
-                    {{ $user?->company?->name }}  </td>
-                     <td>
-                    
-                    {{ $product?->name }}  </td>
-                    <td>
-                      {{ $user->email ?? 'N/A' }}      
-                    </td>
-                    <td>
-                         @php
+       <tbody>
+@forelse ($products as $product)
+    @php
+        $vendor = $product->vendor;
+        $company = $vendor?->company;
+        $firstImage = $product->gallery->first()?->image;
+    @endphp
 
-                           $gallery= $product->gallery->toArray(); 
-                           // echo "<pre>";
-                           // print_r($gallery[0]['image']); die;
-                         
-                          
-                        @endphp
-                        @if($gallery && isset($gallery['0']['image']))
-                            <img src="{{ asset('uploads/products/gallery/' . $gallery[0]['image']) }}" style="height:50px" alt="">
-                        @else
-                            <span>No Image</span>
-                        @endif 
-                    </td>
-                   
-                    <td>
-                        <label title="Active/Inactive" class="switch round_switch">
-                                                <input type="checkbox" id="id9" checked value="1">
-                                                <div class="slider round"></div>
-                                            </label>
+    <tr>
+        <td>{{ $loop->iteration }}</td>
 
-                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline-block;">
-                            @csrf @method('DELETE')
-                            <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            @empty
-                <tr><td colspan="5" class="text-center">No certificates found.</td></tr>
-            @endforelse
-        </tbody>
+        <td>{{ $company?->name ?? 'N/A' }}</td>
+
+        <td>{{ $product->name }}</td>
+
+        <td>{{ $vendor?->email ?? 'N/A' }}</td>
+
+        <td>
+            @if($firstImage)
+                <img src="{{ asset('uploads/products/gallery/' . $firstImage) }}"
+                     style="height:50px" alt="product image">
+            @else
+                <span>No Image</span>
+            @endif
+        </td>
+
+        <td>
+            <label title="Active/Inactive" class="switch round_switch">
+                <input type="checkbox" checked>
+                <div class="slider round"></div>
+            </label>
+
+            <form action="{{ route('admin.products.destroy', $product->id) }}"
+                  method="POST" style="display:inline-block;">
+                @csrf @method('DELETE')
+                <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">
+                    Delete
+                </button>
+            </form>
+        </td>
+    </tr>
+@empty
+    <tr>
+        <td colspan="6" class="text-center">No products found.</td>
+    </tr>
+@endforelse
+</tbody>
     </table>
 
     

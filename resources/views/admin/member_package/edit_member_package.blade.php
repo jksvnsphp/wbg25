@@ -85,6 +85,28 @@
                                     @enderror
                                 </div>
                             </div>
+							
+							<div class="col-md-4">
+                                <div class="form-group">
+							
+        <label>Package Image</label>
+        <input type="file" name="image" class="form-control">
+    </div>
+
+    @if($package->image)
+        <div class="mt-2">
+            <img src="{{ asset('uploads/member_packages/'.$package->image) }}"
+                 width="150"
+                 alt="Package Image">
+        </div>
+    @endif
+	</div>						
+							
+							
+							
+							
+							
+							
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="status" class="form-label">Status</label>

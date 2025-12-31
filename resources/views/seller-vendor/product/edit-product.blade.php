@@ -515,36 +515,61 @@
                                                             </div>
                                                         </div>
                                                         <!-- Shipping Table -->
-                                                        <div class="col-md-12 mb-3">
-                                                            <h6 class="fs-6 fw-bold py-3 pb-1">Set Region Or Country</h6>
-                                                            <div class="table-responsive">
-                                                                <table class="table table-bordered table-striped">
-                                                                    <thead>
-                                                                        <tr class="align-middle">
-                                                                            <th class="col-4">Region</th>
-                                                                            <th class="col-4">Country</th>
-                                                                            <th class="col-3">Shipping Cost</th>
-                                                                            <th class="col">Delete</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody id="expeditedTableBody">
-                                                                        <tr>
-                                                                            <td colspan="4">
-                                                                                <button type="button"
-                                                                                    class="btnsem d-flex align-items-center"
-                                                                                    onclick="addRow('expeditedTableBody','expedited')">
-                                                                                    <span class="plus-circle"><i
-                                                                                            class="fa fa-plus"
-                                                                                            aria-hidden="true"></i></span>
-                                                                                    <span class="btntext">Add Region /
-                                                                                        Country</span>
-                                                                                </button>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
+                                                      <div class="row mt-3">
+    <!-- LEFT: Shipping Table -->
+    <div class="col-md-8">
+        <h6 class="fs-6 fw-bold py-3 pb-1">Set Region Or Country</h6>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr class="align-middle">
+                        <th class="col-4">Region</th>
+                        <th class="col-4">Country</th>
+                        <th class="col-3">Shipping Cost</th>
+                        <th class="col">Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="expeditedTableBody">
+                    <tr>
+                        <td colspan="4">
+                            <button type="button"
+                                class="btnsem d-flex align-items-center"
+                                onclick="addRow('expeditedTableBody','expedited')">
+                                <span class="plus-circle">
+                                    <i class="fa fa-plus"></i>
+                                </span>
+                                <span class="btntext">Add Region / Country</span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- RIGHT: VIDEO GUIDE -->
+    <div class="col-md-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <h6 class="fw-bold mb-3">How to set Shipping Cost</h6>
+
+                <div class="ratio ratio-16x9">
+                    <iframe 
+                        src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+                        title="Shipping Cost Guide"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+
+                <small class="text-muted d-block mt-2">
+                    Watch this video to understand region & country based shipping 
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
 
                                                         <style>
                                                             .plus-circle {

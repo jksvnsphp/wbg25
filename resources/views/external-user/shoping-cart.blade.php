@@ -59,7 +59,7 @@
                                                 }
                                                 $seller_name = $company->name;
                                             }
-                                            if (isset($cart->yourShippingCost['country'])) {
+                                            if (isset($cart->yourShippingCost['country']) && isset($cart->yourShippingCost['shipping_cost'])    ) {
                                                 $seller_shipping_cost = $cart->yourShippingCost['shipping_cost'];
                                                 $totalShippingCost += $cart->yourShippingCost['shipping_cost'];
                                             }

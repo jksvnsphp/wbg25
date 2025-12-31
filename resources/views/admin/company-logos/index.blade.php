@@ -31,7 +31,9 @@
                 </td>
                 <td>
                      <label title="Active/Inactive" class="switch round_switch">
-                                                <input type="checkbox" id="id9" checked value="1">
+                                                 
+                                                 <input @checked($company->status) type="checkbox"
+                                                        id="id{{ $company->id }}">
                                                 <div class="slider round"></div>
                                             </label>
                     <!-- <a href="{{ route('admin.company-logos.edit', $company->id) }}" class="btn btn-sm btn-primary">Edit</a> -->
@@ -68,7 +70,7 @@
                 var id = $(this).attr('id').replace('id', '');
                 $.ajax({
                     type: 'POST',
-                    url: '{{ route('admin.status.tender.category') }}',
+                    url: '{{ route('admin.company_logo.change_status') }}',
                     data: {
                         id: id,
                         status: status,

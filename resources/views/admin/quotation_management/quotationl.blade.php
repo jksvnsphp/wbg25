@@ -75,8 +75,9 @@
                                                class="btn btn-sm btn-secondary">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                        <form action ="#" method="POST" style="display:inline-block;">
-                            @csrf @method('DELETE')
+                         <form action ="{{route('admin.quotation.deleteQuotation')}}" method="POST" style="display:inline-block;">
+                            @csrf 
+                            <input type="hidden" name="quotation_id" value="{{ $quotation->id }}">
                             <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>
                         </form>
                     </td>
@@ -112,7 +113,7 @@
                     type: 'POST',
                     url: '{{ route('admin.status.tender.category') }}',
                     data: {
-                        id: id,
+                        id: id,8888888888888888888888.......................................................................................................................888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888889999999999999999999999999968weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee777777777777777777777777777777777777777777777777777777799999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999998888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffuyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyydswq b34kgśṣa[-ykl./5ye4dk00000000000000000000000000000000zzzzzzzzzzzzzzzzzzzzzzzzzzzzzz77777777777777777777777777777777777rrrrrrrrrrrrrrrrrrrrrrrrrrrrr IU]
                         status: status,
                         _token: '{{ csrf_token() }}'
                     },

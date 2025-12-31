@@ -10,8 +10,11 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-use App\Services\TwilioService;
-
+use App\Services\TwilioService; 
+use Illuminate\Support\Facades\Password;
+use App\Mail\PasswordResetMail;
+Use DB;
+ 
 class AuthController extends Controller
 {
     //
@@ -21,13 +24,28 @@ class AuthController extends Controller
     {
         $this->twilio = $twilio;
     }
-
-    public function showLogin()
+     public function sendSms($to, $message)
     {
+        $client = new \Twilio\Rest\Client($this->sid, $this->token);
+
+        return $client->messages->create(
+            $to,
+            [
+                "from" => "WBG24",   // 👈 YOUR SENDER NAME HERE
+                "body" => $message
+            ]
+        );
+    }
+
+    public function showLogin(Request $request)
+    {
+       
+
         return view('external-user.login');
     }
-    public function forgetPassword()
+    public function forgetPassword(Request $request)
     {
+         
         return view('external-user.forget-password');
     }
 
@@ -306,4 +324,24 @@ class AuthController extends Controller
 
         return redirect()->route('home');
     }
+
+
+ public function sendPasswordResetLink(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email|exists:users,email',
+    ]);
+
+    // Delete old token for same email
+    DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+    // Trigger password reset email
+    $status =Password::sendResetLink($request->only('email'));
+
+    return $status === Password::RESET_LINK_SENT
+        ? back()->with(['status' => __($status)])
+        : back()->withErrors(['email' => __($status)]);
+}
+
+
 }

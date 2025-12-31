@@ -198,9 +198,36 @@ class SellerProductController extends Controller
                     'text' => $region->name,
                 ];
             });
-            $product = products::where('id', $product_id)->where('vendor_id', $vendor_id)->with('parentcategory', 'category', 'childcategory', 'endchildcategory', 'gallery', 'video', 'product_attributes', 'product_setting', 'rate_table.shipping_rate_costs.shipping_regions')->first();
+            $product = products::where('id', $product_id)
+    ->where('vendor_id', $vendor_id)
+    ->with(
+        'parentcategory',
+        'category',
+        'childcategory',
+        'endchildcategory',
+        'gallery',
+        'video',
+        'product_attributes',
+        'product_setting',
+        'rate_table.shipping_rate_costs.shipping_regions'
+    )
+    ->first();
+
+if (!$product) {
+    return redirect()->back()->with([
+        'alert-type' => 'error',
+        'message' => 'Product not found!'
+    ]);
+}
 
             if ($product) {
+				
+				$expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
+
+                 $product->expiry_date = $expiryDate;
+                 $product->isExpired   = now()->greaterThanOrEqualTo($expiryDate);
+				
+				
                 // dd($product->rate_table->toArray());
                 $searchedPath = '';
                 $searched_cat = '';
@@ -352,7 +379,9 @@ class SellerProductController extends Controller
                     'attribute' => 'nullable|array',
                     'attribute.*' => 'nullable',
                     'item_description' => 'nullable|string',
-                    'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
+                    'images'   => 'required|array|min:1',
+                    'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048|dimensions:min_width=500,min_height=500',
+
                     'video' => 'nullable|mimetypes:video/mp4,video/mpeg,video/quicktime',
 
                     'ispcs' => 'array',
@@ -405,6 +434,12 @@ class SellerProductController extends Controller
 
                     'endchild_category_id.integer' => 'The end child category must be a valid integer.',
                     'endchild_category_id.exists' => 'The selected end child category does not exist in the database.',
+					'images.required' => 'At least one product image is required.',
+                    'images.min' => 'Please upload at least one product image.',
+                    'images.*.image' => 'Each uploaded file must be an image.',
+                    'images.*.mimes' => 'Only jpeg, png, jpg, gif, or svg images are allowed.',
+                    'images.*.dimensions' => 'Each image must be at least 500 × 500 pixels.',
+					
                 ]
             );
             if ($validate->fails()) {
@@ -1047,6 +1082,9 @@ class SellerProductController extends Controller
                 $product = products::where('id', $request->product_id)->first();
 
                 if ($product) {
+					
+					$expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
+                   $isExpired  = now()->greaterThanOrEqualTo($expiryDate);
 
                     $rateTableId = null;
                     if ($request->shipping_partner != "") {
@@ -1110,8 +1148,11 @@ class SellerProductController extends Controller
                         $old_shipping_rate->delete();
                     }
 
-
-                    $product->name = $request->item_title;
+                     if ($isExpired) {
+// Restart duration from today
+                     $product->created_at = now();
+                      }
+				$product->name = $request->item_title;
                     $product->slug = $this->createUniqueSlug($request->item_title);
                     $product->description = $request->item_description;
                     $product->price = isset($request->cost[0]) ? $request->cost[0] : 0;
@@ -1277,7 +1318,9 @@ class SellerProductController extends Controller
             return response()->json(['error' => ['message' => "Unauthrized access this page!"]], 422);
         }
     }
-    public function updateProductMultiply(Request $request)
+    
+	
+	public function updateProductMultiply(Request $request)
     {
         // dd($request->all());
         if (isset(auth()->user()->id)) {

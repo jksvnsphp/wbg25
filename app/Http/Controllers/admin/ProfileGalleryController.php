@@ -11,12 +11,18 @@ class ProfileGalleryController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-         $users = User::where('account_type', 'seller')
-                        ->latest()
-                        ->paginate(10); 
-        return view('admin.profile-galleries.index', compact('users'));
-    }
+{
+    $users = User::where('account_type', 'seller')
+        ->whereHas('company', function ($q) {
+            $q->whereNotNull('image_1')
+              ->where('image_1', '!=', '');
+        })
+        ->latest()
+        ->paginate(10);
+
+    return view('admin.profile-galleries.index', compact('users'));
+}
+
 
     /**
      * Show the form for creating a new resource.

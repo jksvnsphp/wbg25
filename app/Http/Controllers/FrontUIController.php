@@ -441,7 +441,7 @@ class FrontUIController extends Controller
                 $q->where('business_type', $request->business_type);
             });
         }
-        $pageItem = 1;
+        $pageItem = 4;
         if ($request->has('pageItem') && $request->filled('pageItem')) {
             $pageItem = $request->pageItem ?? 4;
         }

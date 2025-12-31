@@ -13,6 +13,7 @@ class Coupon extends Model
         'name',
         'description',
         'discount',
+        'percent_type',
         'start_date',
         'end_date',
     ];

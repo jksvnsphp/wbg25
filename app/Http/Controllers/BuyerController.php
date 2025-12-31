@@ -26,6 +26,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SellerUpgradeSuccessMail;
 
 
 
@@ -357,6 +359,15 @@ class BuyerController extends Controller
                     $company->category_2 = $request->company_sub_category;
                     $company->save();
                 }
+
+                // Mail::send('mails.buyer-to-seller-upgrade-success', [
+                //     'name' => $user->first_name,
+                //     'package' => $package->name ?? 'Basic',
+                //     'dashboardLink' => route('seller.dashboard')
+                // ], function ($message) use ($user) {
+                //     $message->to($user->email)
+                //             ->subject('Your Seller Upgrade is Successful – Start Selling Today!');
+                // });
                 return response()->json(['status' => true, 'url' => route('buyer-upgrade.seller.pay')]);
             } else {
                 return response()->json(['status' => false, 'message' => 'This Buyer account could not found.']);
@@ -488,6 +499,15 @@ class BuyerController extends Controller
                 if (isset($response['id']) && $response['id'] != null) {
                     foreach ($response['links'] as $link) {
                         if ($link['rel'] == 'approve') {
+							
+							try {
+		$company = $user->company ?? null;						
+        Mail::to($user->email)->send(new SellerUpgradeSuccessMail($user, $memberPackage->name ?? 'Seller', route('seller.dashboard')));
+    } catch (\Exception $e) {
+        \Log::error('Failed to send seller upgrade email: ' . $e->getMessage());
+    }
+							
+							
                             return redirect()->away($link['href']);
                         }
                     }
@@ -518,6 +538,12 @@ class BuyerController extends Controller
                 $this->functionHandleBusinessSymbole($memberPackage->type, $user->id);
                 session()->flash('success', 'Congratulation, Your account has been successfully upgraded buyer to seller!');
                 $url = route('seller.success.gallery');
+				try {
+					$company = $user->company ?? null;
+        Mail::to($user->email)->send(new SellerUpgradeSuccessMail($user, $memberPackage->name ?? 'Seller', route('seller.dashboard')));
+    } catch (\Exception $e) {
+        \Log::error('Failed to send seller upgrade email: ' . $e->getMessage());
+    }
                 return redirect($url);
             }
         } else {

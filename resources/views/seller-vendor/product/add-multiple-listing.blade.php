@@ -1,6 +1,7 @@
 @extends('seller-vendor.seller-frame')
 
 @section('seller-main-content')
+
     <style>
         #imagePreview .preview-img {
             position: relative;
@@ -281,7 +282,7 @@
                                                         </div>
                                                         <!-- Shipping Table -->
                                                         <div class="col-md-12 mb-3">
-                                                            <h6 class="fs-6 fw-bold py-3 pb-1">Set Region Or Country</h6>
+                                                            <h6 class="fs-6 fw-bold py-3 pb-1">Shipping Cost</h6>
                                                             <div class="table-responsive">
                                                                 <table class="table table-bordered table-striped">
                                                                     <thead>

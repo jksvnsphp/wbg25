@@ -17,95 +17,120 @@ class OfferTenderController extends Controller
 {
     //
     public function sendOffer(Request $request)
-    {
-        if (isset(auth()->user()->id)) {
-            if (isset($request->offer_price) && $request->offer_price > 0) {
-                $validate = Validator::make($request->all(), [
-                    'tender_id' => 'required|exists:tenders,id',
-                    'offer_price' => 'required|numeric|min:1',
-                ]);
-                if ($validate->fails()) {
-                    return response()->json(['status' => false, 'message' => 'Validation failed!', 'error' => $validate->errors()], 200);
-                } else {
-                    $tender = Tender::where('id', $request->tender_id)->first();
-                    if ($tender) {
-                        if ($tender->vendor_id == Auth::user()->id) {
-                            return response()->json(['status' => false, 'message' => 'You are the owner of this tender'], 200);
-                        }
-                        $offer = OfferTender::where('tender_id', $request->tender_id)->where('user_id', Auth::user()->id)->first();
-                        if (!$offer) {
-                            OfferTender::create([
-                                'user_id' => Auth::user()->id,
-                                'vendor_id' => $tender->vendor_id,
-                                'tender_id' => $request->tender_id,
-                                'offer_price' => $request->offer_price,
-                                'status' => 'pending',
-                            ]);
-                            // send mail to seller
-                            $seller = User::where('id', $tender->vendor_id)->first();
-                            $sellerMail = $seller->email;
-                            $sellerName = $seller->first_name;
-                            $offerPrice = $request->offer_price;
-                            $tenderPrice = $tender->price;
-                            $tenderName = $tender->name;
-                            $seller_subject = "New Offer on $tenderName";
-                            $seller_message = 'You have a new offer on your tender' . $tender->title;
-                            $image = asset('uploads/tender/' . $tender->image_1);
-                            $btnText = 'View Offer';
-                            $btnUrl = route('show.tender', $tender->slug);
-                            $mailData = [
-                                'seller_name' => $sellerName,
-                                'seller_subject' => $seller_subject,
-                                'seller_message' => $seller_message,
-                                'image' => $image,
-                                'btnText' => $btnText,
-                                'btnUrl' => $btnUrl,
-                                'tenderName' => $tenderName,
-                                'offer_price' => $offerPrice,
-                                'tenderPrice' => $tenderPrice,
-                                'user_name' => auth()->user()->first_name . ' ' . auth()->user()->last_name,
-                                'user_email' => auth()->user()->email,
-                            ];
-                            Mail::send('mail.tender-offer', $mailData, function ($message) use ($sellerMail, $seller_subject) {
-                                $message->to($sellerMail);
-                                $message->subject($seller_subject);
-                            });
-                            session()->flash('success', 'Congratulation, Your offer on tender has been successfully sent!');
-                            if (auth()->user()->account_type == "seller") {
-                                $rurl = route('seller.success.offer.tender', $tender->slug);
-                            } else {
-                                $rurl = route('buyer.success.offer.tender', $tender->slug);
-                            }
-                            return response()->json([
-                                'status' => true,
-                                'message' => 'Your offer has been submitted successfully!',
-                                'url' => $rurl
-                            ], 200);
-                        } else {
-                            return response()->json(['status' => false, 'message' => 'You have already submitted
-                            an offer for this tender'], 200);
-                        }
-                    } else {
-                        return response()->json([
-                            'status' => false,
-                            'message' => 'Tender not found!',
-                        ], 200);
-                    }
-                }
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'You are not allowed to submit an offer for this tender. Offer price should be greater than 0',
-                ], 200);
-            }
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'You must be logged in to submit an offer!',
-                'code' => 403
-            ], 200);
-        }
+{
+    if (!auth()->check()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'You must be logged in to submit an offer!',
+            'code' => 403
+        ], 200);
     }
+
+    if (!isset($request->offer_price) || $request->offer_price <= 0) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Offer price should be greater than 0',
+        ], 200);
+    }
+
+    $validate = Validator::make($request->all(), [
+        'tender_id'   => 'required|exists:tenders,id',
+        'offer_price' => 'required|numeric|min:1',
+    ]);
+
+    if ($validate->fails()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Validation failed!',
+            'error' => $validate->errors()
+        ], 200);
+    }
+
+    $tender = Tender::find($request->tender_id);
+
+    if (!$tender) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Tender not found!',
+        ], 200);
+    }
+
+    if ($tender->vendor_id == auth()->id()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'You are the owner of this tender'
+        ], 200);
+    }
+
+    $existingOffer = OfferTender::where('tender_id', $request->tender_id)
+        ->where('user_id', auth()->id())
+        ->first();
+
+    if ($existingOffer) {
+        return response()->json([
+            'status' => false,
+            'message' => 'You have already submitted an offer for this tender'
+        ], 200);
+    }
+
+    // Create offer
+    OfferTender::create([
+        'user_id'     => auth()->id(),
+        'vendor_id'   => $tender->vendor_id,
+        'tender_id'   => $tender->id,
+        'offer_price' => $request->offer_price,
+        'status'      => 'pending',
+    ]);
+
+    // Seller details
+    $seller = User::find($tender->vendor_id);
+
+    /** ===============================
+     *  SEND MAIL TO SELLER
+     *  =============================== */
+    Mail::send('mails.tender-offer-seller', [
+        'seller_name'     => $seller->first_name,
+        'tender_id'       => $tender->id,
+        'tender_title'    => $tender->name,
+        'buyer_name'      => auth()->user()->first_name,
+        'offer_price'     => number_format($request->offer_price, 2),
+        'submission_date' => now()->format('d M Y'),
+        'dashboard_link'  => route('seller.tenders.offers'),
+    ], function ($message) use ($seller) {
+        $message->to($seller->email)
+                ->subject('New Offer Received on Your Tender!');
+    });
+
+    /** ===============================
+     *  SEND MAIL TO BUYER (FIXED)
+     *  =============================== */
+    $buyerEmail = auth()->user()->email;
+
+    Mail::send('mails.tender-offer-buyer', [
+        'buyer_name'      => auth()->user()->first_name,
+        'seller_name'     => $seller->first_name,
+        'tender_id'       => $tender->id,
+        'tender_title'    => $tender->name,
+        'offer_price'     => number_format($request->offer_price, 2),
+        'submission_date' => now()->format('d M Y'),
+        'dashboard_link'  => route('buyer.tenders.received'),
+    ], function ($message) use ($buyerEmail) {
+        $message->to($buyerEmail)
+                ->subject('Your Offer Has Been Submitted Successfully!');
+    });
+
+    session()->flash('success', 'Congratulations, your offer has been successfully sent!');
+
+    $redirectUrl = auth()->user()->account_type === 'seller'
+        ? route('seller.success.offer.tender', $tender->slug)
+        : route('buyer.success.offer.tender', $tender->slug);
+
+    return response()->json([
+        'status'  => true,
+        'message' => 'Your offer has been submitted successfully!',
+        'url'     => $redirectUrl
+    ], 200);
+}
 
     public function offeredTender()
     {
@@ -284,6 +309,58 @@ class OfferTenderController extends Controller
                     $otherTender->status = "reject";
                     $otherTender->save();
                 }
+                try {
+    $buyer = User::find($tender->user_id);
+    $seller = User::find($tender->vendor_id);
+    $tenderData = Tender::find($tender->tender_id);
+
+    // Send seller confirmation
+    Mail::send('mails.tender-deal-seller', [
+        'seller_name' => $seller->first_name,
+        'buyer_name' => $buyer->first_name,
+        'tender_id' => $tenderData->id,
+        'tender_title' => $tenderData->name,
+        'final_price' => number_format($tender->offer_price, 2),
+        'confirmation_date' => now()->format('d M Y'),
+        'dashboard_link' => route('seller.tenders.deal', $tenderData->slug),
+    ], function ($message) use ($seller) {
+        $message->to($seller->email)
+                ->subject('🎉 Your Deal is Confirmed – Tender RFQ Finalized!');
+    });
+
+    // Send buyer confirmation
+    Mail::send('mails.tender-deal-buyer', [
+        'buyer_name' => $buyer->first_name,
+        'seller_name' => $seller->first_name,
+        'tender_id' => $tenderData->id,
+        'tender_title' => $tenderData->name,
+        'final_price' => number_format($tender->offer_price, 2),
+        'confirmation_date' => now()->format('d M Y'),
+        'dashboard_link' => route('buyer.tenders.deal', $tenderData->slug),
+    ], function ($message) use ($buyer) {
+        $message->to($buyer->email)
+                ->subject('✅ Deal Confirmed – Tender RFQ Successfully Finalized!');
+    });
+
+    // Send general update to both
+    Mail::send('mails.tender-deal-update', [
+        'buyer_name' => $buyer->first_name,
+        'seller_name' => $seller->first_name,
+        'tender_id' => $tenderData->id,
+        'tender_title' => $tenderData->name,
+        'final_price' => number_format($tender->offer_price, 2),
+        'confirmation_date' => now()->format('d M Y'),
+        'dashboard_link' => route('buyer.tenders.deal', $tenderData->slug),
+    ], function ($message) use ($buyer, $seller) {
+        $message->to([$buyer->email, $seller->email])
+                ->subject('Deal Finalized – Next Steps for Tender RFQ!');
+    });
+
+} catch (\Exception $e) {
+    \Log::error('Deal Confirmation Email Failed: '.$e->getMessage());
+}
+
+
                 return response()->json(['success' => true, 'message' => 'Successfully accept your tender offer!']);
             } else {
                 return response()->json(['success' => false,  'message' => 'You are not authorized to accept this tender!']);
@@ -293,43 +370,63 @@ class OfferTenderController extends Controller
         }
     }
 
-    public function acceptCounterOfferTender(Request $request)
-    {
-        if (isset(auth()->user()->id)) {
-            $tender = OfferTender::where('id', $request->offer_id)->where('tender_id', $request->tender_id)->first();
-            if (isset($tender->user_id) && $tender->user_id == auth()->user()->id) {
-                $counterOffer = CounterOfferTender::where('id', $request->counter_id)->first();
-                if ($counterOffer->status == 'pending') {
-                    $counterOffer->status = "accept";
-                    $counterOffer->save();
-                    
-                    $tenderMain=Tender::where('id',$tender->tender_id)->first();
-                    $tenderMain->isDeal=1;
-                    $tenderMain->save();
-                    
-                    $tender->status = "accept";
-                    $tender->counter_price = $counterOffer->offer_price;
-                    $tender->save();
-                    
-                    $otherTenders = OfferTender::where('id', '!=', $tender->id)->where('tender_id', $request->tender_id)->where('vendor_id', auth()->user()->id)->get();
-                    foreach ($otherTenders as $otherTender) {
-                        $otherTender->status = "reject";
-                        $otherTender->save();
-                        $counterOffers = CounterOfferTender::where('tender_id', $otherTender->tender_id)->get();
-                        foreach ($counterOffers ?? [] as $cOffer) {
-                            $cOffer->delete();
-                        }
-                    }
-                }
-                
-                return response()->json(['success' => true, 'message' => 'Successfully accept your tender offer!']);
-            } else {
-                return response()->json(['success' => false,  'message' => 'You are not authorized to delete this quote!']);
-            }
-        } else {
-            return response()->json(['success' => false,  'message' => 'You must be logged in to access this page!']);
-        }
+  public function acceptCounterOfferTender(Request $request)
+{
+    if (!auth()->check()) {
+        return response()->json(['success' => false, 'message' => 'You must be logged in to access this page!']);
     }
+
+    $tenderOffer = OfferTender::where('id', $request->offer_id)
+        ->where('tender_id', $request->tender_id)
+        ->first();
+
+    if (!$tenderOffer || $tenderOffer->user_id != auth()->id()) {
+        return response()->json(['success' => false, 'message' => 'Unauthorized action.']);
+    }
+
+    $counterOffer = CounterOfferTender::where('id', $request->counter_id)->first();
+    if (!$counterOffer || $counterOffer->status != 'pending') {
+        return response()->json(['success' => false, 'message' => 'Invalid or already processed counter offer.']);
+    }
+
+    // ✅ Update statuses
+    $counterOffer->status = 'accept';
+    $counterOffer->save();
+
+    $tenderOffer->status = 'accept';
+    $tenderOffer->counter_price = $counterOffer->offer_price;
+    $tenderOffer->save();
+
+    $tender = Tender::find($tenderOffer->tender_id);
+    $tender->isDeal = 1;
+    $tender->save();
+
+    // Fetch parties
+    $buyer = User::find($tenderOffer->user_id);
+    $seller = User::find($tenderOffer->vendor_id);
+
+    // ✅ Send notification email to both
+    try {
+        Mail::send('mails.tender-counter-offer-update', [
+            'buyer_name' => $buyer->first_name,
+            'seller_name' => $seller->first_name,
+            'tender_id' => $tender->id,
+            'tender_title' => $tender->name,
+            'counter_price' => number_format($counterOffer->offer_price, 2),
+            'status' => 'Accepted',
+            'updated_at' => now()->format('d M Y'),
+            'dashboard_link' => route('buyer.tenders.deal', $tender->slug)
+        ], function ($message) use ($buyer, $seller) {
+            $message->to([$buyer->email, $seller->email])
+                    ->subject('✅ Counter Offer Accepted – Tender Deal Confirmed!');
+        });
+    } catch (\Exception $e) {
+        \Log::error('Counter Offer Accept Email Failed: ' . $e->getMessage());
+    }
+
+    return response()->json(['success' => true, 'message' => 'Counter offer accepted and email notifications sent.']);
+}
+
     
     public function rejectOfferTenderBySeller(Request $request)
     {
@@ -353,25 +450,57 @@ class OfferTenderController extends Controller
 
 
     public function rejectCounterOfferTender(Request $request)
-    {
-        if (isset(auth()->user()->id)) {
-            $tender = OfferTender::where('id', $request->offer_id)->where('tender_id', $request->tender_id)->first();
-            if (isset($tender->user_id) && $tender->user_id == auth()->user()->id) {
-                $counterOffer = CounterOfferTender::where('id', $request->counter_id)->first();
-                if ($counterOffer->status == 'pending') {
-                    $counterOffer->status = "reject";
-                    $counterOffer->save();
-                    $tender->status = "reject";
-                    $tender->save();
-                }
-                return response()->json(['success' => true, 'message' => 'Successfully reject your tender offer!']);
-            } else {
-                return response()->json(['success' => false,  'message' => 'You are not authorized to delete this quote!']);
-            }
-        } else {
-            return response()->json(['success' => false,  'message' => 'You must be logged in to access this page!']);
-        }
+{
+    if (!auth()->check()) {
+        return response()->json(['success' => false, 'message' => 'You must be logged in to access this page!']);
     }
+
+    $tenderOffer = OfferTender::where('id', $request->offer_id)
+        ->where('tender_id', $request->tender_id)
+        ->first();
+
+    if (!$tenderOffer || $tenderOffer->user_id != auth()->id()) {
+        return response()->json(['success' => false, 'message' => 'Unauthorized action.']);
+    }
+
+    $counterOffer = CounterOfferTender::where('id', $request->counter_id)->first();
+    if (!$counterOffer || $counterOffer->status != 'pending') {
+        return response()->json(['success' => false, 'message' => 'Invalid or already processed counter offer.']);
+    }
+
+    // ✅ Update statuses
+    $counterOffer->status = 'reject';
+    $counterOffer->save();
+
+    $tenderOffer->status = 'reject';
+    $tenderOffer->save();
+
+    $tender = Tender::find($tenderOffer->tender_id);
+    $buyer = User::find($tenderOffer->user_id);
+    $seller = User::find($tenderOffer->vendor_id);
+
+    // ✅ Send notification email to both
+    try {
+        Mail::send('mails.tender-counter-offer-update', [
+            'buyer_name' => $buyer->first_name,
+            'seller_name' => $seller->first_name,
+            'tender_id' => $tender->id,
+            'tender_title' => $tender->name,
+            'counter_price' => number_format($counterOffer->offer_price, 2),
+            'status' => 'Rejected',
+            'updated_at' => now()->format('d M Y'),
+            'dashboard_link' => route('buyer.tenders.received', $tender->slug)
+        ], function ($message) use ($buyer, $seller) {
+            $message->to([$buyer->email, $seller->email])
+                    ->subject('❌ Counter Offer Rejected – Tender RFQ Update');
+        });
+    } catch (\Exception $e) {
+        \Log::error('Counter Offer Reject Email Failed: ' . $e->getMessage());
+    }
+
+    return response()->json(['success' => true, 'message' => 'Counter offer rejected and notifications sent.']);
+}
+
 
     public function sendCounterOfferTender(Request $request)
     {
@@ -398,6 +527,49 @@ class OfferTenderController extends Controller
                     $checkCountForUser->offer_price = $request->counter_price;
                     $checkCountForUser->status = 'pending';
                     $checkCountForUser->save();
+                    try {
+         //send mail to buyer and seller
+            $buyer = User::find($tender->user_id);
+            $seller = User::find($tender->vendor_id);
+            $counterOffer = CounterOfferTender::where('offer_id', $tender->id   )->where('user_id', $tender->user_id)->first(); 
+            $originalPrice = $tender->offer_price;
+            $counterPrice = $counterOffer->offer_price;
+
+// Send to Seller (confirmation)
+Mail::send('mails.tender-counter-offer-seller', [
+    'seller_name' => $seller->first_name,
+    'tender_id' => $tender->id,
+    'tender_title' => $tender->name,
+    'buyer_name' => $buyer->first_name,
+    'original_price' => number_format($originalPrice, 2),
+    'counter_price' => number_format($counterPrice, 2),
+    'submission_date' => now()->format('d M Y'),
+    'dashboard_link' => route('seller.tenders.offers'),
+], function ($message) use ($seller) {
+    $message->to($seller->email)
+        ->subject('Your Counter Offer Has Been Sent Successfully!');
+});
+
+// Send to Buyer (notification)
+Mail::send('mails.tender-counter-offer-buyer', [
+    'buyer_name' => $buyer->first_name,
+    'seller_name' => $seller->first_name,
+    'tender_id' => $tender->id,
+    'tender_title' => $tender->name,
+    'original_price' => number_format($originalPrice, 2),
+    'counter_price' => number_format($counterPrice, 2),
+    'submission_date' => now()->format('d M Y'),
+    'dashboard_link' => route('buyer.tenders.received'),
+], function ($message) use ($buyer) {
+    $message->to($buyer->email)
+        ->subject('New Counter Offer Received for Your Tender/RFQ!');
+});
+
+               
+
+    } catch (\Exception $e) {
+        \Log::error('Counter Offer Reject Email Failed: ' . $e->getMessage());
+    }
                     return response()->json(['status' => true, 'message' => 'Counter offer sent successfully']);
                 } else {
                     return response()->json(['status' => false, 'message' => 'You are not authorized to send counter offer!']);

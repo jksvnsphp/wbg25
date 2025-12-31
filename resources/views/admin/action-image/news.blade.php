@@ -24,7 +24,7 @@
                        @php 
                         //echo "<pre>";    
                         //print_r($new->toArray()); die;
-                          $user = \App\Models\User::find($new->author_id);
+                          $user = \App\Models\User::find($new->vendor_id);
                        @endphp
                         {{ $loop->iteration }}</td>
                     <td>

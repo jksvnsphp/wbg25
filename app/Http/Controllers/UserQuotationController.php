@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
-
+//use Carbon\Carbon;
 class UserQuotationController extends Controller
 {
     private function createUniqueSlug($title, $id = null)
@@ -58,8 +58,40 @@ class UserQuotationController extends Controller
         return view('external-user.get-quote', compact('categories'));
     }
     ///getAllQuotePage
-    
     public function editQuotation($quotation_id)
+{
+    $quotation = Quotation::where('id', $quotation_id)
+        ->where('user_id', auth()->id())
+        ->first();
+
+    if (!$quotation) {
+        return back()->with(['alert-type' => 'error', 'message' => 'Quotation not found!']);
+    }
+
+    // Check if expired
+    $expiryDate = Carbon::parse($quotation->created_at)->addDays($quotation->duration);
+    if ($expiryDate->isPast()) {
+        // Relist quotation from today
+        $quotation->created_at = Carbon::now();
+
+        // Optional: reset is_expired flag if exists
+        if (Schema::hasColumn('quotations', 'is_expired')) {
+            $quotation->is_expired = 0;
+        }
+
+        $quotation->save();
+    }
+
+    $categories = CustomeCategory::where('status', 1)
+        ->where('deleted', '0')
+        ->where('parent_id', '0')
+        ->orderBy('category_name', 'ASC')
+        ->get();
+
+    return view('seller-vendor.quotations.edit-quotation', compact('quotation', 'categories'));
+}
+
+    public function editQuotationold($quotation_id)
     {
         $quotation = Quotation::where('id', $quotation_id)->where('user_id', Auth::user()->id)->first();
         $categories = CustomeCategory::where('status', 1)

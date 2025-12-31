@@ -35,7 +35,7 @@
                             }
                             $totalPrice += $cart->price;
                             if (isset($cart->yourShippingCost['country'])) {
-                                $totalShippingCost += $cart->yourShippingCost['shipping_cost'];
+                                $totalShippingCost += @$cart->yourShippingCost['shipping_cost'];
                             }
                         @endphp
                     @endforeach

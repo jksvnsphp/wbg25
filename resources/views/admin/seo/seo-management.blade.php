@@ -37,34 +37,46 @@
                                     </tr>
                                 </thead>
 
-                                <tbody>
-                                    <tr>
-                                        <td class="align-middle">1</td>
-                                        <td class="align-middle">
-                                        Home
-                                        </td>
-                                        <td class="align-middle">
-                                            <p style="width: 12rem;">
-                                            Manufacturerssss Suppliers Exporters Importers from the world s largest online B2B marketplace india
-                                            </p>
-                                        </td>
-                                        <td class="align-middle">
-                                            <p style="width: 10rem;">
-                                            B2B Marketplace india
-                                            </p>
-                                        </td>
-                                        <td class="align-middle">
-                                            <p style="width: 10rem;">
-                                            B2B Marketplace india
-                                            </p>
-                                        </td>
-                                        
-                                        <td class="align-middle">
-                                            <a href="" class="btn m-1 btn-sm btn-info"><i class="fas fa-edit    "></i></a>
-                                            <a href="" class="btn m-1 btn-sm btn-secondary"><i class="fas fa-eye    "></i></a>
-                                           
-                                        </td>
-                                    </tr>
+                                <tbody>@foreach($seo as $index => $item)
+<tr>
+    <td class="align-middle">{{ $index + 1 }}</td>
+
+    <td class="align-middle">
+        {{ ucfirst($item->page) }}
+    </td>
+
+    <td class="align-middle">
+        <p style="width: 12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            {{ $item->title }}
+        </p>
+    </td>
+
+    <td class="align-middle">
+        <p style="width: 10rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            {{ $item->keywords }}
+        </p>
+    </td>
+
+    <td class="align-middle">
+        <p style="width: 10rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            {{ $item->description }}
+        </p>
+    </td>
+
+    <td class="align-middle">
+        <a href="{{ route('admin.seo.edit', $item->id) }}" class="btn m-1 btn-sm btn-info">
+            <i class="fas fa-edit"></i>
+        </a>
+		<button class="btn btn-sm btn-danger deleteSeo" data-id="{{ $item->id }}">
+                        Delete
+                    </button>
+
+        <a href="{{ route('admin.seo.view', $item->id) }}" class="btn m-1 btn-sm btn-secondary">
+            <i class="fas fa-eye"></i>
+        </a>
+    </td>
+</tr>
+@endforeach
 
                                 </tbody>
                             </table>
@@ -77,27 +89,25 @@
     </div>
 @endsection
 @section('custom-js')
-    {{-- <script>
-        $(document).ready(function() {
-            $('input[type="checkbox"]').change(function() {
-                var status = this.checked ? 1 : 0;
-                var id = $(this).attr('id').replace('checkbox', '');
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('admin.update.status.user') }}',
-                    data: {
-                        id: id,
-                        status: status,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(data) {
-                        toastr.success('Status updated successfully');
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error updating status');
-                    }
-                });
-            });
+    
+	<script>
+$(document).on('click', '.deleteSeo', function(){
+    let id = $(this).data('id');
+
+    if(confirm('Are you sure to delete this?')) {
+		const deleteBaseUrl = "{{ url('admin.seo.delete', '0') }}";
+   const finalUrl = deleteBaseUrl.replace('0', id);
+        $.ajax({
+            url: "/admin/seo/delete/" + id,
+            type: 'DELETE',
+            data: { _token: '{{ csrf_token() }}' },
+            success: function(res){
+                alert(res.message);
+                location.reload();
+            }
         });
-    </script> --}}
+
+    }
+});
+</script>
 @endsection

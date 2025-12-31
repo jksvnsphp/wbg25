@@ -25,18 +25,27 @@
                 <div class="d-flex">
                     <h6 class="fs-5 text-light my-3 px-3 fw-bold">Registration form for seller</h6>
                 </div>
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
                 <form method="post" id="completeSeller" class="card rounded-0">
                     @csrf
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <input type="hidden" name="user_id" value="{{ $user->id }}">
+                               
                                 <div class="form-group mb-3">
                                     <label for="" class="form-label">Company Name <span
                                             class="text-danger fs-5">*</span></label>
                                     <input type="text" class="form-control" name="company_name"
-                                        value="{{ isset($user->company->name) ? $user->company->name : '' }}"
+                                        value="{{ old('company_name') }}"
                                         placeholder="Enter your company name" />
                                     @error('company_name')
                                         <span class="text-danger"> {{ $message }} </span>
@@ -51,7 +60,7 @@
                                             <label for="" class="form-label">Contact person <span
                                                     class="text-danger fs-5">*</span></label>
                                             <input type="text" id="first_name" name="first_name" class="form-control"
-                                                placeholder="Enter your first name" value="{{ $user->first_name }}" />
+                                                placeholder="Enter your  name" value="{{ session('name') }}" />
                                             @error('first_name')
                                                 <span class="text-danger"> {{ $message }} </span>
                                             @enderror
@@ -60,11 +69,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label for="" class="form-label"> </label>
-                                            <input type="text" name="last_name" class="form-control mt-2"
-                                                placeholder="Enter your last name" value="{{ $user->last_name }}" />
-                                            @error('last_name')
-                                                <span class="text-danger"> {{ $message }} </span>
-                                            @enderror
+ 
                                         </div>
                                     </div>
                                 </div>
@@ -73,8 +78,8 @@
                                 <div class="form-group mb-3">
                                     <label for="" class="form-label">Email Address <span
                                             class="text-danger fs-5">*</span></label>
-                                    <input type="email" name="email" value="{{ $user->email }}" class="form-control"
-                                        placeholder="Enter your email address" />
+                                    <input type="email" name="email" value="{{ old('email') }}" class="form-control"
+                                        placeholder="Enter your email address"   />
                                     @error('email')
                                         <span class="text-danger"> {{ $message }} </span>
                                     @enderror
@@ -85,11 +90,11 @@
                                     <label for="" class="form-label">Mobile <span
                                             class="text-danger fs-5">*</span></label>
                                     <input type="tel" name="phonenm" class="form-control" id="phonenm"
-                                        placeholder="Enter your mobile number" value="{{ $user->phone }}" />
+                                        placeholder="Enter your mobile number" value="{{ session('phone') }}" />
                                     @error('phone')
                                         <span class="text-danger"> {{ $message }} </span>
                                     @enderror
-                                    <input type="hidden" name="phone" id="phone" value="{{ $user->phone }}">
+                                    <input type="hidden" name="phone" id="phone" value="{{ session('phone') }}">
                                 </div>
                             </div>
                             <div class="col-md-6 position-relative">
@@ -157,11 +162,11 @@
                                         <option value="">Select number of employees</option>
                                         @foreach ($keyPersonnelRoles as $role)
                                             @php
-                                                $role_type = isset($user->company->key_personnal)
-                                                    ? $user->company->key_personnal
+                                                $role_type = session('number_of_employees')
+                                                    ? session('number_of_employees')
                                                     : '';
                                             @endphp
-                                            <option @selected($role == $role_type) value="{{ $role }}">
+                                            <option   value="{{ $role }}">
                                                 {{ $role }}</option>
                                         @endforeach
                                     </select>
@@ -186,8 +191,8 @@
                                         <option value="">Business Type</option>
                                         @foreach ($businessTypes as $type)
                                             @php
-                                                $business_type = isset($user->company->business_type)
-                                                    ? $user->company->business_type
+                                                $business_type =  session('business_type')
+                                                    ? session('business_type')
                                                     : '';
                                             @endphp
                                             <option @selected($type == $business_type) value="{{ $type }}">
@@ -217,13 +222,13 @@
                                             'Other',
                                         ];
                                         $selectedCertifications = [];
-                                        if (isset($user->company->certifications)) {
+                                       /* if (isset($user->company->certifications) session('business_type')) {
                                             $selectedCertifications = json_decode(
                                                 isset($user->company->certifications)
                                                     ? $user->company->certifications
                                                     : [],
                                             );
-                                        }
+                                        } */
                                     @endphp
                                     @foreach (array_chunk($certifications, 2) as $chunk)
                                         <div class="col-md-2">
@@ -248,11 +253,7 @@
                                             <label for="other_certificate" class="form-label mb-4">Other (please
                                                 specify)</label>
                                             @if (is_array($selectedCertifications) && $certification == 'Other' && in_array('Other', $selectedCertifications))
-                                                @if (isset($user->company->other_certificate) && json_decode($user->company->other_certificate) != null)
-                                                    @php
-                                                        $others = json_decode($user->company->other_certificate);
-                                                    @endphp
-                                                @endif
+                                               
                                             @endif
                                             <div class="row">
                                                 <div class="mb-3 col-md-3">
@@ -329,7 +330,7 @@
                                             <label for="" class="form-label">City <span
                                                     class="text-danger fs-5">*</span></label>
                                             <input type="text" list="cities" name="city" id="city"
-                                                class="form-control" value="{{ $user->city }}"
+                                                class="form-control" value="{{ session('city') ? session('city') : '' }}"
                                                 placeholder="Enter your city" />
                                             <datalist id="cities">
 
@@ -341,7 +342,7 @@
                                             <label for="" class="form-label">ZIP Code <span
                                                     class="text-danger fs-5">*</span></label>
                                             <input type="text" class="form-control" name="zip"
-                                                value="{{ $user->zip }}" placeholder="Enter Zip Code" />
+                                                value="{{ session('zip')}}" placeholder="Enter Zip Code" />
                                             @error('zip')
                                                 <span class="text-danger"> {{ $message }} </span>
                                             @enderror
@@ -351,7 +352,7 @@
                                         <div class="form-group mb-3">
                                             <label for="" class="form-label">Street</label>
                                             <input type="text" class="form-control" name="street"
-                                                value="{{ $user->street }}" placeholder="Enter street name" />
+                                                value="{{ session('street')?session('street'):'' }}" placeholder="Enter street name" />
                                             @error('street')
                                                 <span class="text-danger"> {{ $message }} </span>
                                             @enderror
@@ -363,7 +364,7 @@
                                         @endphp --}}
                                         <div class="form-group mb-3">
                                             <label for="" class="form-label">House Number</label>
-                                            <input type="number" name="house_no" value="{{ $user->house_no }}"
+                                            <input type="number" name="house_no" value="{{ session('house_no') }}"
                                                 class="form-control" placeholder="House Number" />
                                             @error('house_no')
                                                 <span class="text-danger"> {{ $message }} </span>
@@ -380,7 +381,7 @@
                                                         class="form-select">
                                                         <option value="">Select Category</option>
                                                         @foreach ($categories as $category)
-                                                            <option @selected($category->id == (isset($user->company->category_1) ? $user->company->category_1 : ''))
+                                                            <option @selected($category->id == session('company_category') ? session('company_category') : ''))
                                                                 value="{{ $category->id }}">
                                                                 {{ $category->category_name }}
                                                             </option>
@@ -393,7 +394,7 @@
                                                     <label for="subCategorySelect" class="form-label">Sub Category
                                                     </label>
                                                     <select
-                                                        value="{{ isset($user->company->category_2) ? $user->company->category_2 : '' }}"
+                                                        value="{{ session('company_sub_category') ? session('company_sub_category') : '' }}"
                                                         name="company_sub_category" id="subCategorySelect"
                                                         class="form-select">
                                                         <option value="">Select Subcategory</option>
@@ -441,7 +442,7 @@
                             <div class="input-group w-100 mb-3">
                                 <input type="text" class="form-control" placeholder="Enter your phone number.."
                                     name="phone" id="phone2" />
-                                <button class="input-group-btn btn btn-primary" id="verifybtn">Verify</button>
+                                <button class="input-group-btn btn btn-primary" id="verifybtn">Send OTP</button>
                             </div>
                         </div>
                     </div>
@@ -460,7 +461,7 @@
                                 oninput="moveToNext(this, null)" required />
                         </div>
                         <div class="d-flex flex-column align-items-center justify-content-center">
-                            <small class="text-success text-center py-2">Testing Code 12345</small>
+                            <!-- <small class="text-success text-center py-2">Testing Code 12345</small> -->
                             <button type="button" class="btn btn-primary my-4" onclick="validateOTP()">
                                 Validate Code
                             </button>
@@ -498,7 +499,7 @@
         function startTimer() {
             $('#resendOtpContainer').addClass('d-none'); // Hide Resend OTP initially
             $('#timerText').removeClass('d-none'); // Show the timer text
-            $('#verifybtn').attr('disabled', true); // Disable Verify button
+            //$('#verifybtn').attr('disabled', true); // Disable Verify button
             timerValue = 30;
             $('#timer').text(timerValue);
 
@@ -565,7 +566,7 @@
 
         function submitForm() {
             var formData = $('#completeSeller').serialize();
-            $('#sendotpbtn').attr('disabled', true); // Disable the button
+           // $('#sendotpbtn').attr('disabled', true); // Disable the button
             $('#spinner').show();
             $.ajax({
                 url: "{{ route('seller.complete.profile.save') }}",
@@ -575,21 +576,21 @@
                     if (response.status) {
                         toastr.success('Successfully Saved Your Profile');
                         location.href = "{{ route('paypal.pay') }}";
-                        $('#sendotpbtn').attr('disabled', false);
+                        //$('#sendotpbtn').attr('disabled', false);
                         $('#spinner').hide();
                     } else {
                         let errors = response.error;
                         for (let field in errors) {
                             toastr.error(errors[field][0]);
                         }
-                        $('#sendotpbtn').attr('disabled', false);
+                       // $('#sendotpbtn').attr('disabled', false);
                         $('#spinner').hide();
                     }
                 },
                 error: function(xhr) {
                     console.error(xhr.responseText);
                     toastr.error('Failed to submit form');
-                    $('#sendotpbtn').attr('disabled', false);
+                   // $('#sendotpbtn').attr('disabled', false);
                     $('#spinner').hide();
                 }
             });
@@ -667,65 +668,96 @@
             //         submitForm();
             //     }
             // });
-            $('#sendotpbtn').on('click', function(e) {
-                e.preventDefault();
-                $('#otp1').val(''); // Clear OTP input fields
-                $('#otp2').val('');
-                $('#otp3').val('');
-                $('#otp4').val('');
-                $('#otp5').val('');
-                var mobile = $('#phone').val();
-                var name = $('#first_name').val();
-                if (mobile === '') {
-                    toastr.error('Please enter your mobile number');
-                    return;
-                }
-                if (name === '') {
-                    toastr.error('Please enter your name');
-                    return;
-                }
-                if (!isValidate || (oldPhone !== mobile)) {
-                    var registerotp = new bootstrap.Modal($('#registerotp'), {
-                        keyboard: false
-                    });
-                   
-                    $('#phone2').val(mobile); // Show the mobile number in the modal
-                    $('#otpForm').addClass('d-none');
+           $('#sendotpbtn').on('click', function(e) {
+    e.preventDefault();
 
-                    $.ajax({
-                        url: '{{ route('seller.sendreg.otp') }}',
-                        type: 'POST',
-                        data: { 
-                            phone: mobile 
-                        },
-                        success: function(response) {
-                            if (response.status) {
-                                registerotp.show(); 
-                                toastr.success(response.message);
-                            } else {
-                                toastr.error(response.message);
-                            }
-                        },
-                        error: function() {
-                            toastr.error('An error occurred.');
-                        },
-                        complete: function() {
-                        // button_otp.prop('disabled', false);
-                            //spinner_otp.addClass('d-none');
-                        }
-                    });
+    // 🔹 Clear OTP input fields
+    $('#otp1, #otp2, #otp3, #otp4, #otp5').val('');
 
-                    // When 'Verify' button is clicked
-                    $('#verifybtn').on('click', function() {
-                        $(this).attr('disabled', true);
-                        $('#otpForm').removeClass('d-none');
-                        startTimer();
-                        // validateOTP(); 
-                    });
-                } else {
-                    submitForm();
-                }
-            });
+    // 🔹 Collect required field values
+    var fields = {
+        'company_name': $('input[name="company_name"]').val(),
+        'first_name': $('#first_name').val(),
+        'email': $('input[name="email"]').val(),
+        'phonenm': $('#phonenm').val(),
+        'password': $('#password').val(),
+        'password_confirmation': $('#confirm_password').val(),
+        'registration_year': $('#registration_year').val(),
+        'number_of_employees': $('#number_of_employees').val(),
+        'business_type': $('#business_type').val(),
+        'country': $('#country').val(),
+        'state': $('#state').val(),
+        'city': $('#city').val(),
+        'zip': $('input[name="zip"]').val()
+    };
+
+    // 🔹 Validate required fields
+    var errors = [];
+    $.each(fields, function(key, value) {
+        if (value === '' || value === null) {
+            errors.push(key);
+        }
+    });
+
+    // 🔹 Show toastr errors if any missing fields
+    if (errors.length > 0) {
+        toastr.error('Please fill all required fields marked with * before proceeding.');
+        $.each(errors, function(i, field) {
+            let input = $('[name="' + field + '"]');
+            input.addClass('is-invalid');
+            input.on('input', function() { $(this).removeClass('is-invalid'); });
+        });
+        return;
+    }
+
+    // 🔹 Validate phone number and name separately for clarity
+    var mobile = $('#phone').val();
+    var name = $('#first_name').val();
+
+    if (mobile === '') {
+        toastr.error('Please enter your mobile number');
+        return;
+    }
+    if (name === '') {
+        toastr.error('Please enter your name');
+        return;
+    }
+
+    // 🔹 Proceed to OTP modal only if all fields are valid
+    if (!isValidate || (oldPhone !== mobile)) {
+        var registerotp = new bootstrap.Modal($('#registerotp'), { keyboard: false });
+
+        $('#phone2').val(mobile); // set mobile number in modal
+        $('#otpForm').addClass('d-none');
+        registerotp.show();
+
+      
+        // 🔹 Handle verify click
+        $('#verifybtn').off('click').on('click', function() {
+            //$(this).attr('disabled', true);
+            $('#otpForm').removeClass('d-none');
+            startTimer();
+            // validateOTP();
+              // Optional: send OTP here if needed
+                $.ajax({
+                    url: '{{ route('seller.sendreg.otp') }}',
+                    type: 'POST',
+                    data: { phone: mobile },
+                    success: function(response) {
+                        if (response.status) toastr.success(response.message);
+                        else toastr.error(response.message);
+                    },
+                    error: function() {
+                        toastr.error('An error occurred while sending OTP.');
+                    }
+                });
+
+        });
+    } else {
+        submitForm(); // directly submit if OTP already verified
+    }
+});
+
 
             // When 'Resend OTP' is clicked
             $('#resendOtpBtn').on('click', function() {
@@ -754,7 +786,7 @@
                         // Add each country as an option
                         $('#country').append('<option value="">Select Country</option>');
                         $.each(response, function(index, country) {
-                            var oldCountry = "{{ $user->country }}";
+                            var oldCountry = "{{ session('country') ? session('country') : '' }}";
                             if (oldCountry == country.id) {
                                 $('#country').append('<option value="' + country.id +
                                     '" selected>' + country.name +
@@ -794,7 +826,7 @@
                         // Add each state as an option
                         $('#state').append('<option value="">Select State</option>');
                         $.each(response, function(index, state) {
-                            var oldState = "{{ $user->state }}";
+                            var oldState = "{{ session('state') ? session('state') : '' }}";
                             if (oldState == state.id) {
                                 $('#state').append('<option value="' + state.id +
                                     '" selected>' + state.name +
@@ -905,7 +937,7 @@
                         if (response.status) {
                             var data = response.categories;
                             var oldSubCategory =
-                                "{{ isset($user->company->category_2) ? $user->company->category_2 : '' }}";
+                                "{{ session('category_2') ? session('category_2') : '' }}";
                             $.each(data, function(key, subcategory) {
                                 var selected = (oldSubCategory == subcategory.id) ? "selected" : "";
                                 subCategorySelect.append('<option ' + selected + ' value="' +

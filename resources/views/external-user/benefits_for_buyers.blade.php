@@ -85,7 +85,7 @@
                         <div class="card shadow rounded-0 " style="background-color: #e6e6e6">
                             <div class="card-body d-flex align-items-center">
                                 <i class="fa fa-clock fs-5 text-danger me-3"></i> Save time in
-                                search of <br> supplier
+                                search of  supplier
                             </div>
                         </div>
                     </div>
@@ -101,7 +101,7 @@
                         <div class="card shadow rounded-0 " style="background-color: #e6e6e6">
                             <div class="card-body d-flex align-items-center">
                                 <i class="fas fa-envelope-open fs-5 text-danger me-3"></i>
-                                Compare & Evakute the <br> quotes
+                                Compare & Evakute the  quotes
                             </div>
                         </div>
                     </div>

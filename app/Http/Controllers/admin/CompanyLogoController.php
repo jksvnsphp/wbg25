@@ -10,7 +10,7 @@ class CompanyLogoController extends Controller
 {
     public function index()
     {
-        $companies = company::with('user')->paginate(10);
+        $companies = company::with('user')->where('company_logo','!=',NULL)->latest()->paginate(10);
         return view('admin.company-logos.index', compact('companies'));
     }
 
@@ -52,10 +52,26 @@ class CompanyLogoController extends Controller
         if ($company->company_logo && Storage::exists('public/company-logos/'.$company->company_logo)) {
             Storage::delete('public/company-logos/'.$company->company_logo);
         }
-
-        $company->update(['company_logo' => null]);
+        //$company->company_logo = null;
+        //$company->save();
+         $company->delete();
+        // Alternatively, if you want to just remove the logo reference without deleting the record:
+      ///  $company->update(['company_logo' => null]);
 
         return redirect()->route('admin.company-logos.index')
             ->with('success', 'Company Logo deleted successfully.');
     }
+
+     public function changeStatus(Request $request)
+    {
+        // dd($request->all());
+        $supplier = Company::where('id', $request->id)->first();
+        $supplier->status = $request->status;
+        if ($supplier->save()) {
+            return response()->json(['success' => 'Status Changed Successfully']);
+        } else {
+            return response()->json(['error' => 'Something went wrong']);
+        }
+    }
+
 }

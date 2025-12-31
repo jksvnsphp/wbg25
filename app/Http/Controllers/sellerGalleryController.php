@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\ImageManager;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ImagesUploadedMail;
 
 class sellerGalleryController extends Controller
 {
@@ -90,6 +92,7 @@ class sellerGalleryController extends Controller
         $id = auth()->user()->id;;
         $user = User::where('id', $id)->first();
         $company = company::where('vendor_id', $id)->first();
+		$uploadedImagesCount = 0;
         if ($request->hasFile('profile')) {
             $file = $request->file('profile');
             $manager = new ImageManager(['driver' => 'gd']);
@@ -146,9 +149,16 @@ class sellerGalleryController extends Controller
                     }
                     $company->$col = $fileName;
                     $company->save();
+					$uploadedImagesCount++;
                 }
             }
         }
+
+try {
+        Mail::to($user->email)->send(new ImagesUploadedMail($user, $uploadedImagesCount));
+    } catch (\Exception $e) {
+        \Log::error('Failed to send uploaded images email: ' . $e->getMessage());
+    }
 
         session()->flash('success', 'Congratulation, Your profile gallery successfully updated and online now!');
         return redirect()->route('seller.success.gallery');

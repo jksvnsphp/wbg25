@@ -100,7 +100,7 @@
 
                                                 <a href="{{route('admin.edit.quotation.category',$item->id)}}" title="Edit" class="btn m-2 btn-sm btn-success"> <i
                                                         class="fas fa-edit    "></i> </a>
-                                                <a id="delete" href="{{route('admin.delete.quotation.category',$item->id)}}" title="Delete" class="btn m-2 btn-sm btn-danger"> <i
+                                                <a id="delete" href="{{route('admin.quotation.deleteQuotation',$item->id)}}" title="Delete" class="btn m-2 btn-sm btn-danger"> <i
                                                         class="fa fa-trash" aria-hidden="true"></i> </a>
                                             </td>
                                         </tr>

@@ -4,8 +4,22 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    @yield('meta_data')
-    <title>WBG</title>
+   <?php /* @yield('meta_data') */ ?>
+    
+    @php
+    $seo = $seo ?? [
+        'title' => config('app.name'),
+        'keywords' => '',
+        'description' => ''
+    ];
+@endphp
+
+<title>{{ $seo['title'] }}</title>
+
+<meta name="keywords" content="{{ $seo['keywords'] }}">
+<meta name="description" content="{{ $seo['description'] }}">
+<meta name="author" content="WBG24.com">
+
 
     <link rel="shortcut icon" href="{{ asset('world-business/images/logos/logo.png') }}" />
 
@@ -206,6 +220,10 @@
 
     <div class="card shadow border-top-0 rounded-0 py-4 mb-4"></div>
     <!-- Right corner popup -->
+     @php
+             $segment = request()->segment(1);
+     @endphp
+     @if ( $segment == 'member-packages')
     <div id="loginPopup" class="popup-container" style="display: none;">
         <div class="popup-content">
             <span class="close-popup">&times;</span>
@@ -214,6 +232,7 @@
             </a>
         </div>
     </div>
+    @endif
     {{-- footer here --}}
     @include('external-user.inc-parts.footer')
 

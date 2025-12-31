@@ -20,15 +20,14 @@
                             </div>
                             <div class="col-sm-4">
                                 <select name="package" id="package" class="form-control">
-                                    <option value="">Sort By Package Type</option>
-                                    <option value="1">Bronce</option>
-                                    <option value="2">Silver</option>
-                                    <option value="3">Gold</option>
-                                    <option value="4">Platinum</option>
-                                </select>
+    <option value="">All Packages</option>
+    @foreach($packages as $package)
+        <option value="{{ $package->id }}">{{ $package->name }}</option>
+    @endforeach
+</select>
                             </div>
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive" id="tableData">
                             <table class="table table-bordered " id="dataTable" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
@@ -46,7 +45,7 @@
                                 </thead>
 
                                 <tbody>
-                                    <tr>
+                                    <!--<tr>
                                         <td class="align-middle p-2">1</td>
                                         <td class="align-middle p-2">Rihana Khan</td>
                                         <td class="align-middle p-2">rihanakhan@gmail.com</td>
@@ -64,7 +63,12 @@
                                             <a title="Delete" href="" class="btn m-1 btn-sm btn-danger"> <i class="fa fa-trash" aria-hidden="true"></i> </a>
 
                                         </td>
-                                    </tr>
+                                    </tr>--->
+									
+									
+									
+
+
 
                                 </tbody>
                             </table>
@@ -78,27 +82,46 @@
 @endsection
 @section('custom-js')
     
-    {{-- <script>
-        $(document).ready(function() {
-            $('input[type="checkbox"]').change(function() {
-                var status = this.checked ? 1 : 0;
-                var id = $(this).attr('id').replace('checkbox', '');
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('admin.update.status.user') }}',
-                    data: {
-                        id: id,
-                        status: status,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(data) {
-                        toastr.success('Status updated successfully');
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error updating status');
-                    }
-                });
-            });
-        });
-    </script> --}}
+    <script>
+function loadPaymentData(page = 1) {
+
+    let payment = $('#payment').val();
+    let package = $('#package').val();
+    let search  = $('#dataTable_filter input').val();
+
+    $.ajax({
+        url: "{{ route('admin.payment.center.ajax') }}",
+        data: {
+            payment: payment,
+            package: package,
+            search: search,
+            page: page
+        },
+        success: function(res) {
+            $("#tableData").html(res.html);
+        }
+    });
+}
+
+// Load default table on page load
+loadPaymentData();
+
+// Filter change
+$("#payment, #package").change(function() {
+    loadPaymentData();
+});
+
+// Search as typing
+$("#dataTable_filter input").keyup(function() {
+    loadPaymentData();
+});
+
+// Pagination click
+$(document).on("click", ".pagination a", function(e){
+    e.preventDefault();
+    var page = $(this).attr("href").split("page=")[1];
+    loadPaymentData(page);
+});
+</script>
+
 @endsection

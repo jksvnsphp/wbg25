@@ -259,8 +259,8 @@
 								?>
 								
 								@if ($product->isMultiple == 0)
-                                    <p class="text-center mt-2 mb-0 text-primary" style="font-size:13px;" id="ends_in" data-end="{{ $product->duration_date }}" >Ends in
-                                        {{ $product->remaining_time }}, {{ $product->expiry_date }}</p>
+                                    <p class="text-center mt-2 mb-0 text-primary" style="font-size:13px;" id="ends_in11" data-end="{{ $product->created_at }}" >
+                                        {{ $product->remaining_time  }}</p>
                                 @endif
                                 <div class="my-4 mt-2 d-flex justify-content-center" id="btn-group-action">
                                     <a href="javascript:void(0)" class="btn btn-primary me-3 checkout-now"
@@ -689,8 +689,18 @@
                             <div class="col-md-8">
                                 <p class="fontp">
                                     <strong
-                                        class="fw-bolder">{{ isset($yourShippingCost['shipping_cost']) ? 'US$' . $yourShippingCost['shipping_cost'] : 'No Shipping Zone' }}
-                                        WBG International shipping</strong>
+                                        class="fw-bolder">
+										
+										@if(isset($yourShippingCost['shipping_cost']))
+    @if($yourShippingCost['shipping_cost'] == 0)
+        Free International Shipping
+    @else
+        US${{ $yourShippingCost['shipping_cost'] }} WBG International Shipping
+    @endif
+@else
+    No Shipping Zone
+@endif
+</strong>
 
                                 </p>
                                 <p class="text-muted" style="font-size: 12px">
@@ -1147,8 +1157,69 @@
         });
     </script>
 
+
+<script>
+$(document).on('click', '.add-to-cart', function () {
+
+    const $btn = $(this);
+    const productId = $btn.data('id');
+    const quantity = $('#qty').val();
+    const priceMultiply = $('#priceVariant').val();
+
+    let variant = {};
+    $('.attribute-select').each(function () {
+        const attr = $(this).data('attribute');
+        const val  = $(this).val();
+        if (val) variant[attr] = val;
+    });
+
+    $btn.prop('disabled', true);
+
+    $.ajax({
+        url: '{{ route('cart.add') }}',
+        method: 'POST',
+        data: {
+            product_id: productId,
+            quantity: quantity,
+            variant: variant,
+            priceMultiply: priceMultiply,
+            _token: '{{ csrf_token() }}',
+        },
+        success(response) {
+
+            if (response.success) {
+
+                $('#add_to_cart_val').text(response.cartCount);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added to Cart',
+                    text: response.message
+                });
+
+            } else {
+                Swal.fire({
+                    title: 'Login Required',
+                    text: response.message,
+                    confirmButtonText: 'Sign in',
+                    confirmButtonColor: '#FF7519'
+                }).then(() => {
+                    window.location.href = "{{ route('login') }}";
+                });
+            }
+        },
+        error(xhr) {
+            Swal.fire('Error', 'Something went wrong!', 'error');
+        },
+        complete() {
+            $btn.prop('disabled', false);
+        }
+    });
+});
+
+</script>
     <script>
-        $(document).on('click', '.add-to-cart', function() {
+        $(document).on('click', '.add-to-cart1', function() {
             const productId = $(this).data('id');
             const quantity = $('#qty').val();
             const priceMultiply = $('#priceVariant').val();

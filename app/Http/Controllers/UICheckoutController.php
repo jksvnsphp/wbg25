@@ -15,6 +15,7 @@ use App\Models\seller_package;
 use App\Models\shipping_rate_tables;
 use App\Models\states;
 use App\Models\User;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -617,205 +618,156 @@ class UICheckoutController extends Controller
         }
     }
 
-    public function orderNow2(Request $request)
-    {
-        $validate = Validator::make($request->all(), [
-            'vendor_id' => ['required', 'exists:users,id'],
-            'payment' => ['required'],
-            'address' => ['required']
+   public function orderNow2(Request $request)
+{
+    $validate = Validator::make($request->all(), [
+        'vendor_id' => ['required', 'exists:users,id'],
+        'payment' => ['required'],
+        'address' => ['required']
+    ]);
+
+    if ($validate->fails()) {
+        return redirect()->back()->withErrors($validate->errors())->with([
+            'alert-type' => 'error',
+            'message' => 'Something went wrong!'
         ]);
-        if ($validate->fails()) {
-            // dd($validate->errors());
-            return redirect()->back()->withErrors($validate->errors())->with(['alert-type' => 'error', 'message' => 'Something went to wrong!']);
-        } else {
-            $vendor = User::where('id', $request->vendor_id)->with('payment_info')->first();
-            if (!$vendor) {
-                return redirect()->back()->withErrors(['Vendor not found'])->with(['alert-type' => 'error', 'message' => 'Vendor not found']);
-            }
-            $carts = Cart::where('user_id', Auth::user()->id)
-                ->whereHas('product.vendor', function ($query) use ($vendor) {
-                    $query->where('ref_no', $vendor->ref_no);
-                })
-                ->with('product.gallery')->get();
-
-            $totalShippingCost = 0;
-            $totalPrice = 0;
-            if ($carts) {
-                foreach ($carts as $cart) {
-                    $cart->shippingData = $this->getShippingData($cart->product->rate_table_id);
-                    $cart->yourShippingCost = $this->getShippingCostByIp($cart->product->rate_table_id);
-                    $totalPrice += $cart->price;
-                    if (isset($cart->yourShippingCost['country'])) {
-                        $totalShippingCost += $cart->yourShippingCost['shipping_cost'] ?? 0;
-                    }
-                }
-            }
-
-            if ($totalPrice > 0) {
-                $order = new Order();
-                $order->user_id = Auth::user()->id;
-                $order->order_number = Order::generateOrderNumber();
-                $order->order_status = 'processing';
-                $order->shipping_cost = $totalShippingCost;
-                $order->total_amount = $totalPrice;
-                $order->payment_status = 'payment_check';
-                $order->payment_method = $request->payment;
-                $order->payment_id = uniqid('NOPAYMENT_');
-                $order->shipping_address = $request->address;
-                $order->billing_address = $request->billing_address;
-                $order->save();
-
-                Session::put('order_number', $order->order_number);
-                $shippingAddress = json_decode($order->shipping_address, true);
-                $formattedAddress = implode(', ', array_filter([
-                    $shippingAddress['street'] ?? null,
-                    $shippingAddress['house_no'] ?? null,
-                    $shippingAddress['city'] ?? null,
-                    $shippingAddress['state_name'] ?? null,
-                    $shippingAddress['country_name'] ?? null,
-                    $shippingAddress['postal_code'] ?? null,
-                    $shippingAddress['phone_number'] ?? null
-                ]));
-                $orderItems = [];
-
-                foreach ($carts as $cart) {
-
-                    $orderItem = new OrderItem();
-                    $orderItem->order_id = $order->id;
-                    $orderItem->product_id = $cart->product_id;
-                    $orderItem->product_name = $cart->product->name ?? 'No Name';
-                    $orderItem->variant = json_encode($cart->variant);
-                    $orderItem->quantity = $cart->quantity;
-                    $orderItem->price = $cart->qtyPrice;
-                    $orderItem->total_price = $cart->price;
-                    $orderItem->save();
-                    // filter product image
-                    $cartVariant = is_string($orderItem->variant)
-                        ? json_decode($orderItem->variant, true)
-                        : $orderItem->variant;
-                    $variants = is_string($cart->product->variants)
-                        ? json_decode($cart->product->variants, true)
-                        : $cart->product->variants;
-                    $variants = is_array($variants) ? $variants : [];
-                    $allImages = [];
-                    foreach ($variants as $variant) {
-                        if (
-                            isset($variant['attributes']) &&
-                            $variant['attributes'] == $cartVariant
-                        ) {
-                            if (
-                                !empty($variant['images']) &&
-                                is_array($variant['images'])
-                            ) {
-                                $allImages = array_merge(
-                                    $allImages,
-                                    $variant['images'],
-                                );
-
-                                break;
-                            }
-                        }
-                    }
-
-                    // Pick the first valid image
-                    $previewImage = !empty($allImages)
-                        ? asset('uploads/products/' . $allImages[0])
-                        : null;
-
-                    // Fallback to gallery or placeholder
-                    if (empty($previewImage)) {
-                        $previewImage =
-                            isset($cart->product->gallery[0]->image) &&
-                            !empty($cart->product->gallery[0]->image)
-                            ? asset(
-                                'uploads/products/gallery/' .
-                                    $cart->product->gallery[0]->image,
-                            )
-                            : 'https://placehold.co/600x400';
-                    }
-                    $orderItem->image = $previewImage;
-                    $orderItem->slug = route('product.detail', $cart->product->slug);
-
-                    $orderItems[] = $orderItem;
-                    $getVendor = products::where('id', $cart->product_id)->with('vendor')->first();
-                    $seller_data = [
-                        'seller_name' => isset($getVendor->vendor->first_name) ? $getVendor->vendor->first_name : "",
-                        'order_number' => $order->order_number,
-                        'total_amount' => $order->total_amount,
-                        'shipping_address' => $formattedAddress,
-                        'order_items' => $orderItems,
-                        'payment_method' => $order->payment_method,
-                        'shipping_cost' => $order->shipping_cost,
-                        'buyer_name' => Auth::user()->first_name . ' ' . Auth::user()->last_name,
-                        'buyer_email' => Auth::user()->email,
-                    ];
-                    if (isset($getVendor->vendor->email)) {
-                        $seller_email = $getVendor->vendor->email;
-                        Mail::send('mail.order-to-seller', $seller_data, function ($message) use ($seller_email) {
-                            $message->to($seller_email)
-                                ->subject('Order Confirmation!');
-                        });
-                    }
-                }
-                $paymentInfo = [];
-                if ($request->payment == "paypal") {
-                    $paymentInfo = [
-                        'payment method' => 'PayPal',
-                        'paypal email' => $vendor->payment_info->email ?? '',
-                    ];
-                } elseif ($request->payment == "gpay") {
-                    $paymentInfo = [
-                        'payment method' => 'Google Pay',
-                        'upi id' => $vendor->payment_info->upi_google ?? '',
-                    ];
-                } elseif ($request->payment == "other") {
-                    $paymentInfo = [
-                        'payment method' => $vendor->payment_info->other_method_name ?? '',
-                        'method id' => $vendor->payment_info->other_value ?? '',
-                    ];
-                } else {
-                    $paymentInfo = [
-                        'payment method' => 'Bank',
-                        'bank name' => $vendor->payment_info->bank_name ?? '',
-                        'account holder' => $vendor->payment_info->account_holder ?? '',
-                        'iban' => $vendor->payment_info->iban ?? '',
-                        'bic' => $vendor->payment_info->bic ?? '',
-                        'country' => $vendor->payment_info->country ?? '',
-                    ];
-                }
-                $data = [
-                    'user_name' => Auth::user()->first_name,
-                    'order_number' => $order->order_number,
-                    'seller_name' => $vendor->first_name ?? '' . $vendor->last_name ?? '',
-                    'seller_phone' => $vendor->phone ?? '',
-                    'seller_email' => $vendor->email ?? '',
-                    'total_amount' => $order->total_amount,
-                    'shipping_address' => $formattedAddress,
-                    'order_items' => $orderItems,
-                    'payment_method' => $order->payment_method,
-                    'paymentInfo' => $paymentInfo,
-                    'shipping_cost' => $order->shipping_cost,
-                ];
-                $email = Auth::user()->email;
-
-                Mail::send('mail.order-confirmed2', $data, function ($message) use ($email) {
-                    $message->to($email)
-                        ->subject('Your Product Has Been Placed For Payment!');
-                });
-
-                Cart::where('user_id', Auth::user()->id)
-                    ->whereHas('product.vendor', function ($query) use ($vendor) {
-                        $query->where('ref_no', $vendor->ref_no);
-                    })
-                    ->delete();
-                if (Auth::user()->account_type == "seller") {
-                    return redirect()->route('order.placed')->with(['alert-type' => 'success', 'message' => 'Your order has been placed.']);
-                } else {
-                    return redirect()->route('order.placed2')->with(['alert-type' => 'success', 'message' => 'Your order has been placed.']);
-                }
-            }
-        }
     }
+
+    $vendor = User::with('payment_info')->find($request->vendor_id);
+    if (!$vendor) {
+        return redirect()->back()->with([
+            'alert-type' => 'error',
+            'message' => 'Vendor not found.'
+        ]);
+    }
+
+    $buyer = Auth::user();
+    $carts = Cart::where('user_id', $buyer->id)
+        ->whereHas('product.vendor', fn($q) => $q->where('ref_no', $vendor->ref_no))
+        ->with('product.gallery')
+        ->get();
+
+    if ($carts->isEmpty()) {
+        return redirect()->back()->with(['alert-type' => 'error', 'message' => 'Your cart is empty.']);
+    }
+
+    $totalPrice = 0;
+    $totalShippingCost = 0;
+
+    foreach ($carts as $cart) {
+        $cart->shippingData = $this->getShippingData($cart->product->rate_table_id);
+        $cart->yourShippingCost = $this->getShippingCostByIp($cart->product->rate_table_id);
+        $totalPrice += $cart->price;
+        $totalShippingCost += $cart->yourShippingCost['shipping_cost'] ?? 0;
+    }
+
+    // Create Order
+    $order = new Order();
+    $order->user_id = $buyer->id;
+    $order->order_number = Order::generateOrderNumber();
+    $order->order_status = 'processing';
+    $order->payment_status = 'payment_check';
+    $order->payment_method = $request->payment;
+    $order->payment_id = uniqid('NOPAYMENT_');
+    $order->shipping_cost = $totalShippingCost;
+    $order->total_amount = $totalPrice;
+    $order->shipping_address = $request->address;
+    $order->billing_address = $request->billing_address;
+    $order->save();
+
+    Session::put('order_number', $order->order_number);
+
+    $shippingAddress = json_decode($order->shipping_address, true);
+    $formattedAddress = implode(', ', array_filter([
+        $shippingAddress['street'] ?? null,
+        $shippingAddress['house_no'] ?? null,
+        $shippingAddress['city'] ?? null,
+        $shippingAddress['state_name'] ?? null,
+        $shippingAddress['country_name'] ?? null,
+        $shippingAddress['postal_code'] ?? null,
+        $shippingAddress['phone_number'] ?? null
+    ]));
+
+    // Save Items
+    foreach ($carts as $cart) {
+        $orderItem = new OrderItem();
+        $orderItem->order_id = $order->id;
+        $orderItem->product_id = $cart->product_id;
+        $orderItem->product_name = $cart->product->name ?? 'Unnamed Product';
+        $orderItem->variant = json_encode($cart->variant);
+        $orderItem->quantity = $cart->quantity;
+        $orderItem->price = $cart->qtyPrice;
+        $orderItem->total_price = $cart->price;
+        $orderItem->image = $cart->product->gallery[0]->image ?? null;
+        $orderItem->save();
+    }
+    //sale provison logic ////
+    if ($vendor->id) {
+        $wallets = Wallet::latest()->where('user_id',$vendor->id)->get();
+        
+        $commissionAmount =5; 
+        $provisionAmount = ($commissionAmount / 100) * $totalPrice; 
+        // Save to SaleProvision table
+        $saleProvision = new Wallet();
+        $saleProvision->order_item_id = $order->id;
+        $saleProvision->user_id       = $vendor->id;
+        $saleProvision->debit         = $provisionAmount;
+        $saleProvision->type          = 'sale_provision';
+        $saleProvision->save();
+       // $walletsum = $wallets->sum('credit') - $wallets->sum('debit');
+       // $newbalance = $walletsum - $provisionAmount;
+        // Update Wallet Balance
+        // $vendorWallet = new Wallet();
+        // $vendorWallet->user_id = $vendor->id;
+        // $vendorWallet->balance = $newbalance;
+        // $vendorWallet->debit = $provisionAmount;
+        // $vendorWallet->type = 'sale_provision_deduction';
+        // $vendorWallet->save();
+    }
+
+    
+
+    // 📨 Send confirmation emails
+    try {
+        // Buyer email
+        Mail::send('mails.order-confirmation-buyer', [
+            'buyer_name' => $buyer->first_name,
+            'order_id' => $order->order_number,
+            'product_name' => $carts->first()->product->name ?? 'Product',
+            'quantity' => $carts->sum('quantity'),
+            'seller_name' => $vendor->first_name ?? 'Seller',
+            'delivery_date' => now()->addDays(7)->format('d M Y'),
+        ], function ($message) use ($buyer) {
+            $message->to($buyer->email)
+                ->subject('Order Confirmed – Thank You for Your Purchase!');
+        });
+
+        // Seller email
+        Mail::send('mails.order-confirmation-seller', [
+            'seller_name' => $vendor->first_name,
+            'buyer_name' => $buyer->first_name,
+            'order_id' => $order->order_number,
+            'product_name' => $carts->first()->product->name ?? 'Product',
+            'quantity' => $carts->sum('quantity'),
+            'buyer_address' => $formattedAddress,
+            'dashboard_link' => route('seller.orders.index'),
+        ], function ($message) use ($vendor) {
+            $message->to($vendor->email)
+                ->subject('New Order Received – Process Now!');
+        });
+    } catch (\Exception $e) {
+        \Log::error('Order email send failed: ' . $e->getMessage());
+    }
+
+    // Clear cart
+    Cart::where('user_id', $buyer->id)
+        ->whereHas('product.vendor', fn($q) => $q->where('ref_no', $vendor->ref_no))
+        ->delete();
+
+    return redirect()
+        ->route(Auth::user()->account_type == 'seller' ? 'order.placed' : 'order.placed2')
+        ->with(['alert-type' => 'success', 'message' => 'Your order has been placed successfully.']);
+}
 
     public function orderNowTender(Request $request)
     {

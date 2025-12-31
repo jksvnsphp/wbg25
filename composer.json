@@ -10,9 +10,10 @@
         "intervention/image": "^2.7",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
-        "laravel/tinker": "^2.8",
+        "laravel/tinker": "^2.10",
         "livewire/livewire": "^3.5",
         "mews/captcha": "^3.3",
+        "psy/psysh": "^0.12.13",
         "srmklive/paypal": "^3.0",
         "twilio/sdk": "^8.7"
     },

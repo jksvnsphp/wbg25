@@ -7,7 +7,7 @@
                 <div class="card rounded-0">
                     <div
                         class="card-header d-flex justify-content-between align-items-center rounded-0 py-2 bg-dark text-light font-weight-bolder">
-                          All Stores
+                          All Stores 
                     </div>
 
                     <div class="card-body pb-0">

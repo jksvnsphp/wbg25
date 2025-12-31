@@ -10,7 +10,7 @@ class SellerController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::where('account_type', 'seller')->with('countryData', 'sellerPackage');
+        $query = User::where('account_type', 'seller')->with('countryData', 'sellerPackage')->latest();
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {

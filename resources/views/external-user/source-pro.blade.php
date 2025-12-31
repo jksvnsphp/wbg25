@@ -40,7 +40,7 @@
                         <div class="row justify-content-center">
                             <div class="col-md-2">
                                 <select class="form-control form-select" name="order_type" id="order_type">
-                      <option @selected(request('order_type')=="all") value="all">All quotation</option>
+                      <option @selected(request('order_type')=="all") value="all">All Quotations</option>
                       <option @selected(request('order_type')=="expired-soon") value="expired-soon">Ending Soonest</option>
                       <option @selected(request('order_type')=="latest") value="latest">Newly Listed</option>
                     </select>
@@ -169,7 +169,7 @@
 
 
                                 <div class=" fw-bolder mt-2 text-center">Required Price: <span class="text-secondary">US ${{ number_format($quotation->price) }}</span> </div>
-                                    <div class=" fw-bolder mt-1 text-center">Required Quality: <span class="text-secondary">{{ $quotation->quantity ?? ''}}</span></div>
+                                    <div class=" fw-bolder mt-1 text-center">Required Quantity: <span class="text-secondary">{{ $quotation->quantity ?? ''}}</span></div>
                                     <div class=" fw-bolder mt-1 text-center">Expired On: <span class="text-secondary">{{ $quotation->expiry_date ?? '' }}</span></div>
                                 <div class="text-center mt-3">
                                     <a href="{{ route('user.source-pro.detail', $quotation->slug) }}"

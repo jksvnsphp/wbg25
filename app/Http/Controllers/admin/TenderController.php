@@ -27,6 +27,8 @@ class TenderController extends Controller
     {
          $tenders = Tender::with(['vendor']) // eager load seller/buyer
            // ->where('type', 'buy') // assuming you have a type column ('buy'/'sell')
+           ->whereNotNull('image_1')
+              ->where('image_1', '!=', '')  
             ->latest()
             ->paginate(10);
 
@@ -111,9 +113,9 @@ class TenderController extends Controller
      */
     public function destroy(Tender $tender)
     {
-        if ($product->image && file_exists(storage_path('app/public/' . $product->image))) {
-            unlink(storage_path('app/public/' . $product->image));
-        }
+        // if ($product->image && file_exists(storage_path('app/public/' . $product->image))) {
+        //     unlink(storage_path('app/public/' . $product->image));
+        // }
         $tender->delete();
 
         return redirect()->route('admin.tenders.index')

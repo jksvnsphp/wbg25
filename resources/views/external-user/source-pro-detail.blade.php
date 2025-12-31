@@ -97,7 +97,7 @@
                                     <button type="submit" class="input-group-btn btn btn-primary">Send Quote</button>
                                 </div>
                             </form>
-                            <a class="btn btn-secondary mt-5"  href="{{route('seller.profile.view', $quotation->vendor->ref_no)}}">Request to Buyer</a>
+                            <!--<a class="btn btn-secondary mt-5"  href="{{route('seller.profile.view', $quotation->vendor->ref_no)}}">Request to Buyer</a>-->
                         </div>
                         <div class="col-md-12 mt-3">
                             <div class="my-5" style="min-height: 7rem; border: 1px solid #202020">
@@ -182,6 +182,12 @@
 
     </section>
     @include('external-user.inc-parts.listCard')
+	
+	<div class="container-fluid my-3">
+    <a href="{{ url()->previous() }}" class="btn btn-primary">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+</div>
 @endsection
 @section('custom-js-external')
     <script>

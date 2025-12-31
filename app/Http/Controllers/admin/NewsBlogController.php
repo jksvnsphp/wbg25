@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\news;
+use App\Models\SellerNews;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -17,7 +18,7 @@ class NewsBlogController extends Controller
     public function allNews()
     {
         
-        $newss = news::latest()->with('user')->get();
+        $newss = SellerNews::latest()->with('vendor')->get();
 
         return view('admin.news.all-news', compact('newss'));
     }
@@ -25,7 +26,8 @@ class NewsBlogController extends Controller
      public function allNewsImages()
     {
         
-        $news = news::latest()->with('user')->paginate(10);
+        $news = SellerNews::with('vendor')->whereNotNull('image')
+              ->where('image', '!=', '')->latest()->paginate(10);
 
         return view('admin.action-image.news', compact('news'));
     }

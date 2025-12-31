@@ -299,12 +299,14 @@ class SellerTenderController extends Controller
                               ->get();
                               
             $unReadTenders = Tender::where('vendor_id', $user->id)->where('isRead',0)->get();
-            
+            $tenders->is_expired=0;
             foreach ($unReadTenders ?? [] as $unReadTender){
                 $unReadTender->isRead=1;
                 $unReadTender->save();
             }
-            
+            //echo '<pre>';
+            //print_r($tenders);
+			//echo '</pre>';
             return view('seller-vendor.tenders.my-tenders', compact('tenders'));
         } else {
             return redirect()->route('login')->with(['alert-type' => 'error', 'message' => 'Please login first.']);
@@ -325,8 +327,11 @@ class SellerTenderController extends Controller
                 $unReadTender->isRead=1;
                 $unReadTender->save();
             }
-            
-            return view('seller-vendor.tenders.my-tenders', compact('tenders'));
+			$tenders->is_expired=1;
+			//echo '<pre>';
+            //print_r($tenders);
+			//echo '</pre>';
+            return view('seller-vendor.tenders.my-expired-tenders', compact('tenders'));
         } else {
             return redirect()->route('login')->with(['alert-type' => 'error', 'message' => 'Please login first.']);
         }
@@ -396,7 +401,97 @@ class SellerTenderController extends Controller
     }
 
 
-    public function editTender($slug)
+    
+
+public function editTender($slug)
+{
+    if (!auth()->check()) {
+        return redirect()->back()->with([
+            'alert-type' => 'warning',
+            'message' => 'Unauthorized access this page!'
+        ]);
+    }
+
+    $regions = region::where('status', 1)
+        ->with('countries')
+        ->orderBy('name', 'ASC')
+        ->get();
+
+    $countries = countries::where('status', 1)
+        ->orderBy('name', 'asc')
+        ->get()
+        ->map(fn ($c) => ['id' => $c->id, 'text' => $c->name]);
+
+    $regions_countries = region::where('status', 1)
+        ->orderBy('name', 'asc')
+        ->get()
+        ->map(fn ($r) => ['id' => $r->id, 'text' => $r->name]);
+
+    $tender = Tender::where('slug', $slug)
+        ->where('vendor_id', auth()->id())
+        ->with(
+            'parentcategory',
+            'category',
+            'childcategory',
+            'endchildcategory',
+            'tender_setting',
+            'rate_table.shipping_rate_costs.shipping_regions'
+        )
+        ->first();
+
+    if (!$tender) {
+        return redirect()->back()->with([
+            'alert-type' => 'warning',
+            'message' => 'Tender not found!'
+        ]);
+    }
+
+    /**  CHECK IF EXPIRED */
+    $expiryDate = Carbon::parse($tender->created_at)->addDays($tender->duration);
+
+    $tender->is_expired = $expiryDate->isPast() ? 1 : 0;
+
+    // Optional: Save in DB if you want
+    // $tender->save();
+
+    /** CATEGORY PATH LOGIC (UNCHANGED) */
+    $searchedCategory = '';
+    $searchedPath = '';
+
+    if ($tender->parentcategory) {
+        $searchedCategory = $tender->parentcategory->name;
+        $searchedPath = $searchedCategory;
+    }
+
+    if ($tender->category) {
+        $searchedCategory = $tender->category->name;
+        $searchedPath .= ' > ' . $searchedCategory;
+    }
+
+    if ($tender->childcategory) {
+        $searchedCategory = $tender->childcategory->name;
+        $searchedPath .= ' > ' . $searchedCategory;
+    }
+
+    if ($tender->endchildcategory) {
+        $searchedCategory = $tender->endchildcategory->name;
+        $searchedPath .= ' > ' . $searchedCategory;
+    }
+
+    $tender->searched_category = $searchedCategory;
+    $tender->searched_path = $searchedPath;
+
+    return view('seller-vendor.tenders.edit-tender', compact(
+        'tender',
+        'regions',
+        'countries',
+        'regions_countries'
+    ));
+}
+
+	
+	
+	public function editTenderold($slug)
     {
         if (isset(auth()->user()->id)) {
             $regions = region::where('status', 1)->with('countries')->orderBy('name', 'ASC')->get();
@@ -513,8 +608,16 @@ class SellerTenderController extends Controller
                 return response()->json(['error' => $validate->messages()], 422);
             } else {
                 $tender = Tender::find($request->id);
-                if ($tender) {
+				
+				if (!$tender) {
+    return response()->json(['success' => false, 'message' => 'Tender not found']);
+}
 
+				
+                if ($tender) {
+$isExpired = Carbon::parse($tender->created_at)
+    ->addDays($tender->duration)
+    ->isPast();
                     $rateTableId = null;
                     if ($request->shipping_partner != "") {
                         $newRateTable = new shipping_rate_tables();
@@ -591,10 +694,21 @@ class SellerTenderController extends Controller
                     $tender->category_id = $request->category_id;
                     $tender->subcategory_id = $request->child_category_id;
                     $tender->childcategory_id = $request->endchild_category_id;
-                    if ($request->duration != $tender->duration) {
-                        $tender->duration = $request->duration;
-                        $tender->created_at = Carbon::now();
-                    }
+                    
+					if ($isExpired) {
+    
+    $tender->created_at = Carbon::now();
+    $tender->duration  = $request->duration;
+    $tender->isDeal    = 0; // reopen if needed
+
+    
+
+} elseif ($request->duration != $tender->duration) {
+    // tender active → only update duration
+    $tender->duration = $request->duration;
+}
+
+					
                     $tender->isReturnAccept = $request->isReturnAccept=="on"?1:0;
                 if($request->isReturnAccept=="on"){
                    $tender->buyer_pay = $request->buyer_pay=="on"?1:0;
@@ -607,6 +721,10 @@ class SellerTenderController extends Controller
                    $tender->refund = $request->refund;  
                    $tender->return_timeline = $request->return_timeline;  
                 }
+
+
+
+
 
 
                     // Tender gallery

@@ -79,6 +79,9 @@
             width: 50px;
             height: 50px;
         }
+		.delete-gimage {
+		display: none;	
+		}
     </style>
     <div id="loadingOverlay"
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999;">
@@ -187,7 +190,15 @@
                                                     aria-hidden="true"></i></small>
                                             </label>
                                             <input type="file" name="image_1" id="img1" class="form-control" />
-                                            <img id="preview1" src="#" alt="Image 1 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
+											
+<div class="preview-img" data-image-id=""
+style="width: 100px; height: 100px; position: relative; margin: 5px;">
+<img id="preview1" src="#" alt="Image 1 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
+<span class="delete-gimage"
+data-input="img1" data-preview="preview1" style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
+<i class="fa-solid fa-trash "></i>
+</span>
+</div>
                                         </div>
                                     </div>
                                     <div class="col-md-4 mb-4">
@@ -196,7 +207,18 @@
                                                 <small class="text-danger">(480px X 360px)</small>
                                             </label>
                                             <input type="file" name="image_2" id="img2" class="form-control" />
-                                            <img id="preview2" src="#" alt="Image 2 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
+                                            
+<div class="preview-img" data-image-id=""
+style="width: 100px; height: 100px; position: relative; margin: 5px;">
+<img id="preview2" src="#" alt="Image 2 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
+<span class="delete-gimage"
+data-input="img2" data-preview="preview2" style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
+<i class="fa-solid fa-trash "></i>
+</span>
+</div>											
+											
+											
+											
                                         </div>
                                     </div>
                                     <div class="col-md-4 mb-4">
@@ -204,28 +226,78 @@
                                             <label for="image3" class="form-label">Image 3 
                                                 <small class="text-danger">(480px X 360px)</small></label>
                                             <input type="file" name="image_3" id="img3" class="form-control" />
-                                            <img id="preview3" src="#" alt="Image 3 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
+                                            
+											
+<div class="preview-img" data-image-id=""
+style="width: 100px; height: 100px; position: relative; margin: 5px;">
+<img id="preview3" src="#" alt="Image 3 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
+<span class="delete-gimage"
+data-input="img3" data-preview="preview3" style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
+<i class="fa-solid fa-trash "></i>
+</span>
+</div>												
+											
+											
+											
                                         </div>
                                     </div>
                                     <div class="col-md-4 mb-4">
                                         <div class="form-group mb-2">
                                             <label for="image4" class="form-label">Image 4 <small class="text-danger">(480px X 360px)</small></label>
                                             <input type="file" name="image_4" id="img4" class="form-control" />
-                                            <img id="preview4" src="#" alt="Image 4 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
+                                            
+											
+<div class="preview-img" data-image-id=""
+style="width: 100px; height: 100px; position: relative; margin: 5px;">
+<img id="preview4" src="#" alt="Image 4 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
+<span class="delete-gimage"
+data-input="img4" data-preview="preview4" style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
+<i class="fa-solid fa-trash "></i>
+</span>
+</div>												
+											
+											
+											
                                         </div>
                                     </div>
                                     <div class="col-md-4 mb-4">
                                         <div class="form-group mb-2">
                                             <label for="image5" class="form-label">Image 5 <small class="text-danger">(480px X 360px)</small></label>
                                             <input type="file" name="image_5" id="img5" class="form-control" />
-                                            <img id="preview5" src="#" alt="Image 5 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
+                                            
+											
+<div class="preview-img" data-image-id=""
+style="width: 100px; height: 100px; position: relative; margin: 5px;">
+<img id="preview5" src="#" alt="Image 5 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
+<span class="delete-gimage"
+data-input="img5" data-preview="preview5" style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
+<i class="fa-solid fa-trash "></i>
+</span>
+</div>											
+											
+											
+											
+											
                                         </div>
                                     </div>
                                     <div class="col-md-4 mb-4">
                                         <div class="form-group mb-2">
                                             <label for="image6" class="form-label">Image 6 <small class="text-danger">(480px X 360px)</small> </label>
                                             <input type="file" name="image_6" id="img6" class="form-control" />
-                                            <img id="preview6" src="#" alt="Image 6 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
+                                            
+											
+<div class="preview-img" data-image-id=""
+style="width: 100px; height: 100px; position: relative; margin: 5px;">
+<img id="preview6" src="#" alt="Image 6 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
+<span class="delete-gimage"
+data-input="img6" data-preview="preview6" style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
+<i class="fa-solid fa-trash "></i>
+</span>
+</div>											
+													
+											
+											
+											
                                         </div>
                                     </div>
                                 </div>
@@ -812,7 +884,9 @@ function addRow(tableId) {
             placeholder: "Select Country",
         });
     </script>
-     <script>
+     
+	 
+	 <!--<script>
         function previewImage(input, previewId) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
@@ -841,5 +915,40 @@ function addRow(tableId) {
         $('#img6').change(function() {
             previewImage(this, 'preview6');
         });
-    </script>
+    </script>-->
+	
+	<script>
+function previewImage(input, previewId) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $('#' + previewId)
+                .attr('src', e.target.result)
+                .show()
+                .siblings('.delete-gimage')
+                .show();
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Image change handlers
+for (let i = 1; i <= 6; i++) {
+    $('#img' + i).on('change', function () {
+        previewImage(this, 'preview' + i);
+    });
+}
+
+// Delete image
+$('.delete-gimage').on('click', function () {
+    let previewId = $(this).data('preview');
+    let inputId = $(this).data('input');
+
+    $('#' + previewId).attr('src', '').hide();
+    $('#' + inputId).val(''); // Clear file input
+    $(this).hide();
+});
+</script>
+
+	
 @endsection

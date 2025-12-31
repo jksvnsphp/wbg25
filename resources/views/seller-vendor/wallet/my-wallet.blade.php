@@ -73,7 +73,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($wallets as $wallet)
-                                        @if ($wallet->type == 'member_package')
+                                        @if ($wallet->type == 'member_package' || $wallet->type == 'sale_provision' || $wallet->type == 'sale_provision_deduction')
                                             <tr>
                                                 <td>
 
@@ -96,12 +96,20 @@
 
                                                     <p class="fw-bold mb-0 pb-0 text-center">
                                                         <span class="text-success">USD
-                                                            {{ number_format($wallet->credit, 2, ',', '.') }}</span>
+                                                            @if($wallet->type == 'sale_provision' && ($wallet->order_item_id != null))
+                                                             {{ number_format(getOrderPriceWithoutTax($wallet->order_item_id), 2, '.', ',') }}
+                                                            @elseif($wallet->type == 'sale_provision_deduction' && ($wallet->order_item_id != null))
+                                                              {{ number_format(getOrderPriceWithoutTax($wallet->order_item_id), 2, '.', ',') }}
+                                                            @else
+                                                              {{ number_format($wallet->credit, 2, '.', ',') }}
+                                                            @endif
+
+                                                            </span>
                                                     </p>
                                                 </td>
                                                 <td>
                                                     <p class="fw-bold mb-0 pb-0 text-center">
-                                                        <span class="text-danger">USD 0,00</span>
+                                                        <span class="text-danger">USD {{ number_format($wallet->debit, 2, '.', ',') }}</span>
                                                     </p>
                                                 </td>
                                             </tr>

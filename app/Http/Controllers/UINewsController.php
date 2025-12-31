@@ -160,6 +160,8 @@ class UINewsController extends Controller
 }
 
     
+	
+	
     public function readNews($slug = null)
     {
         $news = SellerNews::where('slug', $slug)->where('isPublish', 1)->with('vendor.company')->first();

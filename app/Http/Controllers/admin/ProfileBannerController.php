@@ -11,15 +11,19 @@ class ProfileBannerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-         // profile-pictures where('account_type', 'seller')
-         $users = User::where('account_type', 'seller')
-                        ->latest()
-                        ->paginate(10); 
-        return view('admin.profile-banners.index', compact('users'));
-        //
-    }
+   public function index()
+{
+    $users = User::where('account_type', 'seller')
+        ->whereHas('company', function ($q) {
+            $q->whereNotNull('profile_banner')
+              ->where('profile_banner', '!=', '');
+        })
+        ->latest()
+        ->paginate(10);
+
+    return view('admin.profile-banners.index', compact('users'));
+}
+
 
     /**
      * Show the form for creating a new resource.

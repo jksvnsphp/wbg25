@@ -15,17 +15,64 @@
                     Join Member Package
                 </h1>
                 <p class="text-white text-center lh-sm fw-semibold fs-5 mb-2">
-                    Join Millions Trading On one of the world's Largest B2B & B2C E-Commerce
-                    Platform!
+                   Join Millions Trading on one of the World`s largest B2B & B2C E-Commerce Platform.
                 </p>
                 <p class="text-white text-center lh-sm fw-semibold fs-5 mb-4">
-                    Promote Your Product to Buyers Across The Globe and Contact Trusted
-                    Suppliers
+                   Advertise your Company and sell your Products or your Services across the Globe!
                 </p>
             </div>
         </div>
     </div>
 </section>
+<style>
+ .package-card {
+    border: 1px solid #000044;
+    border-top: none;
+    height: 100%;
+}
+
+.package-ribbon {
+    background: #ff7a18;
+    color: #fff;
+    font-weight: 800;
+    text-align: center;
+    padding: 12px 10px;
+    font-size: 16px;
+}
+
+.package-ribbon span {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.package-img {
+    padding: 10px;
+}
+
+.package-content li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    padding: 6px 0;
+    border-bottom: 1px dashed #ddd;
+}
+
+.package-content li strong {
+    font-weight: 700;
+}
+
+.package-footer {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.package-footer .btn {
+    width: 100%;
+}
+    
+</style>
 <div class="w-100 bg-white">
     <div class="container-fluid">
         <div class="row">
@@ -39,9 +86,10 @@
                             {{ $package->name }}
                             <img src="{{ asset('world-business/images/badge.png') }}" height="30" alt="" />
                         </h1>
-                        <div class="w-100 d-flex justify-content-center my-4">
-                            <div class="d-flex justify-content-center align-items-center flex-column text-white fw-bolder"
-                                style="height: 8rem; background: url({{ asset('world-business/star.png') }}); width: 8rem;background-position: center center; background-size: contain;">
+                        <div class="w-100">
+                            <img src="{{ asset('uploads/member_packages/'.$package->image) }}" width="100%" alt="" />
+                            
+                            <div class="pkg-title btn btn-secondary d-block text-center btn-block mt-2">
                                 <span class="fs-5 fw-bolder mb-2">{{ $package->validDays }} Days</span>
                                 <span class="fw-bolder fs-6">{{ $package->price == 0 ? 'For free' : 'US $' .
                                     number_format($package->price, 2, ',') }}</span>
@@ -54,24 +102,19 @@
                                 <li><strong class="fw-bold">Features:</strong></li>
                                 <li>{{ $package->name == 'Bronce Package' || $package->name == 'Silver Package'
                                     ? 'Single Product'
-                                    : 'Single/Multiply Product' }}
-                                    listing limit<span>{{ $package->productLimit }} <img style="cursor: pointer;" title="List & sell Products in Number of the Member Package included Limit. Normal Product listings works by Duration Time, Multiply Product listings works by Number of Quantity 
-                                                     Before Seller can start to list Products on WBG24.com, the accepted Payment Method for Buyers need to save 
-                                                     " src="{{ asset('info-symbol.jpg') }}" width="20"
-                                            height="15" /></span></li>
+                                    : 'Single+Multiply Product' }} <br/>
+                                    listing limit<span>{{ $package->productLimit }} <img style="cursor: pointer;" title="List & sell Products in Number of the Member Package included Limit. Normal Product listings works by Duration Time, Multiply Product listings works by Number of Quantity Before Seller can start to list Products on WBG24.com, the accepted Payment Method forBuyers need to save" src="{{ asset('info-symbol.jpg') }}" width="20"
+                                            height="15" /></span></li> 
                                 <li>Tender listing Limit <span>{{ $package->sellTenderLimit }} <img
                                             style="cursor: pointer;"
-                                            title="List & sell Tenders in Number of the Member Package included Limit. 
-                                                    Before Seller can start to list Tenders on WBG24.com, the accepted Payment Method for Buyers need to save"
+                                            title="List & sell Tenders in Number of the Member Package included Limit. Before Seller can start to list Tenders on WBG24.com, the accepted Payment Method for Buyers need to save"
                                             src="{{ asset('info-symbol.jpg') }}" width="20" height="15" /></span></li>
                                 <li>News listing limit <span>{{ $package->newsLimit }} <img style="cursor: pointer;"
                                             title="List Company News in Number of the Member Package included Limit."
                                             src="{{ asset('info-symbol.jpg') }}" width="20" height="15" /></span></li>
                                 <li>Sell Provision included <span>${{ $package->tradeLeadsInclude }} <img
                                             style="cursor: pointer;"
-                                            title="For all successful Sales Activities, WBG24 charges a Sales Commission of 5%.  
-                                                    If you use up all of your included Sales Commission, you will have received your WBG24 Membership Package at                                                     half Price. 
-                                                    After the included Sales Commission has been used up, the corresponding future Sales Commissions are due                                                     monthly through separate Invoicing. "
+                                            title="For all successful Sales Activities, WBG24 charges a Sales Commission of 5%. If you use up all of your included Sales Commission, you will have received your WBG24 Membership Package at half Price. After the included Sales Commission has been used up, the corresponding future Sales Commissions are monthly through separate Invoicing."
                                             src="{{ asset('info-symbol.jpg') }}" width="20" height="15" /></span></li>
                                 @foreach ($services as $service)
                                 <li>

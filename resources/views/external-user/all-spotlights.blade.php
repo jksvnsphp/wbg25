@@ -179,7 +179,7 @@
                 <div class="card mt-4 shadow rounded-0">
                     <div class="row">
                         {{-- Left Column (Logo + Name + Rating) --}}
-                        <div class="col-md-4 d-flex align-items-center">
+                        <div class="col-md-4 d-flex justify-content-center align-items-center">
                             <div class="mx-2 d-flex flex-row align-items-center">
                                 <div class="bg-white p-1 rounded-1 me-2 border d-flex align-items-center justify-content-center" 
                                     style="height:4rem; width:4rem;">

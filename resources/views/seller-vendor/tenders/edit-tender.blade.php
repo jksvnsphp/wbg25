@@ -559,7 +559,13 @@
 
                             </div>
                             <div class="col-md-12">
-                                <button class="btn btn-secondary" type="submit">Save Changes</button>
+                                <button class="btn btn-secondary" type="submit">
+								@if($tender->is_expired)
+							{{'Re-list'}}
+                            @else
+							{{'Save Changes'}}
+							@endif
+								</button>
                             </div>
                         </div>
                     </div>

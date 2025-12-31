@@ -49,8 +49,9 @@
                                                 <input type="checkbox" id="id9" checked value="1">
                                                 <div class="slider round"></div>
                                             </label>
-                        <form action ="#" method="POST" style="display:inline-block;">
-                            @csrf @method('DELETE')
+                        <form action ="{{route('admin.delete.images')}}" method="POST" style="display:inline-block;">
+                            @csrf  
+                            <input type="hidden" name="spotlight_id" value="{{ $spotlight->id }}">
                             <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>
                         </form>
                     </td>

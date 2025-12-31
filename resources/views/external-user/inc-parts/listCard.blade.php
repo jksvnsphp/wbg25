@@ -19,11 +19,11 @@
 
         </div>
     </section>
-    <div class="container-fluid my-3">
+    <!--<div class="container-fluid my-3">
     <a href="{{ url()->previous() }}" class="btn btn-primary">
         <i class="fa fa-arrow-left"></i> Back
     </a>
-</div>
+</div>-->
 <style>
 .btn-back {
     background-color: #2c1a72;

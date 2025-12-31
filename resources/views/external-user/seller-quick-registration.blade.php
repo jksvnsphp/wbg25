@@ -76,6 +76,8 @@
         $(document).ready(function() {
             $('#sendotpbtn').on('click', function(e) {
                 e.preventDefault();
+                 let sellerCode = "{{ $code }}";
+                 console.log("Seller Code:", sellerCode);
                 var mobile = $('#phone').val();
                 var name = $('#name').val();
                 var coupon_code = $('#coupon_code').val();
@@ -90,10 +92,11 @@
                 }
 
                 $.ajax({
-                    url: "{{ route('seller.send.otp') }}",
+                    url: "{{ route('seller.reg.step1') }}",
                     type: 'POST',
                     data: {
                         _token: token,
+                         code: sellerCode,
                         phone: mobile,
                         name: name,
                         coupon_code: coupon_code
@@ -101,27 +104,28 @@
                     success: function(response) {
                         if (response?.status == true) {
                             var package_code = $('#package_code').val();
-                            $.ajax({
-                                url: "{{ route('seller.verify.otp') }}",
-                                type: 'POST',
-                                data: {
-                                    _token: "{{ csrf_token() }}",
-                                    otp: "12345",
-                                    package_code: package_code
-                                },
-                                success: function(response) {
-                                    // console.log(response);
-                                    if (response.status == true) {
-                                        toastr.success(
-                                            "Successfully complete your quick registration."
-                                        )
-                                        location.href = response?.url;
-                                    } else {
-                                        toastr.error(response.message)
+                              location.href = response?.url;
+                            // $.ajax({
+                            //     url: "{{ route('seller.verify.otp') }}",
+                            //     type: 'POST',
+                            //     data: {
+                            //         _token: "{{ csrf_token() }}",
+                            //         otp: "12345",
+                            //         package_code: package_code
+                            //     },
+                            //     success: function(response) {
+                            //         // console.log(response);
+                            //         if (response.status == true) {
+                            //             toastr.success(
+                            //                 "Successfully complete your quick registration."
+                            //             )
+                            //             location.href = response?.url;
+                            //         } else {
+                            //             toastr.error(response.message)
 
-                                    }
-                                }
-                            });
+                            //         }
+                            //     }
+                            // });
                         } else {
                             toastr.error(response?.message)
                         }
@@ -151,8 +155,9 @@
 
     <script>
         function applyCoupon() {
-            let couponCode = $("#coupon_code").val();
-            let couponMsg = $("#coupon-msg");
+            let couponCode   = $("#coupon_code").val();
+            let package_code = $("#package_code").val();
+            let couponMsg    = $("#coupon-msg");
 
             if ($.trim(couponCode) === "") {
                 couponMsg.text("Please enter a coupon code.").removeClass("text-success").addClass("text-danger");
@@ -164,6 +169,7 @@
                 type: "POST",
                 data: {
                     code: couponCode,
+                    package_code: package_code,
                     _token: "{{ csrf_token() }}"
                 },
                 success: function(response) {

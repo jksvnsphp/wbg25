@@ -45,7 +45,7 @@
 
                                     <!-- Discount -->
                                     <div class="col-md-6 mb-3">
-                                        <label for="discount">Discount (€)</label>
+                                        <label for="discount">Discount  </label>
                                         <input type="number" step="0.01" class="form-control" value="{{$coupon->discount }}"
                                             name="discount" placeholder="Discount" min="1" max="100">
                                         @error('discount')
@@ -53,6 +53,21 @@
                                         @enderror
                                     </div>
 
+                                     <!-- Percent Type -->
+                                    <div class="col-md-6 mb-3">
+                                        <label for="percent_type">Discount Type</label>
+                                        <select name="percent_type" class="form-control">
+                                            <option value="percentage" {{ $coupon->percent_type == 'percentage' ? 'selected' : '' }}>
+                                                Percentage (%)
+                                            </option>
+                                            <option value="flat" {{ $coupon->percent_type == 'flat' ? 'selected' : '' }}>
+                                                Flat  
+                                            </option>
+                                        </select>
+                                        @error('percent_type')
+                                            <small class="text-danger"> {{ $message }} </small>
+                                        @enderror
+                                    </div>
                                     <!-- Start Date -->
                                     <div class="col-md-6 mb-3">
                                         <label for="start_date">Start Date</label>

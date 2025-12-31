@@ -19,8 +19,8 @@
                                 <label for="recipient" class="form-label">Select Recipient</label>
                                 <select name="recipient" id="recipient" class="form-control" required>
                                     <option value="all">Send Mail to All Members</option>
-                                    <option value="all-seller">Send Mail to All Seller</option>
-                                    <option value="all-buyer">Send Mail to All Buyer</option>
+                                    <option value="all_seller">Send Mail to All Seller</option>
+                                    <option value="all_buyer">Send Mail to All Buyer</option>
                                     <option value="specific">Send Mail to Specific Member Only</option>
                                     <option value="bronce">Send Mail to All Bronze Members</option>
                                     <option value="silver">Send Mail to All Silver Members</option>

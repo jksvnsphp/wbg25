@@ -212,7 +212,17 @@
 
 
     </section>
-    @include('external-user.inc-parts.listCard')
+    
+	
+	@include('external-user.inc-parts.listCard')
+	
+	<div class="container-fluid my-3">
+    <a href="{{ url()->previous() }}" class="btn btn-primary">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+</div>
+	
+	
 @endsection
 @section('custom-js-external')
     <script>

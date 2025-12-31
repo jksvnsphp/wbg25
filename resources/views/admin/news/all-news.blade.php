@@ -48,7 +48,7 @@
                                                 alt="">
                                         </td>
                                         <td class="align-middle">
-                                            <p class="fs-2 font-weight-bold">{{$news->user->first_name.' '.$news->user->last_name}}</p>
+                                            <p class="fs-2 font-weight-bold">{{$news->vendor->first_name.' '.$news->vendor->last_name}}</p>
                                         </td>
                                         <td class="align-middle">
                                             <p class="fs-2 font-weight-bold">

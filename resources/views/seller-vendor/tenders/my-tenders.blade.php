@@ -28,12 +28,12 @@
                                     <tr>
                                         <th colspan="2">Information</th>
 
-                                        <th>Expired</th>
+                                        <th>Expiring on</th>
                                         <th>Condition</th>
                                         <th>Price</th>
                                         <th>Price</th>
-                                        <th>Status</th>
-                                        <th>ReList</th>
+                                        <th>Status</th>                                        
+									    
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -78,11 +78,11 @@
                                                         data-name="status" type="checkbox" id="flexSwitchCheckChecked">
                                                 </div>
                                             </td>
-                                            <td>
-                                                <a href="{{ route('seller.edit.tender',$tender->slug) }}" title="relist" class="btn btn-secondary btn-sm me-2">
-                                                    <i class="fa fa-rotate text-white" aria-hidden="true"></i> Re-List
-                                                </a>
-                                            </td>
+											
+											
+                                            
+											
+											
                                             <td>
                                                 <div class="d-flex">
                                                     <a href="{{ route('seller.edit.tender',$tender->slug) }}" title="Edit" class="btn btn-info me-2">

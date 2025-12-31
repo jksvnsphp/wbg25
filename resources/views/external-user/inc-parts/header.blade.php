@@ -1,4 +1,36 @@
 <header class="container-fluid px-0">
+    <style>
+      .cart-wrapper {
+    position: relative;
+    display: inline-block;
+    height: 3rem;
+}
+
+.cart-icon {
+    height: 100%;
+}
+
+.cart-count {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    
+    background: red;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    </style>
     <div class="row px-2">
         <div class="col-xl-2 d-xl-block d-none">
             <a class="navbar-brand" href="{{ route('home') }}">
@@ -92,6 +124,12 @@
                                         href="{{ route('user.source-pro') }}">Source
                                         Pro</a>
                                 </li>
+								
+								<li>
+                                    <a class="dropdown-item mx-0 pb-1 px-0" href="{{ route('benefits.buyers') }}">Get
+                                        Quote</a>
+                                </li>
+								
 
                                 <li>
                                     <a class="dropdown-item mx-0 pb-1 px-0"
@@ -169,10 +207,12 @@
 
                     <div id="customGoogleTranslateElement" style="display: none;"></div>
                     <div class="navbar-nav py-1 d-flex justify-content-center me-3">
-                        <a href="{{ route('cart.product') }}" style="height: 3rem">
-                            <img style="height: 100%" src="{{ asset('world-business/images/cartl.jpg') }}"
-                                alt="" />
-                        </a>
+                        <a href="{{ route('cart.product') }}" class="cart-wrapper">
+    <img src="{{ asset('world-business/images/cartl.jpg') }}" class="cart-icon" alt="Cart" />
+    <span id="add_to_cart_val" class="cart-count">{{ $cartCount }}</span>
+    
+</a>
+
                     </div>
 
                 </div>
