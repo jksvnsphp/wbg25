@@ -784,7 +784,7 @@ class UserProductController extends Controller
             if (filter_var($userIp, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
                 $response = Http::get("https://ipinfo.io/{$userIp}/json?token=1cbe42adf84123");
             } else {
-                $countryCode = 'DE';
+                $countryCode = 'US';
                 return $this->getShippingCostByCountry($rate_id, $countryCode);
             }
             if ($response->successful()) {
@@ -831,7 +831,7 @@ class UserProductController extends Controller
             $countriesWithCost = $rate->shipping_rate_costs->flatMap(function ($cost) {
                 return $cost->shipping_regions->map(function ($region) use ($cost) {
                     return !$region->isWorldwide && $region->country
-                        ? ['name' => $region->country->name, 'cost' => $cost->cost]
+                        ? ['name' => $region->country->name, 'cost' => $cost->cost, 'iso2' => $region->country->iso2, 'iso3' => $region->country->iso3, 'currency' => $region->country->currency]
                         : null;
                 });
             })->filter()->unique()->values()->all();
@@ -857,7 +857,7 @@ class UserProductController extends Controller
         if (isset($product)) {
             $shippingData = $this->getShippingData($product->rate_table_id);
             $yourShippingCost = $this->getShippingCostByIp($product->rate_table_id);
-            // dd($yourShippingCost);
+            // dd($shippingData, $product->rate_table_id, $yourShippingCost);
             //use Carbon\Carbon;
 
             if ($product->isMultiple == 0) {
