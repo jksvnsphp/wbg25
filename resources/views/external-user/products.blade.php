@@ -272,11 +272,9 @@
                                         @if($product->totalQty > 0)
                                         {!! ($product->totalQty - $product->sold_quantity) !!}
                                         available
-                                        @if($product->sold_quantity > 0) /
-                                        <span class="text-danger">
-                                            {{ $product->sold_quantity }} Sold
+                                        / <span class="text-danger">
+                                            {{ max(0, $product->sold_quantity) }} Sold
                                         </span>
-                                        @endif
                                         @else
                                         soldout
                                         @endif
