@@ -112,59 +112,60 @@ class OfferTenderController extends Controller
         if (isset(auth()->user()->id)) {
             $user = auth()->user();
             $tenders = OfferTender::latest()
-                                  ->where('user_id', $user->id)
-                                  ->where('status','pending')
-                                  ->with('tender.vendor')
-                                  ->doesntHave('counters')
-                                  ->get();
-                                  
+                ->where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->with('tender.vendor')
+                ->doesntHave('counters')
+                ->get();
+
             $unTenders = OfferTender::latest()
-                                    ->where('user_id', $user->id)
-                                    ->where('status','pending')
-                                    ->where('isUserRead',0)
-                                    ->get();
-                                              
-            foreach ($unTenders ?? [] as $unTender){
-                $unTender->isUserRead=1;
+                ->where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->where('isUserRead', 0)
+                ->get();
+
+            foreach ($unTenders ?? [] as $unTender) {
+                $unTender->isUserRead = 1;
                 $unTender->save();
             }
-            
+
             return view('buyer-vendor.offered-tender', compact('tenders'));
         } else {
             return redirect()->route('login')->with(['alert-type' => 'error', 'message' => 'Please login first.']);
         }
     }
-    
+
     public function dealOfferTender()
     {
         if (isset(auth()->user()->id)) {
             $id = auth()->user()->id;
             $tenders = OfferTender::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id());
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id());
-                                 });
-                               })->where('status', 'accept')->with('tender.vendor', 'sender')->get();
+                $query->where(
+                    function ($q) {
+                        $q->where('vendor_id', auth()->id());
+                    }
+                )->orWhere(function ($q) {
+                    $q->where('user_id', auth()->id());
+                });
+            })->where('status', 'accept')->with('tender.vendor', 'sender')->get();
             $unTenders = OfferTender::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
-                                 })->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
-                                 });
-                               })->where('status', 'accept')->get();
-                               
-            foreach ($unTenders ?? [] as $tender) {
-              if ($tender->vendor_id === auth()->id() && $tender->isVendorDealRead == 0) {
-                  $tender->isVendorDealRead = 1;
-                  $tender->save();
-              }
+                $query->where(function ($q) {
+                    $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
+                })->orWhere(function ($q) {
+                    $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
+                });
+            })->where('status', 'accept')->get();
 
-             if ($tender->user_id === auth()->id() && $tender->isUserDealRead == 0) {
-                 $tender->isUserDealRead = 1;
-                  $tender->save();
-             }
+            foreach ($unTenders ?? [] as $tender) {
+                if ($tender->vendor_id === auth()->id() && $tender->isVendorDealRead == 0) {
+                    $tender->isVendorDealRead = 1;
+                    $tender->save();
+                }
+
+                if ($tender->user_id === auth()->id() && $tender->isUserDealRead == 0) {
+                    $tender->isUserDealRead = 1;
+                    $tender->save();
+                }
             }
 
             if (auth()->user()->account_type == "seller") {
@@ -176,13 +177,13 @@ class OfferTenderController extends Controller
             return redirect()->route('login')->with(['alert-type' => 'error', 'message' => 'Please login first.']);
         }
     }
-    
+
     public function dealMyOfferTender()
     {
         if (isset(auth()->user()->id)) {
             $id = auth()->user()->id;
             $tenders = OfferTender::where('vendor_id', auth()->id())->where('status', 'accept')->with('tender.vendor', 'sender')->get();
-                               
+
             if (auth()->user()->account_type == "seller") {
                 return view('seller-vendor.tenders.my-deal-tenders', compact('tenders'));
             } else {
@@ -197,7 +198,7 @@ class OfferTenderController extends Controller
         if (isset(auth()->user()->id)) {
             $id = auth()->user()->id;
             $tenders = OfferTender::where('user_id', auth()->id())->where('status', 'accept')->with('tender.vendor', 'sender')->get();
-            
+
 
             if (auth()->user()->account_type == "seller") {
                 return view('seller-vendor.tenders.my-deal-tenders', compact('tenders'));
@@ -209,30 +210,30 @@ class OfferTenderController extends Controller
         }
     }
 
-  public function dealTenderDetail($slug, $offer_id)
+    public function dealTenderDetail($slug, $offer_id)
     {
-        $id=Auth::user()->id;
+        $id = Auth::user()->id;
         $tenderOffer = OfferTender::where(function ($query) use ($id) {
             $query->where('user_id', $id)
                 ->orWhere('vendor_id', $id);
-        })->where('status', 'accept')->where('id',$offer_id)->with('tender.vendor.payment_infos', 'sender')->first();
-        
-        $tender=Tender::where('slug', $slug)->first();
-        if(!$tender){
-            return back()->with(['alert-type'=>'error','message'=>'Tender not found!']);
+        })->where('status', 'accept')->where('id', $offer_id)->with('tender.vendor.payment_infos', 'sender')->first();
+
+        $tender = Tender::where('slug', $slug)->first();
+        if (!$tender) {
+            return back()->with(['alert-type' => 'error', 'message' => 'Tender not found!']);
         }
-        return view('buyer-vendor.tender-deal-detail',compact('tenderOffer','tender'));
+        return view('buyer-vendor.tender-deal-detail', compact('tenderOffer', 'tender'));
     }
 
     public function receivedOfferTender()
     {
         if (isset(auth()->user()->id)) {
-            $receivedOffers = OfferTender::with('tender', 'sender')->where('vendor_id', auth()->user()->id)->where('status','pending')->doesntHave('counters')->get();
-            
-            $unReceivedOffers = OfferTender::with('tender', 'sender')->where('vendor_id', auth()->user()->id)->where('status','pending')->where('isVendorRead',0)->get();
-            
-            foreach ($unReceivedOffers ?? [] as $unReceivedOffer){
-                $unReceivedOffer->isVendorRead=1;
+            $receivedOffers = OfferTender::with('tender', 'sender')->where('vendor_id', auth()->user()->id)->where('status', 'pending')->doesntHave('counters')->get();
+
+            $unReceivedOffers = OfferTender::with('tender', 'sender')->where('vendor_id', auth()->user()->id)->where('status', 'pending')->where('isVendorRead', 0)->get();
+
+            foreach ($unReceivedOffers ?? [] as $unReceivedOffer) {
+                $unReceivedOffer->isVendorRead = 1;
                 $unReceivedOffer->save();
             }
             return view('seller-vendor.tenders.my-received-offer-tender', compact('receivedOffers'));
@@ -273,12 +274,12 @@ class OfferTenderController extends Controller
                 $tender->status = "accept";
                 $tender->counter_price = $tender->offer_price;
                 $tender->save();
-                
-                $tenderMain=Tender::where('id',$request->tender_id)->first();
+
+                $tenderMain = Tender::where('id', $request->tender_id)->first();
                 // dd($tenderMain);
-                $tenderMain->isDeal=1;
+                $tenderMain->isDeal = 1;
                 $tenderMain->save();
-                
+
                 $otherTenders = OfferTender::where('id', '!=', $tender->id)->where('tender_id', $request->tender_id)->where('vendor_id', auth()->user()->id)->get();
                 foreach ($otherTenders as $otherTender) {
                     $otherTender->status = "reject";
@@ -302,15 +303,15 @@ class OfferTenderController extends Controller
                 if ($counterOffer->status == 'pending') {
                     $counterOffer->status = "accept";
                     $counterOffer->save();
-                    
-                    $tenderMain=Tender::where('id',$tender->tender_id)->first();
-                    $tenderMain->isDeal=1;
+
+                    $tenderMain = Tender::where('id', $tender->tender_id)->first();
+                    $tenderMain->isDeal = 1;
                     $tenderMain->save();
-                    
+
                     $tender->status = "accept";
                     $tender->counter_price = $counterOffer->offer_price;
                     $tender->save();
-                    
+
                     $otherTenders = OfferTender::where('id', '!=', $tender->id)->where('tender_id', $request->tender_id)->where('vendor_id', auth()->user()->id)->get();
                     foreach ($otherTenders as $otherTender) {
                         $otherTender->status = "reject";
@@ -321,7 +322,7 @@ class OfferTenderController extends Controller
                         }
                     }
                 }
-                
+
                 return response()->json(['success' => true, 'message' => 'Successfully accept your tender offer!']);
             } else {
                 return response()->json(['success' => false,  'message' => 'You are not authorized to delete this quote!']);
@@ -330,7 +331,7 @@ class OfferTenderController extends Controller
             return response()->json(['success' => false,  'message' => 'You must be logged in to access this page!']);
         }
     }
-    
+
     public function rejectOfferTenderBySeller(Request $request)
     {
         if (isset(auth()->user()->id)) {
@@ -413,9 +414,9 @@ class OfferTenderController extends Controller
         if (isset(auth()->user()->id)) {
             $user = auth()->user();
             $tenders = CounterOfferTender::latest()->where('user_id', $user->id)->where('status', 'pending')->with('tender', 'offer.sender')->get();
-            $unTenders = CounterOfferTender::latest()->where('user_id', $user->id)->where('status', 'pending')->where('isUserRead',0)->with('tender', 'offer.sender')->get();
-            foreach ($unTenders ?? [] as $unTender){
-                $unTender->isUserRead=1;
+            $unTenders = CounterOfferTender::latest()->where('user_id', $user->id)->where('status', 'pending')->where('isUserRead', 0)->with('tender', 'offer.sender')->get();
+            foreach ($unTenders ?? [] as $unTender) {
+                $unTender->isUserRead = 1;
                 $unTender->save();
             }
             if (auth()->user()->account_type == "seller") {
@@ -431,20 +432,20 @@ class OfferTenderController extends Controller
     {
         if (isset(auth()->user()->id)) {
             $user = auth()->user();
-            
+
             $tenders = CounterOfferTender::latest()->whereHas('offer', function ($query) use ($user) {
                 $query->where('vendor_id', $user->id);
             })->where('status', 'pending')->with('tender', 'offer.sender')->get();
-            
+
             $unTenders = CounterOfferTender::latest()->whereHas('offer', function ($query) use ($user) {
                 $query->where('vendor_id', $user->id);
-            })->where('status', 'pending')->where('isVendorRead',0)->get();
-            
-            foreach ($unTenders ?? [] as $unTender){
-                $unTender->isVendorRead=1;
+            })->where('status', 'pending')->where('isVendorRead', 0)->get();
+
+            foreach ($unTenders ?? [] as $unTender) {
+                $unTender->isVendorRead = 1;
                 $unTender->save();
             }
-            
+
             if (auth()->user()->account_type == "seller") {
                 return view('seller-vendor.tenders.my-counters-offer-tender', compact('tenders'));
             }
@@ -476,7 +477,7 @@ class OfferTenderController extends Controller
             ]);
         }
     }
-    
+
     public function deleteCounterOfferTender(Request $request)
     {
         if (isset(auth()->user()->id)) {
@@ -541,24 +542,24 @@ class OfferTenderController extends Controller
                     }
                     $offer = OfferTender::where('tender_id', $request->tender_id)->where('user_id', Auth::user()->id)->first();
                     if (!$offer) {
-                        
-                        $offerTend=OfferTender::create([
+
+                        $offerTend = OfferTender::create([
                             'user_id' => Auth::user()->id,
                             'vendor_id' => $tender->vendor_id,
                             'tender_id' => $request->tender_id,
                             'offer_price' => $tender->price,
                             'status' => 'accept',
                         ]);
-                        
-                        
-                        $tender->isDeal=1;
+
+
+                        $tender->isDeal = 1;
                         $tender->save();
-                        
-                        $getOtherOffer=OfferTender::where('id','!=',$offerTend->id)->where('tender_id',$request->tender_id)->get();
-                        foreach ($getOtherOffer ?? [] as $offerTender){
+
+                        $getOtherOffer = OfferTender::where('id', '!=', $offerTend->id)->where('tender_id', $request->tender_id)->get();
+                        foreach ($getOtherOffer ?? [] as $offerTender) {
                             $offerTender->delete();
                         }
-                        
+
                         // send mail to seller
                         $seller = User::where('id', $tender->vendor_id)->first();
                         $sellerMail = $seller->email;

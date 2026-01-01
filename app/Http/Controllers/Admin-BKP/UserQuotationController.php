@@ -34,7 +34,7 @@ class UserQuotationController extends Controller
 
         return $count ? "{$slug}-{$count}" : $slug;
     }
-    
+
     public function getQuotePage()
     {
         $categories = CustomeCategory::where('status', 1)
@@ -47,7 +47,7 @@ class UserQuotationController extends Controller
     }
 
 
-     public function getAllQuotePage()
+    public function getAllQuotePage()
     {
         $categories = CustomeCategory::where('status', 1)
             ->where('deleted', '0')
@@ -58,7 +58,7 @@ class UserQuotationController extends Controller
         return view('external-user.get-quote', compact('categories'));
     }
     ///getAllQuotePage
-    
+
     public function editQuotation($quotation_id)
     {
         $quotation = Quotation::where('id', $quotation_id)->where('user_id', Auth::user()->id)->first();
@@ -218,10 +218,10 @@ class UserQuotationController extends Controller
                 ->where('user_id', auth()->user()->id)
                 ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
                 ->get();
-            foreach ($unQuotations ?? [] as $unQuotation){
-                $unQuotation->isRead=1;
+            foreach ($unQuotations ?? [] as $unQuotation) {
+                $unQuotation->isRead = 1;
                 $unQuotation->save();
-            }        
+            }
             return view('seller-vendor.quotations.my-posted-quotations', compact('quotations'));
         } else {
             return back()->with(['alert-type' => 'unauth', 'message' => 'You must be logged in to access this page!']);
@@ -232,20 +232,20 @@ class UserQuotationController extends Controller
     {
         if (isset(auth()->user()->id)) {
             $receivedOffers = OfferQuotation::with('sender')
-                                            ->where('vendor_id', auth()->user()->id)
-                                            ->where('status', 'pending')
-                                            ->doesntHave('counters')
-                                            ->get();
+                ->where('vendor_id', auth()->user()->id)
+                ->where('status', 'pending')
+                ->doesntHave('counters')
+                ->get();
             $unReceivedOffers = OfferQuotation::with('sender')
-                                            ->where('vendor_id', auth()->user()->id)
-                                            ->where('status', 'pending')
-                                            ->where('isVendorRead',0)
-                                            ->doesntHave('counters')
-                                            ->get();
-            foreach ($unReceivedOffers ?? [] as $unReceivedOffer){
-                $unReceivedOffer->isVendorRead=1;
+                ->where('vendor_id', auth()->user()->id)
+                ->where('status', 'pending')
+                ->where('isVendorRead', 0)
+                ->doesntHave('counters')
+                ->get();
+            foreach ($unReceivedOffers ?? [] as $unReceivedOffer) {
+                $unReceivedOffer->isVendorRead = 1;
                 $unReceivedOffer->save();
-            }                               
+            }
             if (auth()->user()->account_type == "seller") {
                 return view('seller-vendor.quotations.my-received-quotation', compact('receivedOffers'));
             } else {
@@ -268,10 +268,10 @@ class UserQuotationController extends Controller
                 ->where('user_id', auth()->user()->id)
                 ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) < ?', [Carbon::now()])
                 ->get();
-            foreach ($unQuotations ?? [] as $unQuotation){
-                $unQuotation->isRead=1;
+            foreach ($unQuotations ?? [] as $unQuotation) {
+                $unQuotation->isRead = 1;
                 $unQuotation->save();
-            }       
+            }
             return view('seller-vendor.quotations.my-posted-quotations', compact('quotations'));
         } else {
             return back()->with(['alert-type' => 'unauth', 'message' => 'You must be logged in to access this page!']);
@@ -354,10 +354,10 @@ class UserQuotationController extends Controller
         if (isset(auth()->user()->id)) {
             $user = auth()->user();
             $quotations = OfferQuotation::latest()->where('user_id', $user->id)->with('quotation.vendor')->where('status', 'pending')->get();
-            
-            $unQuotations = OfferQuotation::latest()->where('user_id', $user->id)->where('status', 'pending')->where('isUserRead',0)->get();
-            foreach ($unQuotations ?? [] as $unQuotation){
-                $unQuotation->isUserRead=1;
+
+            $unQuotations = OfferQuotation::latest()->where('user_id', $user->id)->where('status', 'pending')->where('isUserRead', 0)->get();
+            foreach ($unQuotations ?? [] as $unQuotation) {
+                $unQuotation->isUserRead = 1;
                 $unQuotation->save();
             }
             return view('seller-vendor.quotations.my-submitted-quotes', compact('quotations'));
@@ -407,9 +407,9 @@ class UserQuotationController extends Controller
         if (isset(auth()->user()->id)) {
             $user = auth()->user();
             $quotations = CounterOfferQuotation::latest()->where('user_id', $user->id)->where('status', 'pending')->with('quotation.vendor.company', 'offer.sender')->get();
-            $unQuotations = CounterOfferQuotation::latest()->where('user_id', $user->id)->where('status', 'pending')->where('isUserRead',0)->get();
-            foreach ($unQuotations ?? [] as $unQuotation){
-                $unQuotation->isUserRead=1;
+            $unQuotations = CounterOfferQuotation::latest()->where('user_id', $user->id)->where('status', 'pending')->where('isUserRead', 0)->get();
+            foreach ($unQuotations ?? [] as $unQuotation) {
+                $unQuotation->isUserRead = 1;
                 $unQuotation->save();
             }
             if (auth()->user()->account_type == "seller") {
@@ -425,20 +425,20 @@ class UserQuotationController extends Controller
     {
         if (isset(auth()->user()->id)) {
             $user = auth()->user();
-            
+
             $quotations = CounterOfferQuotation::latest()->whereHas('offer', function ($query) use ($user) {
                 $query->where('vendor_id', $user->id);
             })->where('status', 'pending')->with('quotation', 'offer.sender', 'user')->get();
-            
+
             $unQuotations = CounterOfferQuotation::latest()->whereHas('offer', function ($query) use ($user) {
                 $query->where('vendor_id', $user->id);
-            })->where('isVendorRead',0)->where('status', 'pending')->get();
-            
-            foreach ($unQuotations ?? [] as $unQuotation){
-                $unQuotation->isVendorRead=1;
+            })->where('isVendorRead', 0)->where('status', 'pending')->get();
+
+            foreach ($unQuotations ?? [] as $unQuotation) {
+                $unQuotation->isVendorRead = 1;
                 $unQuotation->save();
-            } 
-             
+            }
+
             if (auth()->user()->account_type == "seller") {
                 return view('seller-vendor.quotations.my-counter-quotations', compact('quotations'));
             } else {
@@ -450,33 +450,33 @@ class UserQuotationController extends Controller
     }
     public function dealQuotes()
     {
-        
+
         if (isset(auth()->user()->id)) {
             $id = auth()->user()->id;
             $quotations = OfferQuotation::where(function ($query) use ($id) {
                 $query->where('user_id', $id)
                     ->orWhere('vendor_id', $id);
             })->where('status', 'accept')->with('quotation.vendor', 'sender')->get();
-            
-            $unQuotations = OfferQuotation::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
-                                 })->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
-                                 });
-                               })->where('status', 'accept')->get();
-             foreach ($unQuotations ?? [] as $unQuotation) {
-              if ($unQuotation->vendor_id === auth()->id() && $unQuotation->isVendorDealRead == 0) {
-                  $unQuotation->isVendorDealRead = 1;
-                  $unQuotation->save();
-              }
 
-             if ($unQuotation->user_id === auth()->id() && $unQuotation->isUserDealRead == 0) {
-                 $unQuotation->isUserDealRead = 1;
-                 $unQuotation->save();
-             }
-            }    
-            
+            $unQuotations = OfferQuotation::where(function ($query) {
+                $query->where(function ($q) {
+                    $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
+                })->orWhere(function ($q) {
+                    $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
+                });
+            })->where('status', 'accept')->get();
+            foreach ($unQuotations ?? [] as $unQuotation) {
+                if ($unQuotation->vendor_id === auth()->id() && $unQuotation->isVendorDealRead == 0) {
+                    $unQuotation->isVendorDealRead = 1;
+                    $unQuotation->save();
+                }
+
+                if ($unQuotation->user_id === auth()->id() && $unQuotation->isUserDealRead == 0) {
+                    $unQuotation->isUserDealRead = 1;
+                    $unQuotation->save();
+                }
+            }
+
             if (auth()->user()->account_type == "seller") {
                 return view('seller-vendor.quotations.my-quotation-deals', compact('quotations'));
             } else {
@@ -486,13 +486,13 @@ class UserQuotationController extends Controller
             return redirect()->route('login')->with(['alert-type' => 'error', 'message' => 'Please login first.']);
         }
     }
-    
+
     public function dealSupplierQuotes()
     {
         if (isset(auth()->user()->id)) {
             $id = auth()->user()->id;
             $quotations = OfferQuotation::where('user_id', $id)->where('status', 'accept')->with('quotation.vendor', 'sender')->get();
-            
+
             if (auth()->user()->account_type == "seller") {
                 return view('seller-vendor.quotations.my-quotation-deals', compact('quotations'));
             } else {
@@ -502,14 +502,14 @@ class UserQuotationController extends Controller
             return redirect()->route('login')->with(['alert-type' => 'error', 'message' => 'Please login first.']);
         }
     }
-    
+
     public function dealMyQuotes()
     {
-            
+
         if (isset(auth()->user()->id)) {
             $id = auth()->user()->id;
-            $quotations = OfferQuotation::where('vendor_id',$id)->where('status', 'accept')->with('quotation.vendor', 'sender')->get();
-                      
+            $quotations = OfferQuotation::where('vendor_id', $id)->where('status', 'accept')->with('quotation.vendor', 'sender')->get();
+
             if (auth()->user()->account_type == "seller") {
                 return view('seller-vendor.quotations.my-quotation-deals', compact('quotations'));
             } else {

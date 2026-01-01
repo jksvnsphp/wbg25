@@ -24,7 +24,7 @@ class ProductsController extends Controller
             ->whereHas('order', function ($query) {
                 $query->where('user_id', Auth::user()->id);
             })
-            ->with('order','rate', 'product.vendor.payment_infos', 'product.gallery')
+            ->with('order', 'rate', 'product.vendor.payment_infos', 'product.gallery')
             ->first();
         // dd($item);
         if ($item) {

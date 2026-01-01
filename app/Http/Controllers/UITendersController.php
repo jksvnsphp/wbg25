@@ -121,7 +121,7 @@ class UITendersController extends Controller
                 }
             });
         }
-        
+
         if ($request->has('parentcategory') && $request->input('parentcategory') != "") {
             $parentcategory = $request->input('parentcategory');
             $queryT->where('parent_category_id', $parentcategory);
@@ -177,155 +177,161 @@ class UITendersController extends Controller
         $tenders = $paginatedResults;
         return view('external-user.tender.tender-home', compact('categories', 'countries', 'tenders'));
     }
-    
-    
+
+
     public function index(Request $request, $slug = null)
-{
-    $pageItem = 12;
-    //$pageItem = request('per_page', 10); // default 10
+    {
+        $pageItem = request('per_page', 25); // default 25
 
-    if ($slug != '' && $slug != null) {
-        $result = $this->findCategoryBySlug($slug);
-        if ($result != null) {
-            $category = $result['category'];
-            $level = $result['level'];
-        } else {
-            abort(404);
-        }
-    }
-
-    if ($request->has('pageItem') && $request->filled('pageItem')) {
-        $pageItem = $request->pageItem ?? 10;
-    }
-
-    $categories = parent_category::where('status', "1")->orderBy('name', 'ASC')->get();
-    $countries = countries::orderBy('name', 'ASC')->get();
-
-    $queryT = Tender::query()
-        ->where('isDeal', 0)
-        ->whereHas('vendor', fn($q) => $q->where('account_type', 'seller'))
-        ->with(['vendor.sellerPackageOne' => fn($q) => $q->whereNotNull('expire_at')])
-        ->where('status', 1);
-
-    // Search
-    if ($request->filled('q')) {
-        $search = $request->input('q');
-        $queryT->where(function ($q) use ($search) {
-            $q->where('name', 'LIKE', "%{$search}%")
-              ->orWhere('description', 'LIKE', "%{$search}%");
-        });
-    }
-
-    // Keyword search
-    if ($request->filled('keywords')) {
-        $keywords = explode(',', $request->keywords);
-        $queryT->where(function ($q) use ($keywords) {
-            foreach ($keywords as $keyword) {
-                $keyword = trim($keyword);
-                $q->orWhere('name', 'LIKE', "%$keyword%")
-                  ->orWhere('description', 'LIKE', "%$keyword%");
+        if ($slug != '' && $slug != null) {
+            $result = $this->findCategoryBySlug($slug);
+            if ($result != null) {
+                $category = $result['category'];
+                $level = $result['level'];
+            } else {
+                abort(404);
             }
-        });
-    }
-
-    // Category filter by level
-    if (isset($level) && isset($category)) {
-        switch ($level) {
-            case 1:
-                $queryT->where('parent_category_id', $category->id);
-                break;
-            case 2:
-                $queryT->where(fn($query) => $query
-                    ->where('category_id', $category->id)
-                    ->orWhere('parent_category_id', $category->parent_category_id));
-                break;
-            case 3:
-                $queryT->where(fn($query) => $query
-                    ->where('subcategory_id', $category->id)
-                    ->orWhere('category_id', $category->category_id));
-                break;
-            case 4:
-                $queryT->where(fn($query) => $query
-                    ->where('childcategory_id', $category->id)
-                    ->orWhere('subcategory_id', $category->subcategories_id));
-                break;
         }
-    }
 
-    // Country filter
-    if ($request->filled('country')) {
-        $countryData = countries::where('name', $request->input('country'))->first();
-        if ($countryData) {
-            $queryT->whereHas('vendor', fn($q) => $q->where('country', $countryData->id));
+        if ($request->has('pageItem') && $request->filled('pageItem')) {
+            $pageItem = $request->pageItem ?? 25;
         }
-    }
 
-    // Other category filters
-    foreach (['parentcategory' => 'parent_category_id', 'subcategory' => 'category_id', 'childcategory' => 'subcategory_id', 'endcategory' => 'childcategory_id'] as $reqKey => $col) {
-        if ($request->filled($reqKey)) {
-            $queryT->where($col, $request->input($reqKey));
+        $categories = parent_category::where('status', "1")->orderBy('name', 'ASC')->get();
+        $countries = countries::orderBy('name', 'ASC')->get();
+
+        $queryT = Tender::query()
+            ->where('isDeal', 0)
+            ->whereHas('vendor', fn($q) => $q->where('account_type', 'seller'))
+            ->with(['vendor.sellerPackageOne' => fn($q) => $q->whereNotNull('expire_at')])
+            ->where('status', 1);
+
+        // Search
+        if ($request->filled('q')) {
+            $search = $request->input('q');
+            $queryT->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%");
+            });
         }
-    }
 
-    // Exclude expired tenders (common in all)
-    $queryT->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
-    
-    // Apply order_type filter
-    if ($request->filled('order_type')) {
-        $orderType = $request->input('order_type');
-        if ($orderType === 'latest') {
+        // Keyword search
+        if ($request->filled('keywords')) {
+            $keywords = explode(',', $request->keywords);
+            $queryT->where(function ($q) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $keyword = trim($keyword);
+                    $q->orWhere('name', 'LIKE', "%$keyword%")
+                        ->orWhere('description', 'LIKE', "%$keyword%");
+                }
+            });
+        }
+
+        // Category filter by level
+        if (isset($level) && isset($category)) {
+            switch ($level) {
+                case 1:
+                    $queryT->where('parent_category_id', $category->id);
+                    break;
+                case 2:
+                    $queryT->where(fn($query) => $query
+                        ->where('category_id', $category->id)
+                        ->orWhere('parent_category_id', $category->parent_category_id));
+                    break;
+                case 3:
+                    $queryT->where(fn($query) => $query
+                        ->where('subcategory_id', $category->id)
+                        ->orWhere('category_id', $category->category_id));
+                    break;
+                case 4:
+                    $queryT->where(fn($query) => $query
+                        ->where('childcategory_id', $category->id)
+                        ->orWhere('subcategory_id', $category->subcategories_id));
+                    break;
+            }
+        }
+
+        // Country filter
+        if ($request->filled('country')) {
+            $countryData = countries::where('name', $request->input('country'))->first();
+            if ($countryData) {
+                $queryT->whereHas('vendor', fn($q) => $q->where('country', $countryData->id));
+            }
+        }
+
+        // Other category filters
+        foreach (['parentcategory' => 'parent_category_id', 'subcategory' => 'category_id', 'childcategory' => 'subcategory_id', 'endcategory' => 'childcategory_id'] as $reqKey => $col) {
+            if ($request->filled($reqKey)) {
+                $queryT->where($col, $request->input($reqKey));
+            }
+        }
+
+        // Exclude expired tenders (common in all)
+        $queryT->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
+
+        // Apply order_type filter
+        if ($request->filled('order_type')) {
+            $orderType = $request->input('order_type');
+            if ($orderType === 'latest') {
+                $queryT->orderBy('created_at', 'desc');
+            } elseif ($orderType === 'expired-soon') {
+                $queryT->orderByRaw('DATE_ADD(created_at, INTERVAL duration DAY) ASC');
+            }
+        } else {
             $queryT->orderBy('created_at', 'desc');
-        } elseif ($orderType === 'expired-soon') {
-            $queryT->orderByRaw('DATE_ADD(created_at, INTERVAL duration DAY) ASC');
-        }
-    } else {
-        $queryT->orderBy('created_at', 'desc');
-    }
-
-    $tenders = $queryT->with('vendor.company')->get();
-
-    $sortedResults = $tenders->sortBy(function ($tender) {
-        $package = optional($tender->vendor->sellerPackageOne)->package;
-        $expireAt = optional($tender->vendor->sellerPackageOne)->expire_at;
-
-        if (!$package || now()->greaterThan($expireAt)) {
-            return 9999;
         }
 
-        return match ($package->type) {
-            'platinum' => 1,
-            'gold' => 2,
-            'silver' => 3,
-            'bronce' => 4,
-            default => 5,
-        };
-    });
+        $tenders = $queryT->with('vendor.company')->get();
 
-    foreach ($sortedResults as $tender) {
-        $tender->country = $tender->vendor->country
-            ? countries::find($tender->vendor->country)
-            : null;
+        $sortedResults = $tenders->sortBy(function ($tender) {
+            $package = optional($tender->vendor->sellerPackageOne)->package;
+            $expireAt = optional($tender->vendor->sellerPackageOne)->expire_at;
 
-        $expiryDate = Carbon::parse($tender->created_at)->addDays($tender->duration);
-        $tender->expiry_date = $expiryDate->format('Y M d | H:i');
-        $tender->is_expired = now()->greaterThanOrEqualTo($expiryDate);
+            if (!$package || now()->greaterThan($expireAt)) {
+                return 9999;
+            }
+
+            return match ($package->type) {
+                'platinum' => 1,
+                'gold' => 2,
+                'silver' => 3,
+                'bronce' => 4,
+                default => 5,
+            };
+        });
+
+        $now = Carbon::now();
+        foreach ($sortedResults as $tender) {
+            $tender->country = $tender->vendor->country
+                ? countries::find($tender->vendor->country)
+                : null;
+
+            $expiryDate = Carbon::parse($tender->created_at)->addDays($tender->duration);
+
+            // Calculate remaining time
+            $days = $now->diffInDays($expiryDate, false);
+            $hours = $now->copy()->addDays($days)->diffInHours($expiryDate, false);
+
+            // Final format
+            $tender->expiry_date = $expiryDate->format('d-M-Y') . " | {$days}d {$hours}h";
+            $tender->is_expired = now()->greaterThanOrEqualTo($expiryDate);
+        }
+
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $items = $sortedResults->slice(($currentPage - 1) * $pageItem, $pageItem)->values();
+        $paginatedResults = new LengthAwarePaginator($items, $sortedResults->count(), $pageItem, $currentPage, [
+            'path' => LengthAwarePaginator::resolveCurrentPath(),
+            'query' => $request->query(),
+        ]);
+
+        return view('external-user.tender.tender-home', [
+            'categories' => $categories,
+            'countries' => $countries,
+            'tenders' => $paginatedResults,
+        ]);
     }
 
-    $currentPage = LengthAwarePaginator::resolveCurrentPage();
-    $items = $sortedResults->slice(($currentPage - 1) * $pageItem, $pageItem)->values();
-    $paginatedResults = new LengthAwarePaginator($items, $sortedResults->count(), $pageItem, $currentPage, [
-        'path' => LengthAwarePaginator::resolveCurrentPath(),
-        'query' => $request->query(),
-    ]);
 
-    return view('external-user.tender.tender-home', [
-        'categories' => $categories,
-        'countries' => $countries,
-        'tenders' => $paginatedResults,
-    ]);
-}
-
-    
     function getShippingCostByCountry($rate_id, $countryCode)
     {
         try {
@@ -460,44 +466,45 @@ class UITendersController extends Controller
 
         return $data;
     }
+
     public function tenderDetails($slug)
     {
         $tender = Tender::where('slug', $slug)->where('status', 1)->where('isDeal', 0)->with('parentcategory', 'category', 'childcategory', 'endchildcategory', 'vendor.company')->first();
         if ($tender) {
             $shippingData = $this->getShippingData($tender->rate_table_id);
             $yourShippingCost = $this->getShippingCostByIp($tender->rate_table_id);
-            
-                $expiryDate = Carbon::parse($tender->created_at)->addDays($tender->duration);
-                ///added_at
-                // Check if expired
-                $isExpired = now()->greaterThanOrEqualTo($expiryDate);
 
-                $remainingTime = $isExpired
-                    ? $expiryDate->diffForHumans([
-                        'parts' => 3,
-                        'short' => true,
-                        'absolute' => true,
-                    ])
-                    : now()->diffForHumans($expiryDate, [
-                        'parts' => 3,
-                        'short' => true,
-                        'absolute' => true,
-                    ]);
+            $expiryDate = Carbon::parse($tender->created_at)->addDays($tender->duration);
+            ///added_at
+            // Check if expired
+            $isExpired = now()->greaterThanOrEqualTo($expiryDate);
 
-                // Update product status if expired
-                if ($isExpired && $tender->status != 0) {
-                    $tender->status = 0;
-                    $tender->save();
-                    return back()->with(['alert-type' => 'error', 'message' => 'This tender is no more avialable in list.']);
-                }
-                $tender->expiry_date = $expiryDate->format('Y M d h:i:s A');
-                $tender->added_at = $tender->created_at->format('Y M d h:i:s A');
-                $tender->is_expired = $isExpired;
-                $remainingTime = str_replace(['before', 'after'], '', $remainingTime);
-                $tender->remaining_time = $remainingTime;
-            
-            
-            
+            $remainingTime = $isExpired
+                ? $expiryDate->diffForHumans([
+                    'parts' => 3,
+                    'short' => true,
+                    'absolute' => true,
+                ])
+                : now()->diffForHumans($expiryDate, [
+                    'parts' => 3,
+                    'short' => true,
+                    'absolute' => true,
+                ]);
+
+            // Update product status if expired
+            if ($isExpired && $tender->status != 0) {
+                $tender->status = 0;
+                $tender->save();
+                return back()->with(['alert-type' => 'error', 'message' => 'This tender is no more avialable in list.']);
+            }
+            $tender->expiry_date = $expiryDate->format('d M Y, h:i A');
+            $tender->added_at = $tender->created_at->format('d M Y, h:i A');
+            $tender->is_expired = $isExpired;
+            $remainingTime = str_replace(['before', 'after'], '', $remainingTime);
+            $tender->remaining_time = $remainingTime;
+
+
+
             $tender->country = null;
             $seller = User::where('id', $tender->vendor_id)->first();
             $seller->rating = number_format($seller->ratings()->avg('rate'), 1);
@@ -523,7 +530,7 @@ class UITendersController extends Controller
             $tender->searched_path = $searchedPath;
             $tender->shippingData = $shippingData;
             // dd($tender);
-            return view('external-user.tender.tender-details', compact('tender', 'seller','yourShippingCost'));
+            return view('external-user.tender.tender-details', compact('tender', 'seller', 'yourShippingCost'));
         } else {
             abort(404);
         }

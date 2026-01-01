@@ -123,8 +123,8 @@ class UserProductController extends Controller
                     ->orWhere('description', 'LIKE', "%{$search}%");
             });
         }
-        if($request->has('pageItem') && $request->filled('pageItem')){
-            $pageItem=$request->pageItem ?? 10;
+        if ($request->has('pageItem') && $request->filled('pageItem')) {
+            $pageItem = $request->pageItem ?? 10;
         }
         if ($request->has('business_type') && $request->input('business_type') != "") {
             $business_type = $request->input('business_type');
@@ -230,202 +230,205 @@ class UserProductController extends Controller
         // dd($premiumProducts);
         return view('external-user.products', compact('categories', 'countries', 'products', 'premiumProducts'));
     }
-  
-  public function allproducts(Request $request, $slug = null)
-{
-    $pageItem = 25;
-    if ($slug != '' && $slug != null) {
-        $result = $this->findCategoryBySlug($slug);
-        if ($result != null) {
-            $category = $result['category'];
-            $level = $result['level'];
-        } else {
-            abort(404);
+
+    public function allproducts(Request $request, $slug = null)
+    {
+        $pageItem = 25;
+        if ($slug != '' && $slug != null) {
+            $result = $this->findCategoryBySlug($slug);
+            if ($result != null) {
+                $category = $result['category'];
+                $level = $result['level'];
+            } else {
+                abort(404);
+            }
         }
-    }
 
-    $countries = countries::orderBy('name', 'ASC')->get();
-    $categories = parent_category::where('status', "1")->orderBy('name', 'ASC')->get();
+        $countries = countries::orderBy('name', 'ASC')->get();
+        $categories = parent_category::where('status', "1")->orderBy('name', 'ASC')->get();
 
-    $queryp = products::query()->whereHas('vendor', function ($q) {
-        $q->where('account_type', 'seller');
-    })->with(['vendor.sellerPackageOne' => function ($q) {
-        $q->whereNotNull('expire_at');
-    }]);
+        $queryp = products::query()->whereHas('vendor', function ($q) {
+            $q->where('account_type', 'seller');
+        })->with(['vendor.sellerPackageOne' => function ($q) {
+            $q->whereNotNull('expire_at');
+        }]);
 
-    $queryp->where('isList', 1);
+        $queryp->where('isList', 1);
 
-    // Apply order_type logic
-    if ($request->filled('order_type')) {
-        $orderType = $request->input('order_type');
-        switch ($orderType) {
-            case 'multiply':
-                $queryp->where('isMultiple', 1);
-                break;
-            case 'single':
-                $queryp->where('isMultiple', 0)
-                       ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
-                break;
-            case 'expired-soon':
-                $queryp->where('isMultiple', 0)
-                       ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]) // not already expired
-                       ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) <= ?', [Carbon::now()->addDays(3)]); // expiring in next 3 days
-                break;
-            case 'latest':
-                 $queryp->orderBy('created_at', 'desc')
-           ->where(function ($query) {
-               $query->where('isMultiple', 1)
-                     ->orWhere(function ($subQuery) {
-                         $subQuery->where('isMultiple', 0)
-                                  ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
-                     });
-           });
-                break;
-            case 'all':
-            default:
-                $queryp->where(function ($query) {
-                    $query->where('isMultiple', 1)
-                        ->orWhere(function ($subQuery) {
-                            $subQuery->where('isMultiple', 0)
-                                ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
-                        });
-                });
-                break;
-        }
-    } else {
-        // Default condition if no order_type
-        $queryp->where(function ($query) {
-            $query->where('isMultiple', 1)
-                ->orWhere(function ($subQuery) {
-                    $subQuery->where('isMultiple', 0)
+        // Apply order_type logic
+        if ($request->filled('order_type')) {
+            $orderType = $request->input('order_type');
+            switch ($orderType) {
+                case 'multiply':
+                    $queryp->where('isMultiple', 1);
+                    break;
+                case 'single':
+                    $queryp->where('isMultiple', 0)
                         ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
-                });
-        });
-    }
-
-    // Existing filters
-    if ($request->has('q') && $request->input('q') != "") {
-        $search = $request->input('q');
-        $queryp->where(function ($q) use ($search) {
-            $q->where('name', 'LIKE', "%{$search}%")
-                ->orWhere('description', 'LIKE', "%{$search}%");
-        });
-    }
-
-    if($request->has('sellerId') && $request->filled('sellerId')){
-          $sellerId = $request->sellerId ?? 0;
-         $queryp->where('vendor_id', $sellerId);
-        
-    }
-
-    if($request->has('pageItem') && $request->filled('pageItem')){
-        $pageItem = $request->pageItem ?? 10;
-    }
-
-    if ($request->has('business_type') && $request->input('business_type') != "") {
-        $business_type = $request->input('business_type');
-        $queryp->whereHas('vendor.company', function ($query) use ($business_type) {
-            $query->where('business_type', $business_type);
-        });
-    }
-
-    if ($request->filled('parentcategory')) {
-        $queryp->where('parent_category_id', $request->input('parentcategory'));
-    }
-    if ($request->filled('subcategory')) {
-        $queryp->where('category_id', $request->input('subcategory'));
-    }
-    if ($request->filled('childcategory')) {
-        $queryp->where('subcategory_id', $request->input('childcategory'));
-    }
-    if ($request->filled('endcategory')) {
-        $queryp->where('childcategory_id', $request->input('endcategory'));
-    }
-    if ($request->filled('min_price')) {
-        $queryp->where('minPrice', '>=', $request->input('min_price'));
-    }
-    if ($request->filled('max_price')) {
-        $queryp->where('maxPrice', '<=', $request->input('max_price'));
-    }
-
-    // Category level-based filtering
-    if (isset($level) && isset($category)) {
-        switch ($level) {
-            case 1:
-                $queryp->where('parent_category_id', $category->id);
-                break;
-            case 2:
-                $queryp->where('category_id', $category->id);
-                break;
-            case 3:
-                $queryp->where('subcategory_id', $category->id);
-                break;
-            case 4:
-                $queryp->where('childcategory_id', $category->id);
-                break;
-        }
-    }
-
-    if ($request->has('country')) {
-        $country = $request->input('country');
-        $countryData = countries::where('name', $country)->first();
-        if ($countryData) {
-            $queryp->whereHas('vendor', function ($query) use ($countryData) {
-                $query->where('country', $countryData->id);
+                    break;
+                case 'expired-soon':
+                    $queryp->where('isMultiple', 0)
+                        ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]) // not already expired
+                        ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) <= ?', [Carbon::now()->addDays(3)]); // expiring in next 3 days
+                    break;
+                case 'latest':
+                    $queryp->orderBy('created_at', 'desc')
+                        ->where(function ($query) {
+                            $query->where('isMultiple', 1)
+                                ->orWhere(function ($subQuery) {
+                                    $subQuery->where('isMultiple', 0)
+                                        ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
+                                });
+                        });
+                    break;
+                case 'all':
+                default:
+                    $queryp->where(function ($query) {
+                        $query->where('isMultiple', 1)
+                            ->orWhere(function ($subQuery) {
+                                $subQuery->where('isMultiple', 0)
+                                    ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
+                            });
+                    });
+                    break;
+            }
+        } else {
+            // Default condition if no order_type
+            $queryp->where(function ($query) {
+                $query->where('isMultiple', 1)
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('isMultiple', 0)
+                            ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
+                    });
             });
         }
-    }
 
-    // Fetch results
-    $products = $queryp->with('gallery', 'vendor.company', 'vendor.symbols')->get();
-
-    // Sort by package type
-    $sortedResults = $products->sortBy(function ($product) {
-        $package = optional($product->vendor->sellerPackageOne)->package;
-        $expireAt = optional($product->vendor->sellerPackageOne)->expire_at;
-        if (!$package || now()->greaterThan($expireAt)) {
-            return 9999;
+        // Existing filters
+        if ($request->has('q') && $request->input('q') != "") {
+            $search = $request->input('q');
+            $queryp->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%");
+            });
         }
-        return match ($package->type) {
-            'platinum' => 1,
-            'gold' => 2,
-            'silver' => 3,
-            'bronce' => 4,
-            default => 5,
-        };
-    });
 
-    foreach ($sortedResults as $product) {
-        $product->country = $product->vendor->country
-            ? countries::find($product->vendor->country)
-            : null;
-        $product->average_rating = number_format($product->ratings()->avg('rate'));
+        if ($request->has('sellerId') && $request->filled('sellerId')) {
+            $sellerId = $request->sellerId ?? 0;
+            $queryp->where('vendor_id', $sellerId);
+        }
+
+        if ($request->has('pageItem') && $request->filled('pageItem')) {
+            $pageItem = $request->pageItem ?? 10;
+        }
+
+        if ($request->has('business_type') && $request->input('business_type') != "") {
+            $business_type = $request->input('business_type');
+            $queryp->whereHas('vendor.company', function ($query) use ($business_type) {
+                $query->where('business_type', $business_type);
+            });
+        }
+
+        if ($request->filled('parentcategory')) {
+            $queryp->where('parent_category_id', $request->input('parentcategory'));
+        }
+        if ($request->filled('subcategory')) {
+            $queryp->where('category_id', $request->input('subcategory'));
+        }
+        if ($request->filled('childcategory')) {
+            $queryp->where('subcategory_id', $request->input('childcategory'));
+        }
+        if ($request->filled('endcategory')) {
+            $queryp->where('childcategory_id', $request->input('endcategory'));
+        }
+        if ($request->filled('min_price')) {
+            $queryp->where('minPrice', '>=', $request->input('min_price'));
+        }
+        if ($request->filled('max_price')) {
+            $queryp->where('maxPrice', '<=', $request->input('max_price'));
+        }
+
+        // Category level-based filtering
+        if (isset($level) && isset($category)) {
+            switch ($level) {
+                case 1:
+                    $queryp->where('parent_category_id', $category->id);
+                    break;
+                case 2:
+                    $queryp->where('category_id', $category->id);
+                    break;
+                case 3:
+                    $queryp->where('subcategory_id', $category->id);
+                    break;
+                case 4:
+                    $queryp->where('childcategory_id', $category->id);
+                    break;
+            }
+        }
+
+        if ($request->has('country')) {
+            $country = $request->input('country');
+            $countryData = countries::where('name', $country)->first();
+            if ($countryData) {
+                $queryp->whereHas('vendor', function ($query) use ($countryData) {
+                    $query->where('country', $countryData->id);
+                });
+            }
+        }
+
+        // Fetch results
+        $products = $queryp
+            ->with('gallery', 'vendor.company', 'vendor.symbols')
+            ->withSum(['orderItems as sold_quantity' => function ($q) {
+                $q->where('payment_status', '!=', 'processing');
+            }], 'quantity')
+            ->get();
+
+        // Sort by package type
+        $sortedResults = $products->sortBy(function ($product) {
+            $package = optional($product->vendor->sellerPackageOne)->package;
+            $expireAt = optional($product->vendor->sellerPackageOne)->expire_at;
+            if (!$package || now()->greaterThan($expireAt)) {
+                return 9999;
+            }
+            return match ($package->type) {
+                'platinum' => 1,
+                'gold' => 2,
+                'silver' => 3,
+                'bronce' => 4,
+                default => 5,
+            };
+        });
+
+        foreach ($sortedResults as $product) {
+            $product->country = $product->vendor->country
+                ? countries::find($product->vendor->country)
+                : null;
+            $product->average_rating = number_format($product->ratings()->avg('rate'));
+        }
+
+        // Paginate
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $items = $sortedResults->slice(($currentPage - 1) * $pageItem, $pageItem)->values();
+        $paginatedResults = new LengthAwarePaginator($items, $sortedResults->count(), $pageItem, $currentPage, [
+            'path' => LengthAwarePaginator::resolveCurrentPath(),
+            'query' => $request->query(),
+        ]);
+
+        $products = $paginatedResults;
+        $premiumProducts = $this->premiumProducts($request);
+
+        // echo '<pre>';
+        // print_r($products->toArray());
+        // echo '</pre>';
+
+        return view('external-user.products', compact('categories', 'countries', 'products', 'premiumProducts'));
     }
 
-    // Paginate
-    $currentPage = LengthAwarePaginator::resolveCurrentPage();
-    $items = $sortedResults->slice(($currentPage - 1) * $pageItem, $pageItem)->values();
-    $paginatedResults = new LengthAwarePaginator($items, $sortedResults->count(), $pageItem, $currentPage, [
-        'path' => LengthAwarePaginator::resolveCurrentPath(),
-        'query' => $request->query(),
-    ]);
 
-    $products = $paginatedResults;
-    $premiumProducts = $this->premiumProducts($request);
-
-//echo '<pre>';
-//print_r($products);
-//echo '</pre>';
-
-    return view('external-user.products', compact('categories', 'countries', 'products', 'premiumProducts'));
-}
-
-  
     public function allTypeProducts_old_05_06_(Request $request, $type)
     {
-
         $pageItem = 10;
-        
+
         $countries = countries::orderBy('name', 'ASC')->get();
         $categories = parent_category::where('status', "1")->orderBy('name', 'ASC')->get();
         $queryp = products::query()->whereHas('vendor', function ($q) {
@@ -433,19 +436,19 @@ class UserProductController extends Controller
         })->with(['vendor.sellerPackageOne' => function ($q) {
             $q->whereNotNull('expire_at');
         }]);
-        if($request->has('pageItem') && $request->filled('pageItem')){
-            $pageItem=$request->pageItem ?? 10;
+        if ($request->has('pageItem') && $request->filled('pageItem')) {
+            $pageItem = $request->pageItem ?? 10;
         }
-        if($type=="limited-offer"){
+        if ($type == "limited-offer") {
             $queryp = $queryp->where('isLimitedOffer', 1);
-        }elseif($type=="daily-deal"){
+        } elseif ($type == "daily-deal") {
             $queryp = $queryp->where('isDailyDeal', 1);
-        }elseif($type=="bulk-buying"){
+        } elseif ($type == "bulk-buying") {
             $queryp = $queryp->where('isBulkBuy', 1);
-        }elseif($type=="hot"){
+        } elseif ($type == "hot") {
             $queryp = $queryp->where('isHotProduct', 1);
         }
-        $retype=$type;
+        $retype = $type;
         $queryp->where('isList', 1)->where(function ($query) {
             $query->where('isMultiple', 1)
                 ->orWhere(function ($subQuery) {
@@ -564,150 +567,150 @@ class UserProductController extends Controller
         $products = $paginatedResults;
         $premiumProducts = $this->premiumProducts($request);
         // dd($premiumProducts);
-        return view('external-user.filter-products', compact('categories', 'countries', 'products', 'premiumProducts','type','retype'));
+        return view('external-user.filter-products', compact('categories', 'countries', 'products', 'premiumProducts', 'type', 'retype'));
     }
 
 
-public function allTypeProducts(Request $request, $type)
-{
-    $pageItem = 10;
+    public function allTypeProducts(Request $request, $type)
+    {
+        $pageItem = 10;
 
-    if ($request->has('pageItem') && $request->filled('pageItem')) {
-        $pageItem = $request->pageItem;
-    }
-
-    $orderType = $request->input('order_type', 'all');
-
-    $countries = countries::orderBy('name', 'ASC')->get();
-    $categories = parent_category::where('status', "1")->orderBy('name', 'ASC')->get();
-
-    $queryp = products::query()
-        ->whereHas('vendor', function ($q) {
-            $q->where('account_type', 'seller');
-        })
-        ->with(['vendor.sellerPackageOne' => function ($q) {
-            $q->whereNotNull('expire_at');
-        }]);
-
-    // Type filters
-    if ($type === "limited-offer") {
-        $queryp->where('isLimitedOffer', 1);
-    } elseif ($type === "daily-deal") {
-        $queryp->where('isDailyDeal', 1);
-    } elseif ($type === "bulk-buying") {
-        $queryp->where('isBulkBuy', 1);
-    } elseif ($type === "hot") {
-        $queryp->where('isHotProduct', 1);
-    }
-
-    $retype = $type;
-
-    // Order type filters
-    $queryp->where(function ($query) use ($orderType) {
-        if ($orderType === 'multiple') {
-            $query->where('isMultiple', 1);
-        } elseif ($orderType === 'single') {
-            $query->where('isMultiple', 0)
-                  ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
-        } elseif ($orderType === 'endest-soon') {
-            $query->where('isMultiple', 0)
-                  ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
-                  ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) <= ?', [Carbon::now()->addDays(7)]);
-        } else {
-            $query->where('isMultiple', 1)
-                  ->orWhere(function ($subQuery) {
-                      $subQuery->where('isMultiple', 0)
-                               ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
-                  });
+        if ($request->has('pageItem') && $request->filled('pageItem')) {
+            $pageItem = $request->pageItem;
         }
-    });
 
-    // Other filters
-    if ($request->has('q') && $request->input('q') != "") {
-        $search = $request->input('q');
-        $queryp->where(function ($q) use ($search) {
-            $q->where('name', 'LIKE', "%{$search}%")
-              ->orWhere('description', 'LIKE', "%{$search}%");
-        });
-    }
+        $orderType = $request->input('order_type', 'all');
 
-    if ($request->has('business_type') && $request->input('business_type') != "") {
-        $queryp->whereHas('vendor.company', function ($query) use ($request) {
-            $query->where('business_type', $request->input('business_type'));
-        });
-    }
+        $countries = countries::orderBy('name', 'ASC')->get();
+        $categories = parent_category::where('status', "1")->orderBy('name', 'ASC')->get();
 
-    foreach (['parentcategory' => 'parent_category_id', 'subcategory' => 'category_id', 'childcategory' => 'subcategory_id', 'endcategory' => 'childcategory_id'] as $input => $column) {
-        if ($request->has($input) && $request->input($input) != "") {
-            $queryp->where($column, $request->input($input));
+        $queryp = products::query()
+            ->whereHas('vendor', function ($q) {
+                $q->where('account_type', 'seller');
+            })
+            ->with(['vendor.sellerPackageOne' => function ($q) {
+                $q->whereNotNull('expire_at');
+            }]);
+
+        // Type filters
+        if ($type === "limited-offer") {
+            $queryp->where('isLimitedOffer', 1);
+        } elseif ($type === "daily-deal") {
+            $queryp->where('isDailyDeal', 1);
+        } elseif ($type === "bulk-buying") {
+            $queryp->where('isBulkBuy', 1);
+        } elseif ($type === "hot") {
+            $queryp->where('isHotProduct', 1);
         }
-    }
 
-    if ($request->has('min_price') && $request->input('min_price') != '') {
-        $queryp->where('minPrice', '>=', $request->input('min_price'));
-    }
+        $retype = $type;
 
-    if ($request->has('max_price') && $request->input('max_price') != "") {
-        $queryp->where('maxPrice', '<=', $request->input('max_price'));
-    }
+        // Order type filters
+        $queryp->where(function ($query) use ($orderType) {
+            if ($orderType === 'multiple') {
+                $query->where('isMultiple', 1);
+            } elseif ($orderType === 'single') {
+                $query->where('isMultiple', 0)
+                    ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
+            } elseif ($orderType === 'endest-soon') {
+                $query->where('isMultiple', 0)
+                    ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
+                    ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) <= ?', [Carbon::now()->addDays(7)]);
+            } else {
+                $query->where('isMultiple', 1)
+                    ->orWhere(function ($subQuery) {
+                        $subQuery->where('isMultiple', 0)
+                            ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()]);
+                    });
+            }
+        });
 
-    if ($request->has('country') && $request->input('country') != "") {
-        $countryData = countries::where('name', $request->input('country'))->first();
-        if ($countryData != null) {
-            $queryp->whereHas('vendor', function ($query) use ($countryData) {
-                $query->where('country', $countryData->id);
+        // Other filters
+        if ($request->has('q') && $request->input('q') != "") {
+            $search = $request->input('q');
+            $queryp->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%");
             });
         }
-    }
 
-    // Product collection
-    if ($orderType === 'latest') {
-        $products = $queryp->with('gallery', 'vendor.company', 'vendor.symbols')
-            ->orderByDesc('created_at')
-            ->get();
-    } else {
-        $products = $queryp->with('gallery', 'vendor.company', 'vendor.symbols')
-            ->inRandomOrder()
-            ->get();
-    }
-
-    // Sorting by seller package
-    $sortedResults = $products->sortBy(function ($product) {
-        $package = optional($product->vendor->sellerPackageOne)->package;
-        $expireAt = optional($product->vendor->sellerPackageOne)->expire_at;
-        if (!$package || now()->greaterThan($expireAt)) {
-            return 9999;
+        if ($request->has('business_type') && $request->input('business_type') != "") {
+            $queryp->whereHas('vendor.company', function ($query) use ($request) {
+                $query->where('business_type', $request->input('business_type'));
+            });
         }
-        return match ($package->type) {
-            'platinum' => 1,
-            'gold' => 2,
-            'silver' => 3,
-            'bronce' => 4,
-            default => 5,
-        };
-    });
 
-    // Enrich products
-    foreach ($sortedResults as $product) {
-        $product->country = $product->vendor->country
-            ? countries::find($product->vendor->country)
-            : null;
-        $product->average_rating = number_format($product->ratings()->avg('rate'));
+        foreach (['parentcategory' => 'parent_category_id', 'subcategory' => 'category_id', 'childcategory' => 'subcategory_id', 'endcategory' => 'childcategory_id'] as $input => $column) {
+            if ($request->has($input) && $request->input($input) != "") {
+                $queryp->where($column, $request->input($input));
+            }
+        }
+
+        if ($request->has('min_price') && $request->input('min_price') != '') {
+            $queryp->where('minPrice', '>=', $request->input('min_price'));
+        }
+
+        if ($request->has('max_price') && $request->input('max_price') != "") {
+            $queryp->where('maxPrice', '<=', $request->input('max_price'));
+        }
+
+        if ($request->has('country') && $request->input('country') != "") {
+            $countryData = countries::where('name', $request->input('country'))->first();
+            if ($countryData != null) {
+                $queryp->whereHas('vendor', function ($query) use ($countryData) {
+                    $query->where('country', $countryData->id);
+                });
+            }
+        }
+
+        // Product collection
+        if ($orderType === 'latest') {
+            $products = $queryp->with('gallery', 'vendor.company', 'vendor.symbols')
+                ->orderByDesc('created_at')
+                ->get();
+        } else {
+            $products = $queryp->with('gallery', 'vendor.company', 'vendor.symbols')
+                ->inRandomOrder()
+                ->get();
+        }
+
+        // Sorting by seller package
+        $sortedResults = $products->sortBy(function ($product) {
+            $package = optional($product->vendor->sellerPackageOne)->package;
+            $expireAt = optional($product->vendor->sellerPackageOne)->expire_at;
+            if (!$package || now()->greaterThan($expireAt)) {
+                return 9999;
+            }
+            return match ($package->type) {
+                'platinum' => 1,
+                'gold' => 2,
+                'silver' => 3,
+                'bronce' => 4,
+                default => 5,
+            };
+        });
+
+        // Enrich products
+        foreach ($sortedResults as $product) {
+            $product->country = $product->vendor->country
+                ? countries::find($product->vendor->country)
+                : null;
+            $product->average_rating = number_format($product->ratings()->avg('rate'));
+        }
+
+        // Paginate
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $items = $sortedResults->slice(($currentPage - 1) * $pageItem, $pageItem)->values();
+        $paginatedResults = new LengthAwarePaginator($items, $sortedResults->count(), $pageItem, $currentPage, [
+            'path' => LengthAwarePaginator::resolveCurrentPath(),
+            'query' => $request->query(),
+        ]);
+
+        $products = $paginatedResults;
+        $premiumProducts = $this->premiumProducts($request);
+
+        return view('external-user.filter-products', compact('categories', 'countries', 'products', 'premiumProducts', 'type', 'retype'));
     }
-
-    // Paginate
-    $currentPage = LengthAwarePaginator::resolveCurrentPage();
-    $items = $sortedResults->slice(($currentPage - 1) * $pageItem, $pageItem)->values();
-    $paginatedResults = new LengthAwarePaginator($items, $sortedResults->count(), $pageItem, $currentPage, [
-        'path' => LengthAwarePaginator::resolveCurrentPath(),
-        'query' => $request->query(),
-    ]);
-
-    $products = $paginatedResults;
-    $premiumProducts = $this->premiumProducts($request);
-
-    return view('external-user.filter-products', compact('categories', 'countries', 'products', 'premiumProducts', 'type', 'retype'));
-}
 
 
     function getShippingCostByCountry($rate_id, $countryCode)
@@ -781,7 +784,7 @@ public function allTypeProducts(Request $request, $type)
             if (filter_var($userIp, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
                 $response = Http::get("https://ipinfo.io/{$userIp}/json?token=1cbe42adf84123");
             } else {
-                $countryCode = 'DE';
+                $countryCode = 'US';
                 return $this->getShippingCostByCountry($rate_id, $countryCode);
             }
             if ($response->successful()) {
@@ -828,7 +831,7 @@ public function allTypeProducts(Request $request, $type)
             $countriesWithCost = $rate->shipping_rate_costs->flatMap(function ($cost) {
                 return $cost->shipping_regions->map(function ($region) use ($cost) {
                     return !$region->isWorldwide && $region->country
-                        ? ['name' => $region->country->name, 'cost' => $cost->cost]
+                        ? ['name' => $region->country->name, 'cost' => $cost->cost, 'iso2' => $region->country->iso2, 'iso3' => $region->country->iso3, 'currency' => $region->country->currency]
                         : null;
                 });
             })->filter()->unique()->values()->all();
@@ -846,63 +849,62 @@ public function allTypeProducts(Request $request, $type)
 
         return $data;
     }
-    
+
     public function productDetails($slug = null)
     {
-        $product = products::where('isList', 1)->where('slug', $slug)->with('parentcategory', 'category', 'childcategory', 'endchildcategory', 'gallery', 'video', 'product_attributes.categoryAttribute.attribute', 'vendor.company', 'vendor.symbols', 'product_setting', 'rate_table.shipping_rate_costs.shipping_regions', 'vendor.payment_info','vendor.sellerPackageOne.package')->first();
-        
+        $product = products::where('isList', 1)->where('slug', $slug)->with('parentcategory', 'category', 'childcategory', 'endchildcategory', 'gallery', 'video', 'product_attributes.categoryAttribute.attribute', 'vendor.company', 'vendor.symbols', 'product_setting', 'rate_table.shipping_rate_costs.shipping_regions', 'vendor.payment_info', 'vendor.sellerPackageOne.package')->first();
+
         if (isset($product)) {
             $shippingData = $this->getShippingData($product->rate_table_id);
             $yourShippingCost = $this->getShippingCostByIp($product->rate_table_id);
-            // dd($yourShippingCost);
+            // dd($shippingData, $product->rate_table_id, $yourShippingCost);
             //use Carbon\Carbon;
 
-if ($product->isMultiple == 0) {
+            if ($product->isMultiple == 0) {
 
-    $start = Carbon::parse($product->created_at);
-    $end   = $start->copy()->addDays($product->duration);
-    $now   = Carbon::now();
+                $start = Carbon::parse($product->created_at);
+                $end   = $start->copy()->addDays($product->duration);
+                $now   = Carbon::now();
 
-    $isExpired = $now->greaterThanOrEqualTo($end);
+                $isExpired = $now->greaterThanOrEqualTo($end);
 
-    // Auto unlist if expired
-    if ($isExpired && $product->isList !== 0) {
-        $product->update(['isList' => 0]);
-    }
+                // Auto unlist if expired
+                if ($isExpired && $product->isList !== 0) {
+                    $product->update(['isList' => 0]);
+                }
 
-    // Remaining time calculation
-    if ($isExpired) {
-        $product->remaining_time = 'Expired';
-    } else {
+                // Remaining time calculation
+                if ($isExpired) {
+                    $product->remaining_time = 'Expired';
+                } else {
 
-        $remainingSeconds = $now->diffInSeconds($end);
+                    $remainingSeconds = $now->diffInSeconds($end);
 
-        $days = intdiv($remainingSeconds, 86400);
-        $remainingSeconds %= 86400;
+                    $days = intdiv($remainingSeconds, 86400);
+                    $remainingSeconds %= 86400;
 
-        $hours = intdiv($remainingSeconds, 3600);
-        $remainingSeconds %= 3600;
+                    $hours = intdiv($remainingSeconds, 3600);
+                    $remainingSeconds %= 3600;
 
-        $minutes = intdiv($remainingSeconds, 60);
-        $seconds = $remainingSeconds % 60;
+                    $minutes = intdiv($remainingSeconds, 60);
+                    $seconds = $remainingSeconds % 60;
 
-        if ($days > 0) {
-            $time = "{$days}d {$hours}h";
-        } elseif ($hours > 0) {
-            $time = "{$hours}h {$minutes}m";
-        } elseif ($minutes > 0) {
-            $time = "{$minutes}m {$seconds}s";
-        } else {
-            $time = "{$seconds}s";
-        }
+                    if ($days > 0) {
+                        $time = "{$days}d {$hours}h";
+                    } elseif ($hours > 0) {
+                        $time = "{$hours}h {$minutes}m";
+                    } elseif ($minutes > 0) {
+                        $time = "{$minutes}m {$seconds}s";
+                    } else {
+                        $time = "{$seconds}s";
+                    }
 
-        $product->remaining_time = "Ends in {$time}";
-    }
+                    $product->remaining_time = "Ends in {$time}";
+                }
 
-    $product->expiry_date = $end->format('Y M d h:i:s A');
-    $product->is_expired  = $isExpired;
-}
- elseif ($product->isMultiple == 1) {
+                $product->expiry_date = $end->format('Y M d h:i:s A');
+                $product->is_expired  = $isExpired;
+            } elseif ($product->isMultiple == 1) {
                 $variants = json_decode($product->variants, true);
                 foreach ($variants as &$variant) {
                     $combination = $variant['attributes'];
@@ -959,9 +961,9 @@ if ($product->isMultiple == 0) {
             $product->shippingData = $shippingData;
             $product->average_rating = number_format($product->ratings()->avg('rate'));
 
-//echo '<pre>';
-//print_r($shippingData);
-//echo '</pre>';
+            // echo '<pre>';
+            // print_r($product->toArray());
+            // echo '</pre>';
 
             return view('external-user.product-detail', compact('product', 'yourShippingCost'));
         } else {
@@ -1002,7 +1004,7 @@ if ($product->isMultiple == 0) {
     // spotlight store
     public function sellerSpotlight(Request $request, $code, $slug = null)
     {
-        $seller = User::where('ref_no', $code)->with('company','store_meta','store_keys')
+        $seller = User::where('ref_no', $code)->with('company', 'store_meta', 'store_keys')
             ->addSelect([
                 'total_sold' => products::selectRaw('SUM(order_items.quantity)')
                     ->join('order_items', 'order_items.product_id', '=', 'products.id')
