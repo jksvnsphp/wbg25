@@ -72,15 +72,15 @@ class SellerTenderController extends Controller
         if (isset(auth()->user()->id)) {
             $user = auth()->user();
             $tenders = OfferTender::latest()->where('user_id', $user->id)->with('tender.vendor')->where('status', 'pending')->doesntHave('counters')->get();
-            
+
             $unTenders = OfferTender::latest()
-                                    ->where('user_id', $user->id)
-                                    ->where('status','pending')
-                                    ->where('isUserRead',0)
-                                    ->get();
-                                              
-            foreach ($unTenders ?? [] as $unTender){
-                $unTender->isUserRead=1;
+                ->where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->where('isUserRead', 0)
+                ->get();
+
+            foreach ($unTenders ?? [] as $unTender) {
+                $unTender->isUserRead = 1;
                 $unTender->save();
             }
             return view('seller-vendor.tenders.offered-tender', compact('tenders'));
@@ -105,7 +105,7 @@ class SellerTenderController extends Controller
 
         return $count ? "{$slug}-{$count}" : $slug;
     }
-    
+
     public function saveTender(Request $request)
     {
         if (isset(auth()->user()->id)) {
@@ -145,7 +145,7 @@ class SellerTenderController extends Controller
                     'image_4' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
                     'image_5' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
                     'image_6' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
-                    
+
                     'buyer_pay' => 'nullable|in:on',
                     'seller_pay' => 'nullable|in:on',
                     'return_timeline' => 'required|integer',
@@ -167,6 +167,7 @@ class SellerTenderController extends Controller
 
                     'endchild_category_id.integer' => 'The end child category must be a valid integer.',
                     'endchild_category_id.exists' => 'The selected end child category does not exist in the database.',
+                    'image_1.required' => 'The primary image is required.',
                 ]
             );
 
@@ -245,18 +246,18 @@ class SellerTenderController extends Controller
                 $tender->subcategory_id = $request->child_category_id;
                 $tender->childcategory_id = $request->endchild_category_id;
                 $tender->duration = $request->duration;
-                
-                $tender->isReturnAccept = $request->isReturnAccept=="on"?1:0;
-                if($request->isReturnAccept=="on"){
-                   $tender->buyer_pay = $request->buyer_pay=="on"?1:0;
-                   $tender->seller_pay = $request->seller_pay=="on"?1:0;  
-                   $tender->refund = $request->refund;  
-                   $tender->return_timeline = $request->return_timeline;  
-                }else{
-                   $tender->buyer_pay = $request->buyer_pay=="on"?1:0;
-                   $tender->seller_pay = $request->seller_pay=="on"?1:0;  
-                   $tender->refund = $request->refund;  
-                   $tender->return_timeline = $request->return_timeline;  
+
+                $tender->isReturnAccept = $request->isReturnAccept == "on" ? 1 : 0;
+                if ($request->isReturnAccept == "on") {
+                    $tender->buyer_pay = $request->buyer_pay == "on" ? 1 : 0;
+                    $tender->seller_pay = $request->seller_pay == "on" ? 1 : 0;
+                    $tender->refund = $request->refund;
+                    $tender->return_timeline = $request->return_timeline;
+                } else {
+                    $tender->buyer_pay = $request->buyer_pay == "on" ? 1 : 0;
+                    $tender->seller_pay = $request->seller_pay == "on" ? 1 : 0;
+                    $tender->refund = $request->refund;
+                    $tender->return_timeline = $request->return_timeline;
                 }
 
 
@@ -294,19 +295,19 @@ class SellerTenderController extends Controller
         if (isset(auth()->user()->id)) {
             $user = auth()->user();
             $tenders = Tender::where('vendor_id', $user->id)
-                              ->where('isDeal',0)
-                              ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
-                              ->get();
-                              
-            $unReadTenders = Tender::where('vendor_id', $user->id)->where('isRead',0)->get();
-            $tenders->is_expired=0;
-            foreach ($unReadTenders ?? [] as $unReadTender){
-                $unReadTender->isRead=1;
+                ->where('isDeal', 0)
+                ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
+                ->get();
+
+            $unReadTenders = Tender::where('vendor_id', $user->id)->where('isRead', 0)->get();
+            $tenders->is_expired = 0;
+            foreach ($unReadTenders ?? [] as $unReadTender) {
+                $unReadTender->isRead = 1;
                 $unReadTender->save();
             }
             //echo '<pre>';
             //print_r($tenders);
-			//echo '</pre>';
+            //echo '</pre>';
             return view('seller-vendor.tenders.my-tenders', compact('tenders'));
         } else {
             return redirect()->route('login')->with(['alert-type' => 'error', 'message' => 'Please login first.']);
@@ -317,20 +318,20 @@ class SellerTenderController extends Controller
         if (isset(auth()->user()->id)) {
             $user = auth()->user();
             $tenders = Tender::where('vendor_id', $user->id)
-                              ->where('isDeal',0)
-                              ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) < ?', [Carbon::now()])
-                              ->get();
-                              
-            $unReadTenders = Tender::where('vendor_id', $user->id)->where('isRead',0)->get();
-            
-            foreach ($unReadTenders ?? [] as $unReadTender){
-                $unReadTender->isRead=1;
+                ->where('isDeal', 0)
+                ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) < ?', [Carbon::now()])
+                ->get();
+
+            $unReadTenders = Tender::where('vendor_id', $user->id)->where('isRead', 0)->get();
+
+            foreach ($unReadTenders ?? [] as $unReadTender) {
+                $unReadTender->isRead = 1;
                 $unReadTender->save();
             }
-			$tenders->is_expired=1;
-			//echo '<pre>';
+            $tenders->is_expired = 1;
+            //echo '<pre>';
             //print_r($tenders);
-			//echo '</pre>';
+            //echo '</pre>';
             return view('seller-vendor.tenders.my-expired-tenders', compact('tenders'));
         } else {
             return redirect()->route('login')->with(['alert-type' => 'error', 'message' => 'Please login first.']);
@@ -401,97 +402,97 @@ class SellerTenderController extends Controller
     }
 
 
-    
 
-public function editTender($slug)
-{
-    if (!auth()->check()) {
-        return redirect()->back()->with([
-            'alert-type' => 'warning',
-            'message' => 'Unauthorized access this page!'
-        ]);
-    }
 
-    $regions = region::where('status', 1)
-        ->with('countries')
-        ->orderBy('name', 'ASC')
-        ->get();
+    public function editTender($slug)
+    {
+        if (!auth()->check()) {
+            return redirect()->back()->with([
+                'alert-type' => 'warning',
+                'message' => 'Unauthorized access this page!'
+            ]);
+        }
 
-    $countries = countries::where('status', 1)
-        ->orderBy('name', 'asc')
-        ->get()
-        ->map(fn ($c) => ['id' => $c->id, 'text' => $c->name]);
+        $regions = region::where('status', 1)
+            ->with('countries')
+            ->orderBy('name', 'ASC')
+            ->get();
 
-    $regions_countries = region::where('status', 1)
-        ->orderBy('name', 'asc')
-        ->get()
-        ->map(fn ($r) => ['id' => $r->id, 'text' => $r->name]);
+        $countries = countries::where('status', 1)
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(fn($c) => ['id' => $c->id, 'text' => $c->name]);
 
-    $tender = Tender::where('slug', $slug)
-        ->where('vendor_id', auth()->id())
-        ->with(
-            'parentcategory',
-            'category',
-            'childcategory',
-            'endchildcategory',
-            'tender_setting',
-            'rate_table.shipping_rate_costs.shipping_regions'
-        )
-        ->first();
+        $regions_countries = region::where('status', 1)
+            ->orderBy('name', 'asc')
+            ->get()
+            ->map(fn($r) => ['id' => $r->id, 'text' => $r->name]);
 
-    if (!$tender) {
-        return redirect()->back()->with([
-            'alert-type' => 'warning',
-            'message' => 'Tender not found!'
-        ]);
-    }
+        $tender = Tender::where('slug', $slug)
+            ->where('vendor_id', auth()->id())
+            ->with(
+                'parentcategory',
+                'category',
+                'childcategory',
+                'endchildcategory',
+                'tender_setting',
+                'rate_table.shipping_rate_costs.shipping_regions'
+            )
+            ->first();
 
-    /**  CHECK IF EXPIRED */
-    $expiryDate = Carbon::parse($tender->created_at)->addDays($tender->duration);
+        if (!$tender) {
+            return redirect()->back()->with([
+                'alert-type' => 'warning',
+                'message' => 'Tender not found!'
+            ]);
+        }
 
-    $tender->is_expired = $expiryDate->isPast() ? 1 : 0;
+        /**  CHECK IF EXPIRED */
+        $expiryDate = Carbon::parse($tender->created_at)->addDays($tender->duration);
+
+        $tender->is_expired = $expiryDate->isPast() ? 1 : 0;
 
     // Optional: Save in DB if you want
     // $tender->save();
 
-    /** CATEGORY PATH LOGIC (UNCHANGED) */
-    $searchedCategory = '';
-    $searchedPath = '';
+        /** CATEGORY PATH LOGIC (UNCHANGED) */
+        $searchedCategory = '';
+        $searchedPath = '';
 
-    if ($tender->parentcategory) {
-        $searchedCategory = $tender->parentcategory->name;
-        $searchedPath = $searchedCategory;
+        if ($tender->parentcategory) {
+            $searchedCategory = $tender->parentcategory->name;
+            $searchedPath = $searchedCategory;
+        }
+
+        if ($tender->category) {
+            $searchedCategory = $tender->category->name;
+            $searchedPath .= ' > ' . $searchedCategory;
+        }
+
+        if ($tender->childcategory) {
+            $searchedCategory = $tender->childcategory->name;
+            $searchedPath .= ' > ' . $searchedCategory;
+        }
+
+        if ($tender->endchildcategory) {
+            $searchedCategory = $tender->endchildcategory->name;
+            $searchedPath .= ' > ' . $searchedCategory;
+        }
+
+        $tender->searched_category = $searchedCategory;
+        $tender->searched_path = $searchedPath;
+
+        return view('seller-vendor.tenders.edit-tender', compact(
+            'tender',
+            'regions',
+            'countries',
+            'regions_countries'
+        ));
     }
 
-    if ($tender->category) {
-        $searchedCategory = $tender->category->name;
-        $searchedPath .= ' > ' . $searchedCategory;
-    }
 
-    if ($tender->childcategory) {
-        $searchedCategory = $tender->childcategory->name;
-        $searchedPath .= ' > ' . $searchedCategory;
-    }
 
-    if ($tender->endchildcategory) {
-        $searchedCategory = $tender->endchildcategory->name;
-        $searchedPath .= ' > ' . $searchedCategory;
-    }
-
-    $tender->searched_category = $searchedCategory;
-    $tender->searched_path = $searchedPath;
-
-    return view('seller-vendor.tenders.edit-tender', compact(
-        'tender',
-        'regions',
-        'countries',
-        'regions_countries'
-    ));
-}
-
-	
-	
-	public function editTenderold($slug)
+    public function editTenderold($slug)
     {
         if (isset(auth()->user()->id)) {
             $regions = region::where('status', 1)->with('countries')->orderBy('name', 'ASC')->get();
@@ -579,13 +580,13 @@ public function editTender($slug)
                     'image_4' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
                     'image_5' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
                     'image_6' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
-                    
+
                     'buyer_pay' => 'nullable|in:on',
                     'seller_pay' => 'nullable|in:on',
                     'return_timeline' => 'required|integer',
                     'isReturnAccept' => 'nullable|in:on',
                     'refund' => 'nullable|string',
-            
+
                 ],
                 [
                     'parent_category_id.required' => 'The parent category is required. Please search and used it.',
@@ -608,16 +609,16 @@ public function editTender($slug)
                 return response()->json(['error' => $validate->messages()], 422);
             } else {
                 $tender = Tender::find($request->id);
-				
-				if (!$tender) {
-    return response()->json(['success' => false, 'message' => 'Tender not found']);
-}
 
-				
+                if (!$tender) {
+                    return response()->json(['success' => false, 'message' => 'Tender not found']);
+                }
+
+
                 if ($tender) {
-$isExpired = Carbon::parse($tender->created_at)
-    ->addDays($tender->duration)
-    ->isPast();
+                    $isExpired = Carbon::parse($tender->created_at)
+                        ->addDays($tender->duration)
+                        ->isPast();
                     $rateTableId = null;
                     if ($request->shipping_partner != "") {
                         $newRateTable = new shipping_rate_tables();
@@ -694,33 +695,33 @@ $isExpired = Carbon::parse($tender->created_at)
                     $tender->category_id = $request->category_id;
                     $tender->subcategory_id = $request->child_category_id;
                     $tender->childcategory_id = $request->endchild_category_id;
-                    
-					if ($isExpired) {
-    
-    $tender->created_at = Carbon::now();
-    $tender->duration  = $request->duration;
-    $tender->isDeal    = 0; // reopen if needed
 
-    
+                    if ($isExpired) {
 
-} elseif ($request->duration != $tender->duration) {
-    // tender active → only update duration
-    $tender->duration = $request->duration;
-}
+                        $tender->created_at = Carbon::now();
+                        $tender->duration  = $request->duration;
+                        $tender->isDeal    = 0; // reopen if needed
 
-					
-                    $tender->isReturnAccept = $request->isReturnAccept=="on"?1:0;
-                if($request->isReturnAccept=="on"){
-                   $tender->buyer_pay = $request->buyer_pay=="on"?1:0;
-                   $tender->seller_pay = $request->seller_pay=="on"?1:0;  
-                   $tender->refund = $request->refund;  
-                   $tender->return_timeline = $request->return_timeline;  
-                }else{
-                   $tender->buyer_pay = $request->buyer_pay=="on"?1:0;
-                   $tender->seller_pay = $request->seller_pay=="on"?1:0;  
-                   $tender->refund = $request->refund;  
-                   $tender->return_timeline = $request->return_timeline;  
-                }
+
+
+                    } elseif ($request->duration != $tender->duration) {
+                        // tender active → only update duration
+                        $tender->duration = $request->duration;
+                    }
+
+
+                    $tender->isReturnAccept = $request->isReturnAccept == "on" ? 1 : 0;
+                    if ($request->isReturnAccept == "on") {
+                        $tender->buyer_pay = $request->buyer_pay == "on" ? 1 : 0;
+                        $tender->seller_pay = $request->seller_pay == "on" ? 1 : 0;
+                        $tender->refund = $request->refund;
+                        $tender->return_timeline = $request->return_timeline;
+                    } else {
+                        $tender->buyer_pay = $request->buyer_pay == "on" ? 1 : 0;
+                        $tender->seller_pay = $request->seller_pay == "on" ? 1 : 0;
+                        $tender->refund = $request->refund;
+                        $tender->return_timeline = $request->return_timeline;
+                    }
 
 
 

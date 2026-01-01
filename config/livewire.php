@@ -195,6 +195,5 @@ return [
     |
     */
 
-    'release_token' => 'a',
-    'asset_url' => env('APP_URL'),
+    'release_token' => 'a'
 ];
