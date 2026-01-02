@@ -268,44 +268,49 @@
                                     <h5 class="text-center fw-bolder fs-6 mt-2 text-primary ">
                                         {{ preg_replace('/([a-z])([A-Z])/', '$1 $2', $product->item_condition) }}
                                     </h5>
+                                    @php
+                                    $available = max(0, $product->totalQty - $product->sold_quantity);
+                                    $sold = max(0, $product->sold_quantity);
+
+                                    $expired = false;
+                                    $days = $hours = $minutes = $seconds = 0;
+
+                                    if ($product->duration > 0) {
+                                    $start = \Carbon\Carbon::parse($product->created_at);
+                                    $end = $start->copy()->addDays($product->duration);
+                                    $now = \Carbon\Carbon::now();
+
+                                    if ($now->gte($end)) {
+                                    $expired = true;
+                                    } else {
+                                    $remainingSeconds = $now->diffInSeconds($end);
+
+                                    $days = intdiv($remainingSeconds, 86400);
+                                    $remainingSeconds %= 86400;
+
+                                    $hours = intdiv($remainingSeconds, 3600);
+                                    $remainingSeconds %= 3600;
+
+                                    $minutes = intdiv($remainingSeconds, 60);
+                                    $seconds = $remainingSeconds % 60;
+                                    }
+                                    }
+                                    @endphp
+
                                     <h5 class="text-center fw-bolder fs-6 mt-2 text-primary1">
-                                        @if($product->totalQty > 0)
-                                        {!! ($product->totalQty - $product->sold_quantity) !!}
-                                        available
-                                        / <span class="text-danger">
-                                            {{ max(0, $product->sold_quantity) }} Sold
-                                        </span>
+
+                                        @if($product->totalQty > 0 && $available > 0)
+                                        {{ $available }} available /
+                                        <span class="text-danger">{{ $sold }} Sold</span>
                                         @else
-                                        soldout
+                                        <span class="text-danger">Sold Out</span>
                                         @endif
-                                        @php
-                                        if($product->duration>0)
 
-                                        $start = \Carbon\Carbon::parse($product->created_at);
-                                        $end = $start->copy()->addDays($product->duration);
-                                        $now = \Carbon\Carbon::now();
-
-                                        if ($now->gte($end)) {
-                                        $expired = true;
-                                        } else {
-                                        $expired = false;
-                                        $remainingSeconds = $now->diffInSeconds($end);
-
-                                        $days = intdiv($remainingSeconds, 86400);
-                                        $remainingSeconds %= 86400;
-
-                                        $hours = intdiv($remainingSeconds, 3600);
-                                        $remainingSeconds %= 3600;
-
-                                        $minutes = intdiv($remainingSeconds, 60);
-                                        $seconds = $remainingSeconds % 60;
-                                        }
-                                        @endphp
-
+                                        @if($product->duration > 0)
                                         @if($expired)
-                                        /<span class="expired"> Expired</span>
+                                        / <span class="expired">Expired</span>
                                         @else
-                                        /<span class="time-left">
+                                        / <span class="time-left">
                                             <strong>Ends in</strong>
                                             @if($days > 0)
                                             {{ $days }}d {{ $hours }}h
@@ -318,8 +323,7 @@
                                             @endif
                                         </span>
                                         @endif
-
-
+                                        @endif
 
                                     </h5>
 

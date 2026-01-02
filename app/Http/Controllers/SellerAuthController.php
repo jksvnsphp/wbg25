@@ -46,7 +46,7 @@ use Illuminate\Support\Facades\DB;
 
 class SellerAuthController extends Controller
 {
-     protected $twilio;
+    protected $twilio;
 
     public function __construct(TwilioService $twilio)
     {
@@ -54,22 +54,22 @@ class SellerAuthController extends Controller
     }
 
     private function createUniqueSlug($name, $companyId = null)
-{
-    $slug = Str::slug($name);
-    $originalSlug = $slug;
-    $count = 1;
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $count = 1;
 
-    // Keep looping until unique slug is found
-    while (
-        Company::where('slug', $slug)
+        // Keep looping until unique slug is found
+        while (
+            Company::where('slug', $slug)
             ->when($companyId, fn($q) => $q->where('id', '!=', $companyId))
             ->exists()
-    ) {
-        $slug = $originalSlug . '-' . $count++;
-    }
+        ) {
+            $slug = $originalSlug . '-' . $count++;
+        }
 
-    return $slug;
-}
+        return $slug;
+    }
     //
     public function quickRegistration($code)
     {
@@ -80,9 +80,9 @@ class SellerAuthController extends Controller
             return redirect()->route('home')->with(['alert-type' => 'error', 'message' => 'Member package not found!']);
         }
     }
-     public function sendOtp(Request $request)
+    public function sendOtp(Request $request)
     {
-        $validator = Validator::make($request->all(), ['name' => ['required', 'string'], 'phone' => ['required'],'coupon_code'=>['nullable','exists:coupons,code']]);
+        $validator = Validator::make($request->all(), ['name' => ['required', 'string'], 'phone' => ['required'], 'coupon_code' => ['nullable', 'exists:coupons,code']]);
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
         } else {
@@ -91,13 +91,13 @@ class SellerAuthController extends Controller
             if ($isUserExist > 0) {
                 return response()->json(['status' => false, 'message' => 'Phone number is already exist.']);
             } else {
-                
-                session(['otp' => $otp, 'name' => $request->name, 'phone' => $request->phone,'coupon_code'=>$request->coupon_code,'package_code'=>$request->code]);
-                 if($request->phone)
-                  $this->twilio->sendSms( trim($request->phone), 'Your OTP is '.$otp); 
 
-                  Cache::put('otp_' .$request->phone, $otp, now()->addMinutes(10));
-                return response()->json(['status' => true, 'message' => 'OTP sent successfully','url'=>route('seller.complete.registration', $request->code)]);
+                session(['otp' => $otp, 'name' => $request->name, 'phone' => $request->phone, 'coupon_code' => $request->coupon_code, 'package_code' => $request->code]);
+                if ($request->phone)
+                    $this->twilio->sendSms(trim($request->phone), 'Your OTP is ' . $otp);
+
+                Cache::put('otp_' . $request->phone, $otp, now()->addMinutes(10));
+                return response()->json(['status' => true, 'message' => 'OTP sent successfully', 'url' => route('seller.complete.registration', $request->code)]);
             }
         }
     }
@@ -119,29 +119,28 @@ class SellerAuthController extends Controller
     public function sendRegOtp(Request $request)
     {
         //,'coupon_code'=>['nullable','exists:coupons,code']
-        $validator = Validator::make($request->all(), [ 'phone' => ['required']]);
+        $validator = Validator::make($request->all(), ['phone' => ['required']]);
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
         } else {
             $otp = rand(10000, 99999);
-             //$phone =session('phone');
-             //echo 'phone'.$request->phone;die;
+            //$phone =session('phone');
+            //echo 'phone'.$request->phone;die;
             //$isUserExist = User::where('phone', $request->phone)->count();
             if ($request->phone) {
-                 if($request->phone)
-                  $this->twilio->sendSms( trim($request->phone), 'Your WBG24.com Verification Code is '.$otp); 
+                if ($request->phone)
+                    $this->twilio->sendSms(trim($request->phone), 'Your WBG24.com Verification Code is ' . $otp);
 
-                  Cache::put('otp_' .$request->phone, $otp, now()->addMinutes(10));
-                  session(['otp' => $otp,  'phone' => $request->phone]);
+                Cache::put('otp_' . $request->phone, $otp, now()->addMinutes(10));
+                session(['otp' => $otp,  'phone' => $request->phone]);
                 return response()->json(['status' => true, 'message' => 'OTP sent successfully']);
-               
             } else {
-               
-                 return response()->json(['status' => false, 'message' => 'Phone number is  not exist.']);
+
+                return response()->json(['status' => false, 'message' => 'Phone number is  not exist.']);
             }
         }
     }
-     public function verifyRegOtp(Request $request)
+    public function verifyRegOtp(Request $request)
     {
         $validator = Validator::make(
             $request->all(),
@@ -150,17 +149,16 @@ class SellerAuthController extends Controller
                 'phone' => ['required', 'string']
             ]
         );
-         $inputOtp = $request->otp;
-         $storedOtp = Cache::get('otp_' . $request->phone);
+        $inputOtp = $request->otp;
+        $storedOtp = Cache::get('otp_' . $request->phone);
 
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => 'Please fill OTP']);
-        } else { 
+        } else {
 
             if (($storedOtp && $storedOtp == $inputOtp) || $request->otp == '12345') {
                 // set package code in session 
-            return response()->json(['status' => true, 'message' => 'OTP Successfully Valid', 'url' => route('seller.complete.registration', $request->ref_no)]);
- 
+                return response()->json(['status' => true, 'message' => 'OTP Successfully Valid', 'url' => route('seller.complete.registration', $request->ref_no)]);
             } else {
                 return response()->json(['status' => false, 'message' => 'Invalid OTP']);
             }
@@ -169,7 +167,7 @@ class SellerAuthController extends Controller
 
     public function sendOtpAfterLogin(Request $request)
     {
-          //echo $request->otp_method;
+        //echo $request->otp_method;
         //  var_dump(auth()->check());die;
         if (auth()->check()) {
             $user = auth()->user();
@@ -178,22 +176,22 @@ class SellerAuthController extends Controller
             // Store OTP in cache for 10 minutes
             Cache::put('otp_' . $user->id, $otp, now()->addMinutes(10));
             try {
-               
-               
-                if($request->otp_method === 'email'){
+
+
+                if ($request->otp_method === 'email') {
                     Mail::send('mail.send-otp', ['otp' => $otp], function ($message) use ($user) {
                         $message->to($request->email)
                             ->subject('Your OTP Code');
                     });
-                } elseif($request->otp_method === 'mobile'){ 
-                    $this->twilio->sendSms( trim($request->phone), 'Your OTP is '.$otp);
+                } elseif ($request->otp_method === 'mobile') {
+                    $this->twilio->sendSms(trim($request->phone), 'Your OTP is ' . $otp);
                 }
 
 
                 return response()->json(['success' => true, 'message' => 'OTP sent successfully']);
             } catch (\Exception $e) {
                 // echo "Caught exception: " . $e->getMessage();;die;
-                return response()->json(['success' => false, 'message' => 'Failed to send OTP. Please try again.'. $e->getMessage()]);
+                return response()->json(['success' => false, 'message' => 'Failed to send OTP. Please try again.' . $e->getMessage()]);
             }
         } else {
             return response()->json(['success' => false, 'message' => 'Please login first!']);
@@ -204,7 +202,7 @@ class SellerAuthController extends Controller
         $user = auth()->user();
         $inputOtp = $request->otp;
         $storedOtp = Cache::get('otp_' . $user->id);
-        if (($storedOtp && $storedOtp == $inputOtp) || $inputOtp=="12345") {
+        if (($storedOtp && $storedOtp == $inputOtp) || $inputOtp == "12345") {
             Cache::forget('otp_' . $user->id);
             session(['verify' => true]);
             // $url = route('seller.edit.registration', auth()->user()->ref_no);
@@ -214,7 +212,7 @@ class SellerAuthController extends Controller
         return response()->json(['success' => false, 'message' => 'Invalid or expired OTP']);
     }
 
-   
+
 
     public function verifyOtp(Request $request)
     {
@@ -225,8 +223,8 @@ class SellerAuthController extends Controller
                 'package_code' => ['required', 'string', 'exists:member_packages,code']
             ]
         );
-         $inputOtp = $request->otp;
-         ///$storedOtp = Cache::get('otp_' . $request->otp);
+        $inputOtp = $request->otp;
+        ///$storedOtp = Cache::get('otp_' . $request->otp);
 
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => 'Please fill OTP']);
@@ -234,7 +232,7 @@ class SellerAuthController extends Controller
 
             $package_code = $request->package_code;
 
-            if ( $request->otp == '12345') {
+            if ($request->otp == '12345') {
                 // set package code in session
                 session(['package_code' => $package_code]);
                 $package = memberPackage::where('code', $package_code)->first();
@@ -272,32 +270,31 @@ class SellerAuthController extends Controller
             return response()->json(['status' => false, 'message' => 'Please fill Coupon Code.']);
         } else {
             $coupon_code = $request->code;
-            if ($coupon_code!="") { 
-               $coupon = Coupon::where('code', $coupon_code)
-                        ->whereDate('start_date', '<=', now()->toDateString())
-                        ->whereDate('end_date', '>=', now()->toDateString())
-                        ->where('is_active', 1)
-                        ->first();
+            if ($coupon_code != "") {
+                $coupon = Coupon::where('code', $coupon_code)
+                    ->whereDate('start_date', '<=', now()->toDateString())
+                    ->whereDate('end_date', '>=', now()->toDateString())
+                    ->where('is_active', 1)
+                    ->first();
                 $package = memberPackage::where('code', $request->package_code)->first();
-                    
+
                 if ($coupon) {
-                    $discount=$coupon->discount ?? 0;
-                        if ($coupon->percent_type == 'percentage') {
-                            // e.g., 10% off
-                            $discount = ($package->price * $coupon->discount) / 100;
-                        } else {
-                            // flat discount, e.g., ₹100 off
-                            $discount = $coupon->discount;
-                        }
-                    if( $discount <= $package->price){
-                        $paybleAmount = $package->price - $discount;
-                       session(['discount' =>  $discount,'coupon_code'=>$coupon_code,'paybleAmount'=>$paybleAmount]);
-                       return response()->json(['status'=>true,'message'=>'Coupon applied successfully!','discount'=>$discount]);
-                    }else{
-                       return response()->json(['status' => false, 'message' => 'Coupon discount exceeds package price']);
+                    $discount = $coupon->discount ?? 0;
+                    if ($coupon->percent_type == 'percentage') {
+                        // e.g., 10% off
+                        $discount = ($package->price * $coupon->discount) / 100;
+                    } else {
+                        // flat discount, e.g., ₹100 off
+                        $discount = $coupon->discount;
                     }
-                    
-                }else{
+                    if ($discount <= $package->price) {
+                        $paybleAmount = $package->price - $discount;
+                        session(['discount' =>  $discount, 'coupon_code' => $coupon_code, 'paybleAmount' => $paybleAmount]);
+                        return response()->json(['status' => true, 'message' => 'Coupon applied successfully!', 'discount' => $discount]);
+                    } else {
+                        return response()->json(['status' => false, 'message' => 'Coupon discount exceeds package price']);
+                    }
+                } else {
                     return response()->json(['status' => false, 'message' => 'Coupon code invalid']);
                 }
             } else {
@@ -307,36 +304,34 @@ class SellerAuthController extends Controller
     }
 
     public function completeRegistration($code)
-{
-    // Find package by code
-    $package = memberPackage::where('code', $code)->first();
-
-    if ($package) {
-
-        // Store package code in session
-        session(['package_code' => $code]);
-
-        // Fetch top-level active categories
-        $categories = CustomeCategory::where('status', "1")
-            ->where('deleted', "0")
-            ->where('parent_id', "0")
-            ->orderBy('category_name', 'ASC')
-            ->get();
-
-        return view('external-user.complete-seller-registration', compact('categories', 'code'));
-    } 
-    else 
     {
-        return back()->with([
-            'alert-type' => 'error',
-            'message' => 'Something went wrong'
-        ]);
+        // Find package by code
+        $package = memberPackage::where('code', $code)->first();
+
+        if ($package) {
+
+            // Store package code in session
+            session(['package_code' => $code]);
+
+            // Fetch top-level active categories
+            $categories = CustomeCategory::where('status', "1")
+                ->where('deleted', "0")
+                ->where('parent_id', "0")
+                ->orderBy('category_name', 'ASC')
+                ->get();
+
+            return view('external-user.complete-seller-registration', compact('categories', 'code'));
+        } else {
+            return back()->with([
+                'alert-type' => 'error',
+                'message' => 'Something went wrong'
+            ]);
+        }
     }
-}
 
     public function editRegistration($code, Request $request)
     {
-       
+
         $user = User::where('ref_no', $code)->with('company')->first();
         if ($user) {
             if (isset($user->isComplete) && $user->isComplete == 1) {
@@ -349,10 +344,10 @@ class SellerAuthController extends Controller
             return redirect()->route('home')->with(['alert-type' => 'error', 'message' => 'Something went to wrong']);
         }
     }
-    
-	public function change_password($code, Request $request)
+
+    public function change_password($code, Request $request)
     {
-       
+
         $user = User::where('ref_no', $code)->with('company')->first();
         if ($user) {
             if (isset($user->isComplete) && $user->isComplete == 1) {
@@ -365,9 +360,9 @@ class SellerAuthController extends Controller
             return redirect()->route('home')->with(['alert-type' => 'error', 'message' => 'Something went to wrong']);
         }
     }
-    
-	
-	public function editSellerProfile($code)
+
+
+    public function editSellerProfile($code)
     {
         $user = User::where('ref_no', $code)->first();
         if ($user) {
@@ -381,52 +376,52 @@ class SellerAuthController extends Controller
             return redirect()->route('home')->with(['alert-type' => 'error', 'message' => 'Something went to wrong']);
         }
     }
-	
-	
-	public function completeMyProfile(Request $request)
-{
-    $validate = Validator::make($request->all(), [
-        'company_name' => ['required', 'string'],
-        'first_name' => ['required', 'string'],
-        'last_name' => ['nullable', 'string'],
-        'email' => ['required', 'email', 'unique:users,email'],
-        'phone' => ['required', 'unique:users,phone'],
-        'password' => ['required', 'min:8', 'confirmed'],
-        'registration_year' => ['required', 'numeric', 'max:3000', "min:1900"],
-        'number_of_employees' => ['required', 'string'],
-        'business_type' => ['required', 'string'],
-        'certifications' => ['nullable', 'array'],
-        'other_certificate' => ['required_if:certifications,Other'],
-        'country' => 'required|string',
-        'state' => 'required|string',
-        'city' => 'required|string',
-        'zip' => 'required',
-        'street' => 'nullable|string',
-        'house_no' => 'nullable|string',
-        'company_category' => 'nullable|numeric',
-        'company_sub_category' => 'nullable|numeric',
-    ]);
 
-    if ($validate->fails()) {
+
+    public function completeMyProfile(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'company_name' => ['required', 'string'],
+            'first_name' => ['required', 'string'],
+            'last_name' => ['nullable', 'string'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'phone' => ['required', 'unique:users,phone'],
+            'password' => ['required', 'min:8', 'confirmed'],
+            'registration_year' => ['required', 'numeric', 'max:3000', "min:1900"],
+            'number_of_employees' => ['required', 'string'],
+            'business_type' => ['required', 'string'],
+            'certifications' => ['nullable', 'array'],
+            'other_certificate' => ['required_if:certifications,Other'],
+            'country' => 'required|string',
+            'state' => 'required|string',
+            'city' => 'required|string',
+            'zip' => 'required',
+            'street' => 'nullable|string',
+            'house_no' => 'nullable|string',
+            'company_category' => 'nullable|numeric',
+            'company_sub_category' => 'nullable|numeric',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Please fill all required fields.',
+                'error' => $validate->errors()
+            ]);
+        }
+
+        // Store in session
+        session(['signup_data' => $request->all()]);
+
         return response()->json([
-            'status' => false,
-            'message' => 'Please fill all required fields.',
-            'error' => $validate->errors()
+            'status' => true,
+            'message' => 'Data saved. Proceed to payment.'
         ]);
     }
 
-    // Store in session
-    session(['signup_data' => $request->all()]);
 
-    return response()->json([
-        'status' => true,
-        'message' => 'Data saved. Proceed to payment.'
-    ]);
-}
 
-	
-	
-	
+
     public function completeMyProfile_old(Request $request)
     {
 
@@ -461,7 +456,7 @@ class SellerAuthController extends Controller
         if ($validate->fails()) {
             return response()->json(['status' => false, 'message' => 'Please fill all required filled.', 'error' => $validate->errors()]);
         } else {
-           
+
             if ($request->phone) {
                 $user = new User();
                 $user->first_name = $request->first_name;
@@ -482,22 +477,22 @@ class SellerAuthController extends Controller
                 $user->ref_no = uniqid(true);
                 $user->save();
                 $user->fpassword = $password;
-                 $slug    = $this->createUniqueSlug($request->company_name, $company->id ?? null);
-                
+                $slug    = $this->createUniqueSlug($request->company_name, $company->id ?? null);
+
                 session(['user_id' => $user->id]);
-                    $company = new company();
-                    $company->name = $request->company_name;
-                    $company->slug = $slug;
-                    $company->vendor_id = $user->id;
-                    $company->company_registeration_year = $request->registration_year;
-                    $company->key_personnal = $request->number_of_employees;
-                    $company->business_type = $request->business_type;
-                    $company->certifications = json_encode($request->certifications);
-                    $company->other_certificate = json_encode($request->other_certificate);
-                    $company->category_1 = $request->company_category;
-                    $company->category_2 = $request->company_sub_category;
-                    $company->save();
-               // }
+                $company = new company();
+                $company->name = $request->company_name;
+                $company->slug = $slug;
+                $company->vendor_id = $user->id;
+                $company->company_registeration_year = $request->registration_year;
+                $company->key_personnal = $request->number_of_employees;
+                $company->business_type = $request->business_type;
+                $company->certifications = json_encode($request->certifications);
+                $company->other_certificate = json_encode($request->other_certificate);
+                $company->category_1 = $request->company_category;
+                $company->category_2 = $request->company_sub_category;
+                $company->save();
+                // }
                 event(new UserCreated($user));
                 return response()->json(['status' => true, 'message' => 'Successfully complete your profile.']);
             } else {
@@ -648,41 +643,44 @@ class SellerAuthController extends Controller
             ->where('products.isListingType', $type)
             ->whereNotIn('orders.payment_status', ['processing', 'failed'])
             ->whereNotIn('orders.order_status', ['canceled'])
-            ->where('order_items.isRead',0)
+            ->where('order_items.isRead', 0)
             ->sum('order_items.quantity');
         return $soldProducts;
     }
-   
+
     public function sellerDashboard()
     {
         $id = auth()->user()->id;
         $seller = User::where('id', $id)->with('social')->first();
         $packageData = seller_package::latest()->where('seller_id', $seller->id)->with('package')->first();
-        
-        $listedSingleProduct = products::where('vendor_id', $id)->where('isListingType', 'normal')->where('isRead',0)->get()
-        ->filter(function ($product) {
-             $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
-             return now()->lessThan($expiryDate);
-        })->count();
-        
-        $listedMultiplyProduct = products::where('vendor_id', $id)->where('isListingType', 'spotlight')->where('isRead',0)->count();
-        
+
+        $listedSingleProduct = products::where('vendor_id', $id)->where('isListingType', 'normal')->where('isRead', 0)->get()
+            ->filter(function ($product) {
+                $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
+                return now()->lessThan($expiryDate);
+            })->count();
+
+        $listedMultiplyProduct = products::where('vendor_id', $id)->where('isListingType', 'spotlight')->where('isRead', 0)->count();
+
         $unreadMessages = inbox::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('receiver_id', auth()->id())->where('isReceiverRead', 0);
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('sender_id', auth()->id())->where('isSenderRead', 0);
-                                 });
-                               })->count();
-        
-        $totalMessages = inbox::where(function ($query) use ($id) { $query->where('receiver_id', $id) ->orWhere('sender_id', $id);})->count();
+            $query->where(
+                function ($q) {
+                    $q->where('receiver_id', auth()->id())->where('isReceiverRead', 0);
+                }
+            )->orWhere(function ($q) {
+                $q->where('sender_id', auth()->id())->where('isSenderRead', 0);
+            });
+        })->count();
+
+        $totalMessages = inbox::where(function ($query) use ($id) {
+            $query->where('receiver_id', $id)->orWhere('sender_id', $id);
+        })->count();
 
         $purchasedProductCount = Order::where('user_id', $id)
             ->where('order_status', '!=', 'canceled')
             ->where('payment_status', '!=', 'processing')
             ->where('payment_status', '!=', 'failed')
-            ->where('isRead',0)
+            ->where('isRead', 0)
             ->with('orderItems')
             ->get()
             ->pluck('orderItems')
@@ -692,72 +690,74 @@ class SellerAuthController extends Controller
 
         $soldMProducts = $this->getMyStoreState('spotlight');
         $soldSProducts = $this->getMyStoreState('normal');
-        
+
         $storeInfo = $listedMultiplyProduct + $soldMProducts;
-        
+
         $productInfo = $listedSingleProduct + $soldSProducts + $purchasedProductCount;
 
-        $listedTender = Tender::where('vendor_id', $id)->where('isRead',0)->where('isDeal',0)->count();
-        
-        $myReceivedOfferTender = OfferTender::where('vendor_id', $id)
-    ->where('status', 'pending')
-    ->where('isVendorRead', 0)
-    ->doesntHave('counters')->count();
+        $listedTender = Tender::where('vendor_id', $id)->where('isRead', 0)->where('isDeal', 0)->count();
 
-$mySubmittedOfferTender = OfferTender::where('user_id', $id)
-    ->where('status', 'pending')
-    ->where('isUserRead', 0)
-    ->doesntHave('counters') 
-    ->count();
-        
+        $myReceivedOfferTender = OfferTender::where('vendor_id', $id)
+            ->where('status', 'pending')
+            ->where('isVendorRead', 0)
+            ->doesntHave('counters')->count();
+
+        $mySubmittedOfferTender = OfferTender::where('user_id', $id)
+            ->where('status', 'pending')
+            ->where('isUserRead', 0)
+            ->doesntHave('counters')
+            ->count();
+
         $myOfferTenderDeal = OfferTender::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
-                                 });
-                               })->where('status', 'accept')->count();
-        
-        $mySubmittedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('status','pending')->where('isUserRead',0)->count();
-        
+            $query->where(
+                function ($q) {
+                    $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
+                }
+            )->orWhere(function ($q) {
+                $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
+            });
+        })->where('status', 'accept')->count();
+
+        $mySubmittedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('status', 'pending')->where('isUserRead', 0)->count();
+
         $myReceivedCounterOfferTender = CounterOfferTender::whereHas('offer', function ($query) use ($id) {
             $query->where('vendor_id', $id);
-        })->where('isVendorRead',0)->where('status','pending')->count();
+        })->where('isVendorRead', 0)->where('status', 'pending')->count();
 
         $tenderInfo = $listedTender + $myReceivedOfferTender + $mySubmittedOfferTender + $myOfferTenderDeal + $mySubmittedCounterOfferTender + $myReceivedCounterOfferTender;
 
         $quotation = Quotation::where('user_id', auth()->user()->id)
-                              ->where('isRead',0)
-                              ->where('isDeal',0)
-                              ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
-                              ->count();
-        
-        $myReceivedOfferQuotation =  OfferQuotation::where('vendor_id', $id)
-                                                   ->where('status','pending') 
-                                                   ->where('isVendorRead',0)
-                                                   ->doesntHave('counters')
-                                                   ->count();
-        $mySubmittedOfferQuotation = OfferQuotation::where('user_id', $id)->where('status','pending')->where('isUserRead',0)->doesntHave('counters')->count();
-        
-        $myOfferQuotationDeal = OfferQuotation::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
-                                 });
-                               })->where('status', 'accept')->count();
+            ->where('isRead', 0)
+            ->where('isDeal', 0)
+            ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
+            ->count();
 
-        $mySubmittedCounterOfferQuotation = CounterOfferQuotation::where('user_id', $id)->where('status', 'pending')->where('isUserRead',0)->count();
+        $myReceivedOfferQuotation =  OfferQuotation::where('vendor_id', $id)
+            ->where('status', 'pending')
+            ->where('isVendorRead', 0)
+            ->doesntHave('counters')
+            ->count();
+        $mySubmittedOfferQuotation = OfferQuotation::where('user_id', $id)->where('status', 'pending')->where('isUserRead', 0)->doesntHave('counters')->count();
+
+        $myOfferQuotationDeal = OfferQuotation::where(function ($query) {
+            $query->where(
+                function ($q) {
+                    $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
+                }
+            )->orWhere(function ($q) {
+                $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
+            });
+        })->where('status', 'accept')->count();
+
+        $mySubmittedCounterOfferQuotation = CounterOfferQuotation::where('user_id', $id)->where('status', 'pending')->where('isUserRead', 0)->count();
         $myReceivedCounterOfferQuotation = CounterOfferQuotation::whereHas('offer', function ($query) use ($id) {
             $query->where('vendor_id', $id);
-        })->where('isVendorRead',0)->where('status','pending')->count();
-        
+        })->where('isVendorRead', 0)->where('status', 'pending')->count();
+
         $quotationInfo = $quotation + $myReceivedOfferQuotation + $myOfferQuotationDeal + $mySubmittedOfferQuotation + $mySubmittedCounterOfferQuotation + $myReceivedCounterOfferQuotation;
-        $wallets=Wallet::latest()->where('user_id',Auth::user()->id)->count();
+        $wallets = Wallet::latest()->where('user_id', Auth::user()->id)->count();
         if ($seller) {
-            return view('seller-vendor.seller-dashboard', compact('seller','wallets', 'unreadMessages', 'totalMessages', 'packageData', 'storeInfo', 'productInfo', 'tenderInfo', 'quotationInfo'));
+            return view('seller-vendor.seller-dashboard', compact('seller', 'wallets', 'unreadMessages', 'totalMessages', 'packageData', 'storeInfo', 'productInfo', 'tenderInfo', 'quotationInfo'));
         } else {
             abort(404);
         }
@@ -766,70 +766,72 @@ $mySubmittedOfferTender = OfferTender::where('user_id', $id)
     public function newStateStore()
     {
         $id = auth()->user()->id;
-        $listedMultiplyProduct = products::where('vendor_id', $id)->where('isListingType', 'spotlight')->where('isRead',0)->count();
+        $listedMultiplyProduct = products::where('vendor_id', $id)->where('isListingType', 'spotlight')->where('isRead', 0)->count();
         $soldProducts = $this->getMyStoreState('spotlight');
-        
+
         $listedRMultiplyProduct = products::where('vendor_id', $id)->where('isListingType', 'spotlight')->count();
         $soldRProducts = $this->getMyStoreState('spotlight');
-        return view('seller-vendor.new-state-store', compact('listedMultiplyProduct', 'soldProducts','listedRMultiplyProduct', 'soldRProducts'));
+        return view('seller-vendor.new-state-store', compact('listedMultiplyProduct', 'soldProducts', 'listedRMultiplyProduct', 'soldRProducts'));
     }
     public function newStateQuotation()
     {
         $id = auth()->user()->id;
         $quotation = Quotation::where('user_id', auth()->user()->id)
-                              ->where('isRead',0)
-                              ->where('isDeal',0)
-                              ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
-                              ->count();
-                              
+            ->where('isRead', 0)
+            ->where('isDeal', 0)
+            ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
+            ->count();
+
         $myReceivedOfferQuotation = OfferQuotation::where('vendor_id', $id)
-                                                   ->where('status','pending') 
-                                                   ->where('isVendorRead',0)
-                                                   ->doesntHave('counters')
-                                                   ->count();
-                                                   
-        $mySubmittedOfferQuotation = OfferQuotation::where('user_id', $id)->where('status','pending')->where('isUserRead',0)->doesntHave('counters')->count();
+            ->where('status', 'pending')
+            ->where('isVendorRead', 0)
+            ->doesntHave('counters')
+            ->count();
+
+        $mySubmittedOfferQuotation = OfferQuotation::where('user_id', $id)->where('status', 'pending')->where('isUserRead', 0)->doesntHave('counters')->count();
         $myOfferQuotationDeal = OfferQuotation::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
-                                 });
-                               })->where('status', 'accept')->count();
-        $myReceivedCounterOfferQuotation = CounterOfferQuotation::where('user_id', $id)->where('status', 'pending')->where('isUserRead',0)->count();
+            $query->where(
+                function ($q) {
+                    $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
+                }
+            )->orWhere(function ($q) {
+                $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
+            });
+        })->where('status', 'accept')->count();
+        $myReceivedCounterOfferQuotation = CounterOfferQuotation::where('user_id', $id)->where('status', 'pending')->where('isUserRead', 0)->count();
 
         $mySubmittedCounterOfferQuotation = CounterOfferQuotation::whereHas('offer', function ($query) use ($id) {
             $query->where('vendor_id', $id);
-        })->where('isVendorRead',0)->where('status', 'pending')->count();
-        
+        })->where('isVendorRead', 0)->where('status', 'pending')->count();
+
         // all quotation
         $quotationR = Quotation::where('user_id', auth()->user()->id)
-                              ->where('isDeal',0)
-                              ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
-                              ->count();
-                              
+            ->where('isDeal', 0)
+            ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
+            ->count();
+
         $myRReceivedOfferQuotation = OfferQuotation::where('vendor_id', $id)
-                                                   ->where('status','pending')
-                                                   ->doesntHave('counters')
-                                                   ->count();
-                                                   
-        $myRSubmittedOfferQuotation = OfferQuotation::where('user_id', $id)->where('status','pending')->doesntHave('counters')->count();
-        
+            ->where('status', 'pending')
+            ->doesntHave('counters')
+            ->count();
+
+        $myRSubmittedOfferQuotation = OfferQuotation::where('user_id', $id)->where('status', 'pending')->doesntHave('counters')->count();
+
         $myROfferQuotationDeal = OfferQuotation::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id());
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id());
-                                 });
-                               })->where('status', 'accept')->count();
+            $query->where(
+                function ($q) {
+                    $q->where('vendor_id', auth()->id());
+                }
+            )->orWhere(function ($q) {
+                $q->where('user_id', auth()->id());
+            });
+        })->where('status', 'accept')->count();
         $myRReceivedCounterOfferQuotation = CounterOfferQuotation::where('user_id', $id)->where('status', 'pending')->count();
 
         $myRSubmittedCounterOfferQuotation = CounterOfferQuotation::whereHas('offer', function ($query) use ($id) {
             $query->where('vendor_id', $id);
         })->where('status', 'pending')->count();
-        
+
         return view('seller-vendor.new-state-quotations', compact(
             'quotation',
             'myReceivedOfferQuotation',
@@ -848,78 +850,80 @@ $mySubmittedOfferTender = OfferTender::where('user_id', $id)
     public function newStateTender()
     {
         $id = auth()->user()->id;
-        $listedTender = Tender::where('vendor_id', $id)->where('isRead',0)->where('isDeal',0)->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])->count();
-        $myReceivedOfferTender = OfferTender::where('vendor_id', $id)->where('status','pending')->where('isVendorRead',0)->doesntHave('counters')->count();
-        $mySubmittedOfferTender = OfferTender::where('user_id', $id)->where('status','pending')->where('isUserRead',0)->doesntHave('counters')->count();
-        
+        $listedTender = Tender::where('vendor_id', $id)->where('isRead', 0)->where('isDeal', 0)->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])->count();
+        $myReceivedOfferTender = OfferTender::where('vendor_id', $id)->where('status', 'pending')->where('isVendorRead', 0)->doesntHave('counters')->count();
+        $mySubmittedOfferTender = OfferTender::where('user_id', $id)->where('status', 'pending')->where('isUserRead', 0)->doesntHave('counters')->count();
+
         $myDealedOfferTender = OfferTender::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
-                                 });
-                               })->where('status', 'accept')->count();
-        
-        $myReceivedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('isUserRead',0)->where('status','pending')->count();
+            $query->where(
+                function ($q) {
+                    $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
+                }
+            )->orWhere(function ($q) {
+                $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
+            });
+        })->where('status', 'accept')->count();
+
+        $myReceivedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('isUserRead', 0)->where('status', 'pending')->count();
         $mySubmittedCounterOfferTender = CounterOfferTender::whereHas('offer', function ($query) use ($id) {
             $query->where('vendor_id', $id);
-        })->where('isVendorRead',0)->where('status','pending')->count();
-        
+        })->where('isVendorRead', 0)->where('status', 'pending')->count();
+
         // all tender data
-        $listedRTender = Tender::where('vendor_id', $id)->where('isDeal',0)->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])->count();
-        $myRReceivedOfferTender = OfferTender::where('vendor_id', $id)->where('status','pending')->doesntHave('counters')->count();
-        $myRSubmittedOfferTender = OfferTender::where('user_id', $id)->where('status','pending')->doesntHave('counters')->count();
-        
+        $listedRTender = Tender::where('vendor_id', $id)->where('isDeal', 0)->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])->count();
+        $myRReceivedOfferTender = OfferTender::where('vendor_id', $id)->where('status', 'pending')->doesntHave('counters')->count();
+        $myRSubmittedOfferTender = OfferTender::where('user_id', $id)->where('status', 'pending')->doesntHave('counters')->count();
+
         $myRDealedOfferTender = OfferTender::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id());
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id());
-                                 });
-                               })->where('status', 'accept')->count();
-        
-        $myRReceivedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('status','pending')->count();
+            $query->where(
+                function ($q) {
+                    $q->where('vendor_id', auth()->id());
+                }
+            )->orWhere(function ($q) {
+                $q->where('user_id', auth()->id());
+            });
+        })->where('status', 'accept')->count();
+
+        $myRReceivedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('status', 'pending')->count();
         $myRSubmittedCounterOfferTender = CounterOfferTender::whereHas('offer', function ($query) use ($id) {
             $query->where('vendor_id', $id);
-        })->where('status','pending')->count();
-        
-        return view('seller-vendor.new-state-tender', compact('listedTender', 'myReceivedOfferTender', 'mySubmittedOfferTender', 'mySubmittedCounterOfferTender', 'myReceivedCounterOfferTender', 'myDealedOfferTender','listedRTender', 'myRReceivedOfferTender', 'myRSubmittedOfferTender', 'myRSubmittedCounterOfferTender', 'myRReceivedCounterOfferTender', 'myRDealedOfferTender'));
+        })->where('status', 'pending')->count();
+
+        return view('seller-vendor.new-state-tender', compact('listedTender', 'myReceivedOfferTender', 'mySubmittedOfferTender', 'mySubmittedCounterOfferTender', 'myReceivedCounterOfferTender', 'myDealedOfferTender', 'listedRTender', 'myRReceivedOfferTender', 'myRSubmittedOfferTender', 'myRSubmittedCounterOfferTender', 'myRReceivedCounterOfferTender', 'myRDealedOfferTender'));
     }
     public function newStateProduct()
     {
         $id = auth()->user()->id;
-        $listedProduct = products::where('vendor_id', $id)->where('isListingType', 'normal')->where('isRead',0)
-        ->get()
-        ->filter(function ($product) {
-             $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
-             return now()->lessThan($expiryDate);
-        })->count();
-        
+        $listedProduct = products::where('vendor_id', $id)->where('isListingType', 'normal')->where('isRead', 0)
+            ->get()
+            ->filter(function ($product) {
+                $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
+                return now()->lessThan($expiryDate);
+            })->count();
+
         $soldProducts = $this->getMyStoreState('normal');
-        
+
         $purchasedProductCount = Order::where('user_id', $id)
             ->where('order_status', '!=', 'canceled')
             ->where('payment_status', '!=', 'processing')
             ->where('payment_status', '!=', 'failed')
-            ->where('isRead',0)
+            ->where('isRead', 0)
             ->with('orderItems')
             ->get()
             ->pluck('orderItems')
             ->flatten()
             ->sum('quantity');
-            
+
         // all products    
         $listedRProduct = products::where('vendor_id', $id)->where('isListingType', 'normal')
-        ->get()
-        ->filter(function ($product) {
-             $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
-             return now()->lessThan($expiryDate);
-        })->count();
-        
+            ->get()
+            ->filter(function ($product) {
+                $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
+                return now()->lessThan($expiryDate);
+            })->count();
+
         $soldRProducts = $this->getMyStoreState('normal');
-        
+
         $purchasedRProductCount = Order::where('user_id', $id)
             ->where('order_status', '!=', 'canceled')
             ->where('payment_status', '!=', 'processing')
@@ -929,8 +933,8 @@ $mySubmittedOfferTender = OfferTender::where('user_id', $id)
             ->pluck('orderItems')
             ->flatten()
             ->sum('quantity');
-            
-        return view('seller-vendor.new-state-product', compact('listedProduct', 'soldProducts', 'purchasedProductCount','listedRProduct', 'soldRProducts', 'purchasedRProductCount'));
+
+        return view('seller-vendor.new-state-product', compact('listedProduct', 'soldProducts', 'purchasedProductCount', 'listedRProduct', 'soldRProducts', 'purchasedRProductCount'));
     }
 
     public function companyProfile()
@@ -964,7 +968,7 @@ $mySubmittedOfferTender = OfferTender::where('user_id', $id)
     public function profilePreview($code)
     {
         // $id = auth()->user()->id;
-        $seller = User::where('ref_no', $code)->with('company', 'exports', 'social','profile_meta')->first();
+        $seller = User::where('ref_no', $code)->with('company', 'exports', 'social', 'profile_meta')->first();
 
         $packageData = seller_package::latest()->where('seller_id', $seller->id)->with('package')->first();
 
@@ -976,11 +980,11 @@ $mySubmittedOfferTender = OfferTender::where('user_id', $id)
             $latestProduct = products::latest()->where('vendor_id', $seller->id)->with('gallery')->where('isList', 1)->first();
             $latestTender = Tender::latest()->where('vendor_id', $seller->id)->where('status', 1)->first();
 
-            
+
             $averageRating = Rating::where('vendor_id', $seller->id)->avg('rate');
             $fiveStarCount = Rating::where('vendor_id', $seller->id)->where('rate', 5)->count();
             $fourStarCount = Rating::where('vendor_id', $seller->id)->where('rate', 4)->count();
-            $threeStarCount =Rating::where('vendor_id', $seller->id)->where('rate', 3)->count();
+            $threeStarCount = Rating::where('vendor_id', $seller->id)->where('rate', 3)->count();
             $twoStarCount = Rating::where('vendor_id', $seller->id)->where('rate', 2)->count();
             $oneStarCount = Rating::where('vendor_id', $seller->id)->where('rate', 1)->count();
             $totalRatings = Rating::where('vendor_id', $seller->id)->count();
@@ -990,8 +994,8 @@ $mySubmittedOfferTender = OfferTender::where('user_id', $id)
             $twoStarPercent = $totalRatings > 0 ? ($twoStarCount / $totalRatings) * 100 : 0;
             $oneStarPercent = $totalRatings > 0 ? ($oneStarCount / $totalRatings) * 100 : 0;
             $ratingData = [
-                'totalRatings'=>$totalRatings,
-                'averageRating'=>number_format($averageRating,1),
+                'totalRatings' => $totalRatings,
+                'averageRating' => number_format($averageRating, 1),
                 'fiveStarCount' => $fiveStarCount,
                 'fourStarCount' => $fourStarCount,
                 'threeStarCount' => $threeStarCount,
@@ -1003,7 +1007,7 @@ $mySubmittedOfferTender = OfferTender::where('user_id', $id)
                 'twoStarPercent' => $twoStarPercent,
                 'oneStarPercent' => $oneStarPercent,
             ];
-            return view('external-user.supplier-profile', compact('certificates','ratingData', 'seller', 'packageData', 'latestNews', 'latestProduct', 'latestTender'));
+            return view('external-user.supplier-profile', compact('certificates', 'ratingData', 'seller', 'packageData', 'latestNews', 'latestProduct', 'latestTender'));
         } else {
             abort(404);
         }
@@ -1127,7 +1131,7 @@ $mySubmittedOfferTender = OfferTender::where('user_id', $id)
             if ($seller) {
                 $key = StoreSearchKey::where('user_id', $id)->first();
                 if (!$key) {
-                  $key = new StoreSearchKey();
+                    $key = new StoreSearchKey();
                 }
                 $key->user_id = $id;
                 for ($i = 1; $i <= 10; $i++) {
@@ -1310,23 +1314,23 @@ $mySubmittedOfferTender = OfferTender::where('user_id', $id)
     }
 
 
-     public function regStep1(Request $request)
+    public function regStep1(Request $request)
     {
-        $validator = Validator::make($request->all(), ['name' => ['required', 'string'], 'phone' => ['required'],'coupon_code'=>['nullable','exists:coupons,code']]);
+        $validator = Validator::make($request->all(), ['name' => ['required', 'string'], 'phone' => ['required'], 'coupon_code' => ['nullable', 'exists:coupons,code']]);
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
         } else {
-            
+
             $isUserExist = User::where('phone', $request->phone)->count();
             if ($isUserExist > 0) {
                 return response()->json(['status' => false, 'message' => 'Phone number is already exist.']);
             } else {
-                 $code = $request->code;
+                $code = $request->code;
                 // echo "code",$code;die;
-                
-                session([ 'name' => $request->name, 'phone' => $request->phone,'coupon_code'=>$request->coupon_code,'package_code'=>$code]);
-                  
-                return response()->json(['status' => true, 'message' => 'OTP sent successfully','url'=>route('seller.complete.registration', $code)]);
+
+                session(['name' => $request->name, 'phone' => $request->phone, 'coupon_code' => $request->coupon_code, 'package_code' => $code]);
+
+                return response()->json(['status' => true, 'message' => 'OTP sent successfully', 'url' => route('seller.complete.registration', $code)]);
             }
         }
     }
