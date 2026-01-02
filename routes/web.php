@@ -1,72 +1,73 @@
 <?php
 
-use App\Http\Controllers\admin\AdminAuthController;
-use App\Http\Controllers\admin\AttributesController;
-use App\Http\Controllers\admin\BulkMailController;
-use App\Http\Controllers\admin\DashboardController;
-use App\Http\Controllers\admin\GeneralSettingController;
-use App\Http\Controllers\admin\HomePageController;
-use App\Http\Controllers\admin\importController;
-use App\Http\Controllers\admin\LocationController as AdminLocationController;
-use App\Http\Controllers\admin\NewsBlogController;
-use App\Http\Controllers\admin\ProductCategoryController;
-use App\Http\Controllers\admin\QuotationController;
-use App\Http\Controllers\admin\QuotationsSubcategoryController;
-use App\Http\Controllers\admin\SupplierController;
-use App\Http\Controllers\admin\SuppliersSubcategoryController;
-use App\Http\Controllers\admin\TendersController;
-use App\Http\Controllers\admin\StoresController;
-use App\Http\Controllers\admin\ProductVideoShowController;
-use App\Http\Controllers\admin\SellerController;
-use App\Http\Controllers\admin\AdminInboxController;
-use App\Http\Controllers\admin\TenderSubcategoryController;
-use App\Http\Controllers\ArticleController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SmsController;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BankDetailsController;
-use App\Http\Controllers\BusinessProfileSymbolController;
-use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\CompanyCertificateController;
-use App\Http\Controllers\CouponController;
-use App\Http\Controllers\CustomeCategoryController;
-use App\Http\Controllers\FrontUIController;
+use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\InboxController;
-use App\Http\Controllers\LocationController;
-use App\Http\Controllers\MemberPackageController;
-use App\Http\Controllers\OfferTenderController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\PayPalController;
 use App\Http\Controllers\PlacesController;
-use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\SearchController;
-use App\Http\Controllers\seller\SellerNewsController;
-use App\Http\Controllers\seller\SellerProductController;
-use App\Http\Controllers\seller\SellerTenderController;
-use App\Http\Controllers\SellerAuthController;
-use App\Http\Controllers\sellerGalleryController;
-use App\Http\Controllers\SocialMediaController;
-use App\Http\Controllers\SourceProController;
-use App\Http\Controllers\StaticPageController;
-use App\Http\Controllers\SupplierController as CSupplierController;
 use App\Http\Controllers\UICartController;
-use App\Http\Controllers\UICheckoutController;
 use App\Http\Controllers\UINewsController;
-use App\Http\Controllers\UIProductVideoShowController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\FrontUIController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\UISellerController;
-use App\Http\Controllers\UISupplierRegionController;
+use App\Http\Controllers\SourceProController;
 use App\Http\Controllers\UITendersController;
+use App\Http\Controllers\SellerAuthController;
+use App\Http\Controllers\StaticPageController;
+use App\Http\Controllers\UICheckoutController;
+use App\Http\Controllers\BankDetailsController;
+use App\Http\Controllers\OfferTenderController;
+use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\UserProductController;
-use App\Http\Controllers\UserQuotationController;
-use App\Http\Controllers\SmsController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\importController;
+use App\Http\Controllers\admin\SellerController;
+use App\Http\Controllers\admin\StoresController;
 use App\Http\Controllers\admin\TenderController;
-
-use App\Http\Controllers\admin\BuyerInquiryController;
-use App\Http\Controllers\admin\SellerInquiryController;
+use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\TendersController;
+use App\Http\Controllers\MemberPackageController;
+use App\Http\Controllers\sellerGalleryController;
+use App\Http\Controllers\UserQuotationController;
+use App\Http\Controllers\admin\BulkMailController;
+use App\Http\Controllers\admin\HomePageController;
+use App\Http\Controllers\admin\NewsBlogController;
+use App\Http\Controllers\admin\SupplierController;
+use App\Http\Controllers\admin\AdminAuthController;
+use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\QuotationController;
+use App\Http\Controllers\CustomeCategoryController;
+use App\Http\Controllers\admin\AdminInboxController;
+use App\Http\Controllers\admin\AttributesController;
+use App\Http\Controllers\UISupplierRegionController;
 use App\Http\Controllers\admin\UserInquiryController;
+use App\Http\Controllers\seller\SellerNewsController;
+use App\Http\Controllers\admin\BuyerInquiryController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\CompanyCertificateController;
+use App\Http\Controllers\UIProductVideoShowController;
 use App\Http\Controllers\admin\EmailTemplateController;
+use App\Http\Controllers\admin\SellerInquiryController;
+use App\Http\Controllers\seller\SellerTenderController;
+use App\Http\Controllers\admin\GeneralSettingController;
+use App\Http\Controllers\seller\SellerProductController;
+use App\Http\Controllers\admin\ProductCategoryController;
+use App\Http\Controllers\BusinessProfileSymbolController;
+
+use App\Http\Controllers\admin\ProductVideoShowController;
+use App\Http\Controllers\admin\TenderSubcategoryController;
+use App\Http\Controllers\admin\SuppliersSubcategoryController;
+use App\Http\Controllers\admin\QuotationsSubcategoryController;
+use App\Http\Controllers\SupplierController as CSupplierController;
+use App\Http\Controllers\admin\LocationController as AdminLocationController;
 
 //SellerInquiryController
 /*
@@ -81,34 +82,32 @@ use App\Http\Controllers\admin\EmailTemplateController;
 */
 
 Route::get('/update-autoload', function () {
-        // Execute the Composer command
-        exec('composer dump-autoload'); 
-         Artisan::call('optimize:clear');
-    Artisan::call('config:clear');
-    Artisan::call('route:clear');
-    Artisan::call('view:clear');
+   // Execute the Composer command
+   exec('composer dump-autoload');
+   Artisan::call('optimize:clear');
+   Artisan::call('config:clear');
+   Artisan::call('route:clear');
+   Artisan::call('view:clear');
 
-        return "Composer autoload dumped successfully!";
-    });
+   return "Composer autoload dumped successfully!";
+});
 
 
 Route::get('/send-sms', [SmsController::class, 'sendTest']);
 
 Route::controller(CSupplierController::class)->group(function () {
- Route::get('/suppliers', 'allsuppliers')->name('all.suppliers');
-    
+   Route::get('/suppliers', 'allsuppliers')->name('all.suppliers');
 });
 
 
 Route::controller(UITendersController::class)->group(function () {
-  Route::get('/tenders', 'index')->name('all.tenders');
-    Route::get('/tender/{slug}', 'tenderDetails')->name('show.tender');
-    
+   Route::get('/tenders', 'index')->name('all.tenders');
+   Route::get('/tender/{slug}', 'tenderDetails')->name('show.tender');
 });
 
- 
+
 Route::controller(CSupplierController::class)->prefix('main')->group(function () {
-  
+
    Route::post('/get-supplier-subcategory', 'getSubCategory')->name('all.supplier-subcategory');
    Route::post('/get-states', 'getStates')->name('all.country.states');
 });
@@ -123,10 +122,10 @@ Route::controller(UIProductVideoShowController::class)->group(function () {
 });
 Route::controller(UINewsController::class)->group(function () {
 
-    Route::get('/news', 'index')->name('all.news.show');
+   Route::get('/news', 'index')->name('all.news.show');
 
-    Route::get('/news/{slug}', 'readNews')
-        ->name('read.news');
+   Route::get('/news/{slug}', 'readNews')
+      ->name('read.news');
 });
 
 Route::controller(UserProductController::class)->group(function () {
@@ -199,9 +198,9 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::get('/forget-password', [AuthController::class, 'forgetPassword'])->name('forget.password');
 Route::get('/forget-password', [AuthController::class, 'forgetPassword'])->name('forget.password');
 Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])
-     ->name('password.reset');
+   ->name('password.reset');
 Route::post('/reset-password', [PasswordResetController::class, 'updatePassword'])
-     ->name('password.update');
+   ->name('password.update');
 Route::post('/send-password-reset-link', [AuthController::class, 'sendPasswordResetLink'])->name('forget.sendPasswordResetLink');
 
 Route::post('/login/verify', [AuthController::class, 'loginNow'])->name('login.now');
@@ -226,76 +225,74 @@ Route::controller(AdminAuthController::class)->group(function () {
 });
 Route::middleware(['role:admin'])->group(function () {
    Route::controller(AdminInboxController::class)->prefix('admin')->group(function () {
-	Route::get('/inbox', 'index')->name('admin.inbox');
-    Route::post('/inbox/read/{id}', 'markAsRead')->name('admin.inbox.read');
-    Route::get('/inbox/dropdown', 'getDropdownMessages')->name('admin.inbox.dropdown');
-	Route::delete('/inbox/delete/{id}', 'destroy')->name('admin.inbox.delete');
-    Route::get('/inbox/unread-count', 'unreadCount')->name('admin.inbox.unreadCount');
+      Route::get('/inbox', 'index')->name('admin.inbox');
+      Route::post('/inbox/read/{id}', 'markAsRead')->name('admin.inbox.read');
+      Route::get('/inbox/dropdown', 'getDropdownMessages')->name('admin.inbox.dropdown');
+      Route::delete('/inbox/delete/{id}', 'destroy')->name('admin.inbox.delete');
+      Route::get('/inbox/unread-count', 'unreadCount')->name('admin.inbox.unreadCount');
+   });
 
-	
-	});
+   Route::prefix('admin')->middleware(['role:admin'])->group(function () {
+      Route::get('/all-email-templates', [EmailTemplateController::class, 'index'])->name('admin.email_templates.index');
+      Route::get('/all-email-templates/create', [EmailTemplateController::class, 'create'])->name('admin.email_templates.create');
+      Route::post('/all-email-templates/store', [EmailTemplateController::class, 'store'])->name('admin.email_templates.store');
+      Route::get('/all-email-templates/{id}/edit', [EmailTemplateController::class, 'edit'])->name('admin.email_templates.edit');
+      Route::put('/all-email-templates/{id}', [EmailTemplateController::class, 'update'])->name('admin.email_templates.update');
+      Route::delete('/all-email-templates/{id}', [EmailTemplateController::class, 'destroy'])->name('admin.email_templates.destroy');
+   });
 
-    Route::prefix('admin')->middleware(['role:admin'])->group(function () {
-    Route::get('/all-email-templates', [EmailTemplateController::class, 'index'])->name('admin.email_templates.index');
-    Route::get('/all-email-templates/create', [EmailTemplateController::class, 'create'])->name('admin.email_templates.create');
-    Route::post('/all-email-templates/store', [EmailTemplateController::class, 'store'])->name('admin.email_templates.store');
-    Route::get('/all-email-templates/{id}/edit', [EmailTemplateController::class, 'edit'])->name('admin.email_templates.edit');
-    Route::put('/all-email-templates/{id}', [EmailTemplateController::class, 'update'])->name('admin.email_templates.update');
-    Route::delete('/all-email-templates/{id}', [EmailTemplateController::class, 'destroy'])->name('admin.email_templates.destroy');
-});
-   
-Route::prefix('admin')->name('admin.')->group(function () {
+   Route::prefix('admin')->name('admin.')->group(function () {
 
-    Route::resource('sellers', SellerController::class);
-    Route::resource('products', ProductController::class);
-    Route::resource('tenders', TenderController::class);
-   Route::resource('company-logos', App\Http\Controllers\admin\CompanyLogoController::class);
-   Route::post('company-logos/change-status', [App\Http\Controllers\admin\CompanyLogoController::class,'changeStatus'])->name('company_logo.change_status');
-   Route::resource('profile-pictures', App\Http\Controllers\admin\ProfilePictureController::class);
-   Route::resource('profile-banners', App\Http\Controllers\admin\ProfileBannerController::class);
-   Route::resource('profile-galleries', App\Http\Controllers\admin\ProfileGalleryController::class);
-   Route::resource('certificates', App\Http\Controllers\admin\CertificateController::class);
+      Route::resource('sellers', SellerController::class);
+      Route::resource('products', ProductController::class);
+      Route::resource('tenders', TenderController::class);
+      Route::resource('company-logos', App\Http\Controllers\admin\CompanyLogoController::class);
+      Route::post('company-logos/change-status', [App\Http\Controllers\admin\CompanyLogoController::class, 'changeStatus'])->name('company_logo.change_status');
+      Route::resource('profile-pictures', App\Http\Controllers\admin\ProfilePictureController::class);
+      Route::resource('profile-banners', App\Http\Controllers\admin\ProfileBannerController::class);
+      Route::resource('profile-galleries', App\Http\Controllers\admin\ProfileGalleryController::class);
+      Route::resource('certificates', App\Http\Controllers\admin\CertificateController::class);
 
-    Route::resource('inquiries', BuyerInquiryController::class)->only(['index','show','destroy']);
-    Route::resource('sellerinquiries', SellerInquiryController::class)->only(['index','show','destroy']);
-    Route::resource('userinquiries', UserInquiryController::class)->only(['index','show','destroy']);
-    //SellerInquiryController
-    Route::get('/product-approval', [ProductController::class, 'index'])->name('product.approval');
-    Route::get('/product-managment', [ProductController::class, 'productmanagment'])->name('product.productmanagment');
-    Route::get('/product-sellout-managment', [ProductController::class, 'productselloutmanagment'])->name('product.productselloutmanagment');
-    Route::get('/product-store-managment', [ProductController::class, 'storeproductmanagment'])->name('product.storeproductmanagment');
-    Route::get('/product-store-sellout-managment', [ProductController::class, 'storeselloutproductmanagment'])->name('product.storeselloutproductmanagment');
+      Route::resource('inquiries', BuyerInquiryController::class)->only(['index', 'show', 'destroy']);
+      Route::resource('sellerinquiries', SellerInquiryController::class)->only(['index', 'show', 'destroy']);
+      Route::resource('userinquiries', UserInquiryController::class)->only(['index', 'show', 'destroy']);
+      //SellerInquiryController
+      Route::get('/product-approval', [ProductController::class, 'index'])->name('product.approval');
+      Route::get('/product-managment', [ProductController::class, 'productmanagment'])->name('product.productmanagment');
+      Route::get('/product-sellout-managment', [ProductController::class, 'productselloutmanagment'])->name('product.productselloutmanagment');
+      Route::get('/product-store-managment', [ProductController::class, 'storeproductmanagment'])->name('product.storeproductmanagment');
+      Route::get('/product-store-sellout-managment', [ProductController::class, 'storeselloutproductmanagment'])->name('product.storeselloutproductmanagment');
 
-    //
-    Route::post('products/approval', [ProductController::class, 'toggleApproval'])->name('products.approval');
-    Route::get('/buy-tender-approval',[TenderController::class, 'index'])->name('buy.tender.approval');
-    Route::post('tenders/approval', [TenderController::class, 'toggleApproval'])->name('tenders.approval');
-    Route::get('/product-images', [ProductController::class, 'product_image'])->name('product.product_images');
-    Route::get('/multiply-product-images', [ProductController::class, 'multiply_product_image'])->name('product.multiply_product_images');
-    Route::get('/tender-images', [TenderController::class, 'tender_images'])->name('tender.tender_images');
-    Route::post('product/toggleApproval', [ProductController::class, 'toggleApproval'])->name('product.approval');
- 
-    
-  Route::get('/trade-sell-list', [TenderController::class, 'allIndex'])->name('sell.trade.list');
- 
- Route::get('/all-tender-deal', [TenderController::class, 'allDealIndex'])->name('sell.trade.deal_list'); //
-  // Route::get('/trade-sell-list', 'sellTradeList')->name('admin.sell.trade.list');
-});
+      //
+      Route::post('products/approval', [ProductController::class, 'toggleApproval'])->name('products.approval');
+      Route::get('/buy-tender-approval', [TenderController::class, 'index'])->name('buy.tender.approval');
+      Route::post('tenders/approval', [TenderController::class, 'toggleApproval'])->name('tenders.approval');
+      Route::get('/product-images', [ProductController::class, 'product_image'])->name('product.product_images');
+      Route::get('/multiply-product-images', [ProductController::class, 'multiply_product_image'])->name('product.multiply_product_images');
+      Route::get('/tender-images', [TenderController::class, 'tender_images'])->name('tender.tender_images');
+      Route::post('product/toggleApproval', [ProductController::class, 'toggleApproval'])->name('product.approval');
 
- 
+
+      Route::get('/trade-sell-list', [TenderController::class, 'allIndex'])->name('sell.trade.list');
+
+      Route::get('/all-tender-deal', [TenderController::class, 'allDealIndex'])->name('sell.trade.deal_list'); //
+      // Route::get('/trade-sell-list', 'sellTradeList')->name('admin.sell.trade.list');
+   });
+
+
 
 
    Route::controller(DashboardController::class)->prefix('admin')->group(function () {
       Route::get('/dashboard', 'dashboard')->name('admin.dashboard');
       Route::get('/all-seller', 'showSellers')->name('admin.all.sellers');
-      
+
       Route::get('/seller-approval', 'sellerApproval')->name('admin.seller.approval');
 
       Route::get('/sell-tender-approval', 'sellTenderApproval')->name('admin.sell.tender.approval');
       Route::get('/payment-center', 'paymentCenter')->name('admin.payment.center');
-	  Route::get('/payment-center/ajax', 'paymentCenterAjax')->name('admin.payment.center.ajax');
-	  Route::delete('/payment-center/{id}', [DashboardController::class, 'destroyPackage'])
-    ->name('admin.payment.center.delete');
+      Route::get('/payment-center/ajax', 'paymentCenterAjax')->name('admin.payment.center.ajax');
+      Route::delete('/payment-center/{id}', [DashboardController::class, 'destroyPackage'])
+         ->name('admin.payment.center.delete');
 
       Route::get('/product-manager', 'productManagement')->name('admin.product.manager');
       //Route::get('/trade-buy-list', 'buyTradeList')->name('admin.buy.trade.list');
@@ -306,19 +303,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
       Route::get('/show-ads-banner', 'showBanner')->name('admin.show.ads.banner');
       Route::get('/seo-management', 'seoManagements')->name('admin.seo.manager');
       Route::get('/add-seo', 'addNewSeo')->name('admin.seo.add');
-	  Route::post('/seo/save', 'seo_store')->name('admin.seo.save');
-  
-  Route::get('/seo/view/{id}', 'seo_show')->name('admin.seo.view');
+      Route::post('/seo/save', 'seo_store')->name('admin.seo.save');
 
-  Route::get('/seo/edit/{id}', 'seo_edit')->name('admin.seo.edit');
-    Route::post('/seo/update/{id}', 'seo_update')->name('admin.seo.update');
-    Route::delete('/seo/delete/{id}', 'seo_destroy')->name('admin.seo.delete');
-	  
-	  
+      Route::get('/seo/view/{id}', 'seo_show')->name('admin.seo.view');
+
+      Route::get('/seo/edit/{id}', 'seo_edit')->name('admin.seo.edit');
+      Route::post('/seo/update/{id}', 'seo_update')->name('admin.seo.update');
+      Route::delete('/seo/delete/{id}', 'seo_destroy')->name('admin.seo.delete');
+
+
       Route::get('/all-enquiry', 'enquiryBox')->name('admin.all.enquiries');
       Route::get('/all-advertisement-enquiry', 'advertisementEnquiry')->name('admin.advertisement.enquiries');
       Route::get('/all-admin-enquiry', 'adminEnquiryBox')->name('admin.all.enquiries.admin');
-     // Route::get('/all-email-templates', 'adminEmailTemplates')->name('admin.all.email.templates');
+      // Route::get('/all-email-templates', 'adminEmailTemplates')->name('admin.all.email.templates');
       Route::get('/add-new-email-template', 'adminAddEmailTemplate')->name('admin.add.email.template');
       Route::get('/bulk-mail-send', 'adminBulkMailSend')->name('admin.bulk.email.send');
       Route::get('/video-show', 'adminVideoShow')->name('admin.video.show');
@@ -410,11 +407,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
    });
 
    Route::controller(StoresController::class)->prefix('admin')->group(function () {
-      Route::get('/stores', 'index')->name('admin.stores.index');  
+      Route::get('/stores', 'index')->name('admin.stores.index');
       Route::get('/stores-images', 'images')->name('admin.stores.images');
-      Route::get('/stores-banners', 'storeBanners')->name('admin.stores.banners'); 
+      Route::get('/stores-banners', 'storeBanners')->name('admin.stores.banners');
       Route::post('stores-images/delete', 'deletImage')->name('admin.delete.images');
-      Route::post('/change-status', 'storeChangeStatus')->name('admin.stores.change_status');  
+      Route::post('/change-status', 'storeChangeStatus')->name('admin.stores.change_status');
       //
       // Route::get('/delete/{id}/tender-category', 'DeleteCategory')->name('admin.delete.tender.category');
       // Route::get('/edit/{id}/tender-category', 'edit')->name('admin.edit.tender.category');
@@ -423,7 +420,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
       // Route::post('/update/tender-category', 'update')->name('admin.update.tender.category');
    });
    Route::controller(ProductVideoShowController::class)->prefix('admin')->group(function () {
-      Route::get('/videos', 'index')->name('admin.videos.index');  
+      Route::get('/videos', 'index')->name('admin.videos.index');
       // Route::get('/delete/{id}/tender-category', 'DeleteCategory')->name('admin.delete.tender.category');
       // Route::get('/edit/{id}/tender-category', 'edit')->name('admin.edit.tender.category');
       // Route::post('/tender-category/status', 'changeStatus')->name('admin.status.tender.category');
@@ -447,13 +444,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
       Route::post('/store/quotation-category', 'store')->name('admin.store.quotation.category');
       Route::post('/update/quotation-category', 'update')->name('admin.update.quotation.category');
 
-      Route::get('/quotation-images','allQuotations')->name('admin.quotation.images');
-       Route::post('/quotation-images/delete','deleteQuotation')->name('admin.quotation.deleteQuotation');
+      Route::get('/quotation-images', 'allQuotations')->name('admin.quotation.images');
+      Route::post('/quotation-images/delete', 'deleteQuotation')->name('admin.quotation.deleteQuotation');
       //deleteQuotation
-      Route::get('/quotations','allListedQuotations')->name('admin.quotations');
-      Route::get('/quotations/{id}','showQuotations')->name('admin.quotations.show');
+      Route::get('/quotations', 'allListedQuotations')->name('admin.quotations');
+      Route::get('/quotations/{id}', 'showQuotations')->name('admin.quotations.show');
       Route::get('/trade-buy-list', 'allListedDealQuotations')->name('admin.buy.trade.list');
-   
    });
    Route::controller(QuotationsSubcategoryController::class)->prefix('admin')->group(function () {
       Route::get('/quotations-subcategory/{id}', 'index')->name('admin.quotations.subcategory');
@@ -543,7 +539,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
    Route::controller(BulkMailController::class)->prefix('admin')->group(function () {
       Route::get('/bulk-mail', 'bulkMail')->name('admin.send.bulk.mail');
       Route::post('/send/bulk-mail', 'sendbulkMail')->name('bulk-mail.send');
-      Route::post('/send/admin-bulk-mail','sendAdminBulkMail')->name('admin.bulk-mail.send');
+      Route::post('/send/admin-bulk-mail', 'sendAdminBulkMail')->name('admin.bulk-mail.send');
    });
 });
 Route::middleware(['role:buyer'])->group(function () {
@@ -586,7 +582,6 @@ Route::middleware(['role:buyer'])->group(function () {
       Route::get('/deal-tender/{slug}/{offer_id}/detail', 'dealTenderDetail')->name('buyer.deal-detail.tender');
       Route::post('/counter/offers/tender', 'acceptCounterOfferTender')->name('buyer.accept-counter.tender.offer');
       Route::post('/delete/counter/offer/tender', 'deleteReceiveCounterOfferTender')->name('buyer.delete-received-counter.offer.tender');
-     
    });
 
    Route::controller(UserQuotationController::class)->prefix('buyer')->group(function () {
@@ -600,7 +595,7 @@ Route::middleware(['role:buyer'])->group(function () {
       Route::get('/deals/quotes', 'dealQuotes')->name('buyer.quote-deal');
       Route::get('/my-deals/quotes', 'dealMyQuotes')->name('buyer.my-quote-deal');
       Route::get('/supplier-deals/quotes', 'dealSupplierQuotes')->name('buyer.supplier-quote-deal');
-      
+
       Route::get('/deal/quotes/{slug}/{offer_id}/details', 'dealQuotesDetails')->name('buyer.offer.quote-deal');
       Route::post('/accept/counter-quote-offer', 'acceptCounterQuoteOffer')->name('buyer.sender.accept-counter-quote');
       Route::post('/deal/update-quotation', 'updateQuotationDealStatus')->name('buyer.status.deal-quotation');
@@ -614,7 +609,7 @@ Route::middleware(['role:buyer'])->group(function () {
 // });
 Route::controller(MemberPackageController::class)->group(function () {
    Route::get('/member-packages', 'indexClient')->name('user.member.package');
-}); 
+});
 
 Route::controller(SourceProController::class)->group(function () {
    Route::get('/source-pro', 'sourcePro')->name('user.source-pro');
@@ -637,9 +632,8 @@ Route::get('/refereshcapcha', [FrontUIController::class, 'refreshCaptcha'])->nam
 Route::get('/places', [PlacesController::class, 'index'])->name('get.all.cities');
 
 Route::controller(UITendersController::class)->prefix('main')->group(function () {
-   
+
    Route::get('/all-tenders/{slug?}', 'index')->name('filter.all.tenders');
- 
 });
 Route::controller(OfferTenderController::class)->prefix('main')->group(function () {
    Route::post('/make-offer/tender', 'sendOffer')->name('offer.tender');
@@ -675,7 +669,7 @@ Route::controller(SellerAuthController::class)->prefix('seller')->group(function
    Route::post('/seller-reg-step1', 'regStep1')->name('seller.reg.step1');
    Route::post('/seller-send-reg-otp', 'sendRegOtp')->name('seller.sendreg.otp');
    Route::post('/seller/verifyreg/otp', 'verifyRegOtp')->name('seller.verify.regotp');
-   
+
    //verifyRegOtp
    Route::post('/seller/verify/otp', 'verifyOtp')->name('seller.verify.otp');
    Route::post('/seller-complete/profile/store', 'completeMyProfile')->name('seller.complete.profile.save');
@@ -691,11 +685,11 @@ Route::middleware(['role:seller'])->group(function () {
       Route::get('/dashboard/new-state/tenders', 'newStateTender')->name('seller.newstate.tender');
       Route::get('/dashboard/new-state/quotation', 'newStateQuotation')->name('seller.newstate.quotation');
       Route::get('/{code}/seller-edit-profile', 'editRegistration')->name('seller.edit.registration');
-	  Route::get('/{code}/change-password', 'change_password')->name('seller.change.password');
-	  
+      Route::get('/{code}/change-password', 'change_password')->name('seller.change.password');
+
       Route::get('/{code}/seller-profile-edit', 'editSellerProfile')->name('seller.edit.profile');
       Route::get('/{code}/profile-preview', 'profilePreview')->name('seller.profile.preview');
-	  
+
       Route::get('/my-business-profile', 'companyProfile')->name('seller.company.profile');
       Route::get('/my-shipment-methods', 'shipmentMethods')->name('seller.shipment.methods');
       Route::get('/my-search-key', 'searchKeys')->name('seller.search.keys');
@@ -793,9 +787,9 @@ Route::middleware(['role:seller'])->group(function () {
    Route::controller(SellerNewsController::class)->prefix('seller')->group(function () {
       Route::get('/add-news', 'addNews')->name('seller.add.news');
       Route::get('/my-news', 'mynews')->name('seller.my.news');
-	  Route::get('/my-inactive-news', 'myinactivenews')->name('seller.my.inactivenews');
-	  
-	  
+      Route::get('/my-inactive-news', 'myinactivenews')->name('seller.my.inactivenews');
+
+
       Route::get('/edit-news/{slug}', 'editNews')->name('seller.edit.news');
       Route::post('/save-news', 'saveNews')->name('seller.save.news');
       Route::post('/status-change-news', 'statusChange')->name('seller.status.news');
@@ -821,11 +815,11 @@ Route::middleware(['role:seller'])->group(function () {
    Route::controller(OfferTenderController::class)->prefix('seller')->group(function () {
       Route::get('/success/offer/{slug}/tender', 'successTenderOfferPage')->name('seller.success.offer.tender');
       Route::get('/received/offer/tender', 'receivedOfferTender')->name('seller.received.offer.tender');
-      
+
       Route::get('/offer/deals/tender', 'dealOfferTender')->name('seller.deal.offer.tender');
       Route::get('/offer/my-deals/tender', 'dealMyOfferTender')->name('seller.my-deal.offer.tender');
       Route::get('/offer/supplier-deals/tender', 'dealSupplierOfferTender')->name('seller.supplier-deal.offer.tender');
-      
+
       Route::post('/delete/offer/tender', 'deleteOfferTenderBySeller')->name('seller.delete-received.offer.tender');
       Route::post('/accept/offer/tender', 'acceptOfferTenderBySeller')->name('seller.accept.tender.offer');
       Route::post('/reject/offer/tender', 'rejectOfferTenderBySeller')->name('seller.reject.tender.offer');
@@ -866,11 +860,10 @@ Route::middleware(['role:seller'])->group(function () {
 });
 
 Route::get('paypal/pay', [PayPalController::class, 'payWithPayPal'])
-    ->name('paypal.pay');
+   ->name('paypal.pay');
 
 Route::get('paypal/status', [PayPalController::class, 'payPalStatus'])
-    ->name('paypal.status');
+   ->name('paypal.status');
 
 Route::get('paypal/free/success', [PayPalController::class, 'paypalFreeSuccess'])
-    ->name('paypal.free.success');
-
+   ->name('paypal.free.success');

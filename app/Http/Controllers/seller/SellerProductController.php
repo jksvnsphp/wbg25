@@ -96,7 +96,7 @@ class SellerProductController extends Controller
             return redirect()->route('login');
         }
     }
-    
+
     public function upgradeLimitPackage()
     {
         if (isset(auth()->user()->id)) {
@@ -112,7 +112,7 @@ class SellerProductController extends Controller
             return redirect()->route('login');
         }
     }
-    
+
     public function addMultipleProduct()
     {
         if (isset(auth()->user()->id)) {
@@ -199,35 +199,35 @@ class SellerProductController extends Controller
                 ];
             });
             $product = products::where('id', $product_id)
-    ->where('vendor_id', $vendor_id)
-    ->with(
-        'parentcategory',
-        'category',
-        'childcategory',
-        'endchildcategory',
-        'gallery',
-        'video',
-        'product_attributes',
-        'product_setting',
-        'rate_table.shipping_rate_costs.shipping_regions'
-    )
-    ->first();
+                ->where('vendor_id', $vendor_id)
+                ->with(
+                    'parentcategory',
+                    'category',
+                    'childcategory',
+                    'endchildcategory',
+                    'gallery',
+                    'video',
+                    'product_attributes',
+                    'product_setting',
+                    'rate_table.shipping_rate_costs.shipping_regions'
+                )
+                ->first();
 
-if (!$product) {
-    return redirect()->back()->with([
-        'alert-type' => 'error',
-        'message' => 'Product not found!'
-    ]);
-}
+            if (!$product) {
+                return redirect()->back()->with([
+                    'alert-type' => 'error',
+                    'message' => 'Product not found!'
+                ]);
+            }
 
             if ($product) {
-				
-				$expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
 
-                 $product->expiry_date = $expiryDate;
-                 $product->isExpired   = now()->greaterThanOrEqualTo($expiryDate);
-				
-				
+                $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
+
+                $product->expiry_date = $expiryDate;
+                $product->isExpired   = now()->greaterThanOrEqualTo($expiryDate);
+
+
                 // dd($product->rate_table->toArray());
                 $searchedPath = '';
                 $searched_cat = '';
@@ -434,12 +434,12 @@ if (!$product) {
 
                     'endchild_category_id.integer' => 'The end child category must be a valid integer.',
                     'endchild_category_id.exists' => 'The selected end child category does not exist in the database.',
-					'images.required' => 'At least one product image is required.',
+                    'images.required' => 'At least one product image is required.',
                     'images.min' => 'Please upload at least one product image.',
                     'images.*.image' => 'Each uploaded file must be an image.',
                     'images.*.mimes' => 'Only jpeg, png, jpg, gif, or svg images are allowed.',
                     'images.*.dimensions' => 'Each image must be at least 500 × 500 pixels.',
-					
+
                 ]
             );
             if ($validate->fails()) {
@@ -1082,9 +1082,9 @@ if (!$product) {
                 $product = products::where('id', $request->product_id)->first();
 
                 if ($product) {
-					
-					$expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
-                   $isExpired  = now()->greaterThanOrEqualTo($expiryDate);
+
+                    $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
+                    $isExpired  = now()->greaterThanOrEqualTo($expiryDate);
 
                     $rateTableId = null;
                     if ($request->shipping_partner != "") {
@@ -1148,11 +1148,11 @@ if (!$product) {
                         $old_shipping_rate->delete();
                     }
 
-                     if ($isExpired) {
-// Restart duration from today
-                     $product->created_at = now();
-                      }
-				$product->name = $request->item_title;
+                    if ($isExpired) {
+                        // Restart duration from today
+                        $product->created_at = now();
+                    }
+                    $product->name = $request->item_title;
                     $product->slug = $this->createUniqueSlug($request->item_title);
                     $product->description = $request->item_description;
                     $product->price = isset($request->cost[0]) ? $request->cost[0] : 0;
@@ -1318,9 +1318,9 @@ if (!$product) {
             return response()->json(['error' => ['message' => "Unauthrized access this page!"]], 422);
         }
     }
-    
-	
-	public function updateProductMultiply(Request $request)
+
+
+    public function updateProductMultiply(Request $request)
     {
         // dd($request->all());
         if (isset(auth()->user()->id)) {
@@ -1554,8 +1554,12 @@ if (!$product) {
                     $product->isBulkBuy = $request->isBulkBuy == "on" ? 1 : 0;
                     $product->isHotProduct = $request->isHotProduct == "on" ? 1 : 0;
                     $product->duration = 0;
-                    $product->save();
 
+                    $product->currency0 = (isset($request->currency[0]) && $request->currency[0] != '') ? $request->currency[0] : "USD";
+                    $product->currency1 = (isset($request->currency[1]) && $request->currency[1] != '') ? $request->currency[1] : "USD";
+                    $product->currency2 = (isset($request->currency[2]) && $request->currency[2] != '') ? $request->currency[2] : "USD";
+
+                    $product->save();
 
                     // extra attributes
                     if (isset($request->buyer_need_detail) && $request->buyer_need_detail != "") {
@@ -1701,7 +1705,7 @@ if (!$product) {
                         ->whereHas('order', function ($query) {
                             $query->where('payment_status', '!=', 'processing');
                         })->sum('quantity');
-                        
+
                     $soldPrice = OrderItem::where('product_id', $product->id)
                         ->whereHas('order', function ($query) {
                             $query->where('payment_status', '!=', 'processing');
@@ -1714,13 +1718,13 @@ if (!$product) {
             if (!empty($productIds)) {
                 Products::whereIn('id', $productIds)->update(['isRead' => 1]);
             }
-            
+
             return view('seller-vendor.product.my-products', compact('products'));
         } else {
             return response()->json(['error' => ['message' => "Unauthrized access this page!"]], 422);
         }
     }
-    
+
     public function myInactiveProduct()
     {
         if (isset(auth()->user()->id)) {
@@ -1761,7 +1765,7 @@ if (!$product) {
     {
         if (isset(auth()->user()->id)) {
             $products = products::latest()->where('vendor_id', auth()->user()->id)->where('isMultiple', 1)->with('gallery')->get();
-            $unReadProducts = products::latest()->where('vendor_id', auth()->user()->id)->where('isMultiple', 1)->where('isRead',0)->get();
+            $unReadProducts = products::latest()->where('vendor_id', auth()->user()->id)->where('isMultiple', 1)->where('isRead', 0)->get();
             if ($products) {
                 foreach ($products as $product) {
                     $soldQty = OrderItem::where('product_id', $product->id)
@@ -1776,9 +1780,9 @@ if (!$product) {
                     $product->sold_price = $soldPrice;
                 }
             }
-            foreach ($unReadProducts ?? [] as $unProduct){
-               $unProduct->isRead=1;
-               $unProduct->save();
+            foreach ($unReadProducts ?? [] as $unProduct) {
+                $unProduct->isRead = 1;
+                $unProduct->save();
             }
             return view('seller-vendor.product.my-multiply-products', compact('products'));
         } else {
@@ -1887,15 +1891,15 @@ if (!$product) {
             ->whereHas('orderItems')
             ->with('orderItems.product.gallery')
             ->paginate(10);
-            
+
         $unOrders = Order::latest()->where('user_id', Auth::user()->id)
-            ->where('isRead',0)
+            ->where('isRead', 0)
             ->whereHas('orderItems')
             ->get();
-        foreach ($unOrders ?? [] as $unOrder){
-           $unOrder->isRead=1;
-           $unOrder->save(); 
-        }    
+        foreach ($unOrders ?? [] as $unOrder) {
+            $unOrder->isRead = 1;
+            $unOrder->save();
+        }
         // dd($orders);
         return view('seller-vendor.product.purchased-products', compact('orders'));
     }
@@ -1941,19 +1945,19 @@ if (!$product) {
             ->with(['orderItems.product.gallery'])
             ->where('payment_status', '!=', 'processing')
             ->paginate(10);
-            
-       $orderItemIds = OrderItem::whereHas('product', function ($query) use ($vendorId) {
-                      $query->where('vendor_id', $vendorId)
-                            ->where('isMultiple', 1);
-       })
-      ->where('isRead',0)
-      ->whereHas('order', function ($query) {
-        $query->where('payment_status', '!=', 'processing');
-      })
-      ->pluck('id');
-      
+
+        $orderItemIds = OrderItem::whereHas('product', function ($query) use ($vendorId) {
+            $query->where('vendor_id', $vendorId)
+                ->where('isMultiple', 1);
+        })
+            ->where('isRead', 0)
+            ->whereHas('order', function ($query) {
+                $query->where('payment_status', '!=', 'processing');
+            })
+            ->pluck('id');
+
         OrderItem::whereIn('id', $orderItemIds)->update(['isRead' => 1]);
-        
+
         return view('seller-vendor.product.sold-products', compact('orders'));
     }
     public function mySoldProductDetail($order_item_id)
@@ -1992,8 +1996,8 @@ if (!$product) {
             'col' => 'required|string',
             'value' => 'required|string',
         ]);
-        if ($request->col == "shipment_status" && $request->value=="shipped") {
-            if ($request->has('shipping_company') && $request->input('shipping_company')!="" && $request->has('tracking_number') && $request->input('tracking_number')!="") {
+        if ($request->col == "shipment_status" && $request->value == "shipped") {
+            if ($request->has('shipping_company') && $request->input('shipping_company') != "" && $request->has('tracking_number') && $request->input('tracking_number') != "") {
                 $orderItem = OrderItem::find($request->order_item_id);
                 $orderItem[$request->col] = $request->value;
                 $orderItem->shippment_company = $request->shipping_company;
@@ -2004,10 +2008,10 @@ if (!$product) {
                 return response()->json(['status' => false, 'message' => 'Shipping company and tracking number are required!']);
             }
         }
-        
+
         $orderItem = OrderItem::find($request->order_item_id);
         $orderItem[$request->col] = $request->value;
         $orderItem->save();
-        return response()->json(['status'=>true,'message' => 'Status updated successfully.']);
+        return response()->json(['status' => true, 'message' => 'Status updated successfully.']);
     }
 }
