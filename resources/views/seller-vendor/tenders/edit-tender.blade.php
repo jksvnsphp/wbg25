@@ -884,12 +884,13 @@
             </div>
         </td>
         <td>
-           <div class="input-group">
-            <span class="input-group-text">
-                US $
-            </span>
-            <input type="number" class="form-control" placeholder="Enter Cost" name="shipping_cost[${index}]" value="${cost}">
-          </div> 
+            <div class="input-group">
+                <select name="currency[${index}]" style="width: 5rem !important;flex:unset;" class="form-select input-group-addon">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+                <input type="number" class="form-control" placeholder="Enter Cost" name="shipping_cost[${index}]" value="${cost}">
+            </div>
         </td>
         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
      </tr>`;
