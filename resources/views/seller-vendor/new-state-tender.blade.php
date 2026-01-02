@@ -32,18 +32,13 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="col-md-12 text-end my-4">
-                                 <a class="text-dark text-decoration-underline d-block position-relative" href="{{route('seller.deal.offer.tender')}}">
-                                            My Tender Deals ({{ $myRDealedOfferTender }})
-                                             <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$myDealedOfferTender ?? 0}}</span>
-                                        </a>
-                            </div>
+                           
                             <div class="col-md-12">
                                 <ul class="d-flex flex-wrap justify-content-between align-items-center " style="list-style: disc !important;">
                                     <h6 class="text-secondary fs-5 fw-bold me-md-5 me-4 mb-0 pb-0 ">Suppliers Tender Activities:</h6>
                                     <li class="me-md-5 me-4" style="list-style: disc !important;">
                                         <a class="text-dark text-decoration-underline  d-block position-relative" href="{{route('seller.receive.offer-counter.tender')}}">
-                                            My Received Counters ({{ $myRReceivedCounterOfferTender }})
+                                           My submitted Offers ({{ $myRReceivedCounterOfferTender }})
                                              <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$myReceivedCounterOfferTender ?? 0}}</span>
                                         </a>
                                     </li>
@@ -53,7 +48,12 @@
                                              <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$mySubmittedOfferTender ?? 0}}</span>
                                         </a>
                                     </li>
-                                   <li>&nbsp;</li>
+                                   <li class="me-md-5 me-4" style="list-style: disc !important;">
+                                     <a class="text-dark text-decoration-underline d-block position-relative" href="{{route('seller.deal.offer.tender')}}">
+                                            My Tender Deals ({{ $myRDealedOfferTender }})
+                                             <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$myDealedOfferTender ?? 0}}</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
