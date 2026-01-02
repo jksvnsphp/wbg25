@@ -185,131 +185,167 @@
                         <div class="col-md-9 mt-4">
                             <div class="row">
                                 <div class="col-md-4 mb-4">
-                                    <div class="form-group mb-2">
-                                        <label for="image1" class="form-label">Image 1
-                                            <small class="text-danger">(480px X 360px) <i class="fa fa-asterisk text-secondary" style="font-size:10px;"
-                                                    aria-hidden="true"></i></small>
-                                        </label>
-                                        <input type="file" name="image_1" id="img1" class="form-control" />
+                                    <div class="card shadow">
+                                        <div class="card-body">
+                                            <label for="image1" class="form-label">Image 1
+                                                <small class="text-danger">(480px X 360px) <i class="fa fa-asterisk text-secondary" style="font-size:10px;" aria-hidden="true"></i></small>
+                                            </label>
 
-                                        <div class="preview-img" data-image-id=""
-                                            style="width: 100px; height: 100px; position: relative; margin: 5px;">
-                                            <img id="preview1" src="#" alt="Image 1 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
-                                            <span class="delete-gimage"
-                                                data-input="img1" data-preview="preview1" style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
-                                                <i class="fa-solid fa-trash "></i>
-                                            </span>
+                                            <input type="file"
+                                                class="form-control file-input"
+                                                name="image_1"
+                                                id="img1"
+                                                data-preview="#preview_img1"
+                                                data-remove="#remove_img1"
+                                                data-required="true">
+
+                                            <div class="position-relative d-inline-block mt-2">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png" id="preview_img1" style="height:6rem; border:1px solid #bcbcbc;" class="mt-2 rounded-2" alt="Image_not_available">
+                                                <button type="button"
+                                                    id="remove_img1"
+                                                    class="btn btn-danger btn-sm"
+                                                    style="position:absolute;top:5px;right:5px;display:none;">
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 mb-4">
+                                    <div class="card shadow">
+                                        <div class="card-body">
+                                            <label for="image2" class="form-label">Image 2
+                                                <small class="text-danger">(480px X 360px)</small>
+                                            </label>
+
+                                            <input type="file"
+                                                class="form-control file-input"
+                                                name="image_2"
+                                                id="img2"
+                                                data-preview="#preview_img2"
+                                                data-remove="#remove_img2"
+                                                data-required="true">
+
+                                            <div class="position-relative d-inline-block mt-2">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png" id="preview_img2" style="height:6rem; border:1px solid #bcbcbc;" class="mt-2 rounded-2" alt="Image_not_available">
+                                                <button type="button"
+                                                    id="remove_img2"
+                                                    class="btn btn-danger btn-sm"
+                                                    style="position:absolute;top:5px;right:5px;display:none;">
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 mb-4">
+                                    <div class="card shadow">
+                                        <div class="card-body">
+                                            <label for="image3" class="form-label">Image 3 <small class="text-danger">(480px X 360px)</small></label>
+
+                                            <input type="file"
+                                                class="form-control file-input"
+                                                name="image_3"
+                                                id="img3"
+                                                data-preview="#preview_img3"
+                                                data-remove="#remove_img3"
+                                                data-required="true">
+
+                                            <div class="position-relative d-inline-block mt-2">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png" id="preview_img3" style="height:6rem; border:1px solid #bcbcbc;" class="mt-2 rounded-2" alt="Image_not_available">
+                                                <button type="button"
+                                                    id="remove_img3"
+                                                    class="btn btn-danger btn-sm"
+                                                    style="position:absolute;top:5px;right:5px;display:none;">
+                                                    ✕
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-4">
-                                    <div class="form-group mb-2">
-                                        <label for="image2" class="form-label">Image 2
-                                            <small class="text-danger">(480px X 360px)</small>
-                                        </label>
-                                        <input type="file" name="image_2" id="img2" class="form-control" />
+                                    <div class="card shadow">
+                                        <div class="card-body">
+                                            <label for="image4" class="form-label">Image 4 <small class="text-danger">(480px X 360px)</small></label>
 
-                                        <div class="preview-img" data-image-id=""
-                                            style="width: 100px; height: 100px; position: relative; margin: 5px;">
-                                            <img id="preview2" src="#" alt="Image 2 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
-                                            <span class="delete-gimage"
-                                                data-input="img2" data-preview="preview2" style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
-                                                <i class="fa-solid fa-trash "></i>
-                                            </span>
+                                            <input type="file"
+                                                class="form-control file-input"
+                                                name="image_4"
+                                                id="img4"
+                                                data-preview="#preview_img4"
+                                                data-remove="#remove_img4"
+                                                data-required="true">
+
+                                            <div class="position-relative d-inline-block mt-2">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png" id="preview_img4" style="height:6rem; border:1px solid #bcbcbc;" class="mt-2 rounded-2" alt="Image_not_available">
+                                                <button type="button"
+                                                    id="remove_img4"
+                                                    class="btn btn-danger btn-sm"
+                                                    style="position:absolute;top:5px;right:5px;display:none;">
+                                                    ✕
+                                                </button>
+                                            </div>
                                         </div>
-
-
-
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-4">
-                                    <div class="form-group mb-2">
-                                        <label for="image3" class="form-label">Image 3
-                                            <small class="text-danger">(480px X 360px)</small></label>
-                                        <input type="file" name="image_3" id="img3" class="form-control" />
+                                    <div class="card shadow">
+                                        <div class="card-body">
+                                            <label for="image5" class="form-label">Image 5 <small class="text-danger">(480px X 360px)</small></label>
 
+                                            <input type="file"
+                                                class="form-control file-input"
+                                                name="image_5"
+                                                id="img5"
+                                                data-preview="#preview_img5"
+                                                data-remove="#remove_img5"
+                                                data-required="true">
 
-                                        <div class="preview-img" data-image-id=""
-                                            style="width: 100px; height: 100px; position: relative; margin: 5px;">
-                                            <img id="preview3" src="#" alt="Image 3 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
-                                            <span class="delete-gimage"
-                                                data-input="img3" data-preview="preview3" style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
-                                                <i class="fa-solid fa-trash "></i>
-                                            </span>
+                                            <div class="position-relative d-inline-block mt-2">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png" id="preview_img5" style="height:6rem; border:1px solid #bcbcbc;" class="mt-2 rounded-2" alt="Image_not_available">
+                                                <button type="button"
+                                                    id="remove_img5"
+                                                    class="btn btn-danger btn-sm"
+                                                    style="position:absolute;top:5px;right:5px;display:none;">
+                                                    ✕
+                                                </button>
+                                            </div>
                                         </div>
-
-
-
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-4">
-                                    <div class="form-group mb-2">
-                                        <label for="image4" class="form-label">Image 4 <small class="text-danger">(480px X 360px)</small></label>
-                                        <input type="file" name="image_4" id="img4" class="form-control" />
+                                    <div class="card shadow">
+                                        <div class="card-body">
+                                            <label for="image6" class="form-label">Image 6 <small class="text-danger">(480px X 360px)</small> </label>
 
+                                            <input type="file"
+                                                class="form-control file-input"
+                                                name="image_6"
+                                                id="img6"
+                                                data-preview="#preview_img6"
+                                                data-remove="#remove_img6"
+                                                data-required="true">
 
-                                        <div class="preview-img" data-image-id=""
-                                            style="width: 100px; height: 100px; position: relative; margin: 5px;">
-                                            <img id="preview4" src="#" alt="Image 4 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
-                                            <span class="delete-gimage"
-                                                data-input="img4" data-preview="preview4" style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
-                                                <i class="fa-solid fa-trash "></i>
-                                            </span>
+                                            <div class="position-relative d-inline-block mt-2">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png" id="preview_img6" style="height:6rem; border:1px solid #bcbcbc;" class="mt-2 rounded-2" alt="Image_not_available">
+                                                <button type="button"
+                                                    id="remove_img6"
+                                                    class="btn btn-danger btn-sm"
+                                                    style="position:absolute;top:5px;right:5px;display:none;">
+                                                    ✕
+                                                </button>
+                                            </div>
                                         </div>
-
-
-
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-4">
-                                    <div class="form-group mb-2">
-                                        <label for="image5" class="form-label">Image 5 <small class="text-danger">(480px X 360px)</small></label>
-                                        <input type="file" name="image_5" id="img5" class="form-control" />
-
-
-                                        <div class="preview-img" data-image-id=""
-                                            style="width: 100px; height: 100px; position: relative; margin: 5px;">
-                                            <img id="preview5" src="#" alt="Image 5 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
-                                            <span class="delete-gimage"
-                                                data-input="img5" data-preview="preview5" style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
-                                                <i class="fa-solid fa-trash "></i>
-                                            </span>
-                                        </div>
-
-
-
-
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-4">
-                                    <div class="form-group mb-2">
-                                        <label for="image6" class="form-label">Image 6 <small class="text-danger">(480px X 360px)</small> </label>
-                                        <input type="file" name="image_6" id="img6" class="form-control" />
-
-
-                                        <div class="preview-img" data-image-id=""
-                                            style="width: 100px; height: 100px; position: relative; margin: 5px;">
-                                            <img id="preview6" src="#" alt="Image 6 Preview" style="display:none; width: 100px; height: 100px; border-radius:5px; margin-top: 10px;" />
-                                            <span class="delete-gimage"
-                                                data-input="img6" data-preview="preview6" style="position: absolute; top: -7%; right: -7%; cursor: pointer; color: red;">
-                                                <i class="fa-solid fa-trash "></i>
-                                            </span>
-                                        </div>
-
-
-
-
                                     </div>
                                 </div>
                             </div>
-
-
                         </div>
-                        <div class="col-md-9">
 
+                        <div class="col-md-9">
                             <div class="d-flex ">
                                 <h5 class="fs-6 fw-bold me-3">Shipping cost settings</h5>
-
                             </div>
                             <div id="shippingFormSection">
                                 <div class="row">
@@ -319,8 +355,7 @@
                                                 <div class="form-group mb-2">
                                                     <label for="rate_table" class="form-label">Enter
                                                         Shipping Partner</label>
-                                                    <input type="text" name="shipping_partner"
-                                                        id="shipping_partner" class="form-control">
+                                                    <input type="text" name="shipping_partner" id="shipping_partner" class="form-control">
 
                                                 </div>
                                             </div>
@@ -636,10 +671,6 @@
         });
     });
 </script>
-<script>
-    // var editor1 = new RichTextEditor("#div_editor1");
-</script>
-
 
 <script>
     const regions_countries = [{
@@ -880,6 +911,7 @@
         });
     });
 </script>
+
 <script>
     $('#country_region').select2({
         width: "100%",
@@ -887,37 +919,99 @@
     });
 </script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
 
-<!--<script>
-        function previewImage(input, previewId) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    $('#' + previewId).attr('src', e.target.result).show();
+        const REQUIRED_WIDTH = 480;
+        const REQUIRED_HEIGHT = 360;
+        const MAX_SIZE_MB = 2;
+
+        let requiredImageValid = false;
+
+        document.querySelectorAll('.file-input').forEach(input => {
+
+            const preview = document.querySelector(input.dataset.preview);
+            const remove = document.querySelector(input.dataset.remove);
+            const required = input.dataset.required === 'true';
+
+            input.addEventListener('change', function() {
+
+                clearError(input);
+                hidePreview();
+
+                const file = this.files[0];
+                if (!file) {
+                    if (required) requiredImageValid = false;
+                    return;
                 }
-                reader.readAsDataURL(input.files[0]);
+
+                if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+                    fail(`Image size must not exceed ${MAX_SIZE_MB}MB.`);
+                    return;
+                }
+
+                if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                    fail('Only JPG or PNG images are allowed.');
+                    return;
+                }
+
+                const img = new Image();
+                img.onload = () => {
+                    if (img.width !== REQUIRED_WIDTH || img.height !== REQUIRED_HEIGHT) {
+                        fail(`Invalid image size. Use ${REQUIRED_WIDTH}×${REQUIRED_HEIGHT}px.`);
+                        return;
+                    }
+
+                    preview.src = img.src;
+                    preview.style.display = 'block';
+                    remove.style.display = 'block';
+
+                    if (required) requiredImageValid = true;
+                };
+
+                img.src = URL.createObjectURL(file);
+
+                function fail(message) {
+                    showError(input, message);
+                    input.value = '';
+                    if (required) requiredImageValid = false;
+                }
+            });
+
+            remove.addEventListener('click', () => {
+                input.value = '';
+                hidePreview();
+                clearError(input);
+                if (required) requiredImageValid = false;
+            });
+
+            function hidePreview() {
+                preview.src = '';
+                preview.style.display = 'none';
+                remove.style.display = 'none';
             }
+        });
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (!requiredImageValid) {
+                e.preventDefault();
+                alert('Certificate Image 1 is required and must be valid (480 × 360).');
+            }
+        });
+
+        function showError(input, message) {
+            const error = document.createElement('small');
+            error.className = 'text-danger image-error d-block mt-1';
+            error.innerText = message;
+            input.closest('.card-body').appendChild(error);
         }
-    
-        $('#img1').change(function() {
-            previewImage(this, 'preview1');
-        });
-        $('#img2').change(function() {
-            previewImage(this, 'preview2');
-        });
-        $('#img3').change(function() {
-            previewImage(this, 'preview3');
-        });
-        $('#img4').change(function() {
-            previewImage(this, 'preview4');
-        });
-        $('#img5').change(function() {
-            previewImage(this, 'preview5');
-        });
-        $('#img6').change(function() {
-            previewImage(this, 'preview6');
-        });
-    </script>-->
+
+        function clearError(input) {
+            const error = input.closest('.card-body').querySelector('.image-error');
+            if (error) error.remove();
+        }
+    });
+</script>
 
 <script>
     function previewImage(input, previewId) {
@@ -936,7 +1030,7 @@
 
     // Image change handlers
     for (let i = 1; i <= 6; i++) {
-        $('#img' + i).on('change', function() {
+        $('#imgold' + i).on('change', function() {
             previewImage(this, 'preview' + i);
         });
     }

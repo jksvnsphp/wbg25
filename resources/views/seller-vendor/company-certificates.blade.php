@@ -254,11 +254,7 @@
 @section('seller-custome-js')
 
 <script>
-    const hasExistingCertificates = {
-        {
-            $certificates - > count() > 0 ? 'true' : 'false'
-        }
-    };
+    const hasExistingCertificates = <?php echo $certificates->count() > 0 ? 'true' : 'false'; ?>;
 
     document.addEventListener('DOMContentLoaded', function() {
 
