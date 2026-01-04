@@ -161,7 +161,7 @@
 
                             <div class=" fw-bolder mt-2 text-danger">
 
-                                Expires on: {{ $tender->expiry_date }}
+                                 Ends in: {{ $tender->expiry_date }}
 
                             </div>
                             <a class="btn btn-secondary my-2" href="{{ route('show.tender', $tender->slug) }}">View Details</a>

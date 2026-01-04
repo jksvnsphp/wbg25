@@ -60,32 +60,63 @@ class AuthController extends Controller
         return view('external-user.complete-buyer-register');
     }
     // send otp 
-    public function sendOtp(Request $request)
-    {
-        $validator = Validator::make($request->all(), ['first_name' => ['required', 'string'], 'email' => ['required', 'email']]);
+   public function sendOtp(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'first_name' => 'required|string',
+        'email'      => 'required|email',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
-        } else {
-            $otp = rand(10000, 99999);
-            // check number is not exist
-           
-            $isUserExist = User::where('email', $request->email)->first();
-            
-            if (isset($isUserExist->id)) {
-                return response()->json(['status' => false, 'message' => 'Email address is already exist.']);
-            } else {
-                Mail::send('mail.send-otp', ['otp' => $otp], function ($message) use ($request) {
-                    $message->to($request->email)
-                        ->subject('Your OTP Code');
-                });
-                if($request->phone)
-                  $this->twilio->sendSms( trim($request->phone), `Your OTP is ${otp}`);
-                session(['otp' => $otp, 'first_name' => $request->first_name, 'email' => $request->email]);
-                return response()->json(['status' => true, 'message' => 'OTP sent successfully']);
-            }
-        }
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => false,
+            'message' => $validator->errors()->first()
+        ]);
     }
+
+    // Check if user already exists
+    if (User::where('email', $request->email)->exists()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Email address already exists.'
+        ]);
+    }
+
+    $otp = rand(10000, 99999);
+
+    // Send OTP email using dynamic template
+    sendDynamicMailNoLoginIn(
+         $request->email, // no user_id yet
+        'otp_verification',
+        [
+            '[USER_NAME]' => $request->first_name,
+            '[OTP]'       => $otp,
+            '[LOGO_URL]'  => asset('world-business/images/logo.png'),
+            '{{YEAR}}'    => date('Y'),
+        ],
+        $request->email // receiver email override
+    );
+
+    // Optional SMS
+    if ($request->phone) {
+        $this->twilio->sendSms(
+            trim($request->phone),
+            "Your OTP is {$otp}"
+        );
+    }
+
+    session([
+        'otp'        => $otp,
+        'first_name' => $request->first_name,
+        'email'      => $request->email,
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'OTP sent successfully.'
+    ]);
+}
+
     public function sendOtpForget(Request $request)
     {
         $validator = Validator::make($request->all(), ['email' => ['required']]);
