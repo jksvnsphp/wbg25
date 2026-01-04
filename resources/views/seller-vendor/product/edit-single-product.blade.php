@@ -482,7 +482,7 @@
                                                     <div class="row mt-3">
                                                         <!-- LEFT: Shipping Table -->
                                                         <div class="col-md-8">
-                                                            <h6 class="fs-6 fw-bold py-3 pb-1">Set Region Or Country</h6>
+                                                            <h6 class="fs-6 fw-bold py-3 pb-1"> Set Shipping Cost </h6>
 
                                                             <div class="table-responsive">
                                                                 <table class="table table-bordered table-striped">
@@ -876,8 +876,8 @@
 
 
     let rowIndex = 0;
-    const shippingRateCosts = @json($product->rate_table->shipping_rate_costs ?? []);
-    
+    const shippingRateCosts = <?php echo json_encode($product->rate_table->shipping_rate_costs ?? []) ?>;
+
     populateRows('expeditedTableBody', shippingRateCosts);
 
     function populateRows(tableId, shippingRateCosts) {
@@ -892,11 +892,11 @@
         const isRegion = data && data.shipping_type === "region";
         const isCountry = data && data.shipping_type === "country";
         const cost = data ? data.cost : "";
-        const productCurrencies = @json([
-            $product->currency0 ?? 'USD',
-            $product->currency1 ?? 'USD',
-            $product->currency2 ?? 'USD'
-        ]);
+        const productCurrencies = <?php echo json_encode([
+                                        $product->currency0 ?? 'USD',
+                                        $product->currency1 ?? 'USD',
+                                        $product->currency2 ?? 'USD'
+                                    ]) ?>;
 
         // Check if "worldwide" is selected
         const isWorldwide = isRegion && data.shipping_regions.some(region => region.isWorldwide === 1);
