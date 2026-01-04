@@ -1209,7 +1209,7 @@ if (!function_exists('sendDynamicMail')) {
      * @param array  $placeholders  // ['[KEY]' => 'value']
      * @return bool
      */
-    function sendDynamicMail(int $userId, string $type, array $placeholders = []): bool
+    function sendDynamicMail(int $userId = null, string $type, array $placeholders = []): bool
     {
         // Fetch user
         $user = DB::table('users')->where('id', $userId)->first();
@@ -1223,7 +1223,13 @@ if (!function_exists('sendDynamicMail')) {
             ->first();
 
         if (!$template) {
-            return false;
+             $template = DB::table('email_templates')
+            ->where('slug', $type)
+            ->first();
+
+            if (!$template) {
+                return false;
+            }
         }
 
         // Replace placeholders dynamically
@@ -1238,6 +1244,45 @@ if (!function_exists('sendDynamicMail')) {
             new DynamicMail($template->subject, $body)
         );
 
+        return true;
+    }
+}
+
+
+
+if (!function_exists('sendDynamicMailNoLoginIn')) {
+
+    /**
+     * Send dynamic email using template and placeholders
+     *
+     * @param int    $userId
+     * @param string $type          // email_templates.type
+     * @param array  $placeholders  // ['[KEY]' => 'value']
+     * @return bool
+     */
+    function sendDynamicMailNoLoginIn(string $email, string $type, array $placeholders = []): bool
+    {
+        // Fetch email template
+        
+        $template = DB::table('email_templates')
+            ->where('slug', $type)
+            ->first(); 
+        if (!$template) {
+            return false;
+        }
+
+        // Replace placeholders dynamically
+        $body = str_replace(
+            array_keys($placeholders),
+            array_values($placeholders),
+            $template->body
+        );
+
+        // Send email
+       
+        Mail::to($email)->send(
+            new DynamicMail($template->subject, $body)
+        );  
         return true;
     }
 }
