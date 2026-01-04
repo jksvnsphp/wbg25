@@ -697,19 +697,19 @@
                                     class="fw-bolder">
 
                                     @if(isset($yourShippingCost['shipping_cost']))
-                                        @if($yourShippingCost['shipping_cost'] == 0)
-                                            Free International Shipping
-                                        @else
-                                        <!-- US${{ $yourShippingCost['shipping_cost'] }} WBG International Shipping -->
-                                            @if (count($data['countries']))
-                                            <div class="text-warning"> Cost by Country: </div>
-                                                @foreach ($data['countries'] as $country)
-                                                <span class="text-warning" style="font-size: 14px;"> {{ $country['name'] }} : US$ {{ number_format($country['cost'], 2) }} </span> <br />
-                                                @endforeach
-                                            @endif
-                                        @endif
+                                    @if($yourShippingCost['shipping_cost'] == 0)
+                                    Free International Shipping
                                     @else
-                                        No Shipping Zone
+                                    <!-- US${{ $yourShippingCost['shipping_cost'] }} WBG International Shipping -->
+                                    @if (count($data['countries']))
+                                    <div class="text-warning"> Cost by Country: </div>
+                                    @foreach ($data['countries'] as $country)
+                                    <span class="text-warning" style="font-size: 14px;"> {{ $country['name'] }} : {{$country['currency']}}{{$country['symbol']}} {{ number_format($country['cost'], 2) }} </span> <br />
+                                    @endforeach
+                                    @endif
+                                    @endif
+                                    @else
+                                    No Shipping Zone
                                     @endif
                                 </strong>
 

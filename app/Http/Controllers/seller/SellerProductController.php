@@ -863,7 +863,7 @@ class SellerProductController extends Controller
                 $product->isDailyDeal = $request->isDailyDeal == "on" ? 1 : 0;
                 $product->isBulkBuy = $request->isBulkBuy == "on" ? 1 : 0;
                 $product->isHotProduct = $request->isHotProduct == "on" ? 1 : 0;
-                $product->duration = 0;
+                $product->duration = 7;
                 $product->save();
 
 
@@ -1761,10 +1761,30 @@ class SellerProductController extends Controller
         }
     }
 
-    public function myMultiplyProduct()
+    public function myMultiplyProduct($status = 1)
     {
         if (isset(auth()->user()->id)) {
-            $products = products::latest()->where('vendor_id', auth()->user()->id)->where('isMultiple', 1)->with('gallery')->get();
+            if ($status == 1) {
+                $products = products::latest()
+                    ->where('vendor_id', auth()->user()->id)
+                    ->where('isMultiple', 1)
+                    ->with('gallery')
+                    ->get()
+                    ->filter(function ($product) {
+                        $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
+                        return now()->lessThan($expiryDate);
+                    });
+            } else {
+                $products = products::latest()
+                    ->where('vendor_id', auth()->user()->id)
+                    ->where('isMultiple', 1)
+                    ->with('gallery')
+                    ->get()
+                    ->filter(function ($product) {
+                        $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
+                        return now()->greaterThanOrEqualTo($expiryDate);
+                    });
+            }
             $unReadProducts = products::latest()->where('vendor_id', auth()->user()->id)->where('isMultiple', 1)->where('isRead', 0)->get();
             if ($products) {
                 foreach ($products as $product) {
