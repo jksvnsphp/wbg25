@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
 use Carbon\Carbon;
+
 class SellerNewsController extends Controller
 {
     //
@@ -44,118 +45,118 @@ class SellerNewsController extends Controller
             return redirect()->route('seller.upgrade.limit')->with(['alert-type' => 'warning', 'message' => 'Your product listing limit has been complete!']);
         }
         $categories = CustomeCategory::where('status', "1")->where('deleted', "0")->where('parent_id', "0")->orderBy('category_name', 'ASC')->get();
-        return view('seller-vendor.news.add-news', compact('categories','listingLimit', 'listedNews'));
-    }
-    
-	public function saveNews(Request $request)
-{
-    if (!auth()->check()) {
-        return back()->with([
-            'alert-type' => 'error',
-            'message' => 'Please login first before accessing this page'
-        ]);
+        return view('seller-vendor.news.add-news', compact('categories', 'listingLimit', 'listedNews'));
     }
 
-    $vendor_id = auth()->user()->id;
-
-    // Dynamic image validation
-    $imageRule = $request->id
-        ? 'nullable|image|mimes:jpeg,png,jpg'
-        : 'required|image|mimes:jpeg,png,jpg';
-
-    // Validation
-    $validator = Validator::make($request->all(), [
-        'id' => 'nullable|exists:seller_news,id',
-        'title' => 'required|string|max:255',
-        'category' => 'required|exists:category,id',
-        'sub_category' => 'required|exists:category,id',
-        'duration' => 'required|in:7,10,21,28,30',
-        'image' => $imageRule, // 🔴 Mandatory on add
-        'news' => 'required|string',
-    ], [
-        'image.required' => 'Please upload at least one image.'
-    ]);
-
-    if ($validator->fails()) {
-        return back()
-            ->withErrors($validator)
-            ->withInput()
-            ->with([
-                'alert-type' => 'error',
-                'message' => 'Validation failed.'
-            ]);
-    }
-
-    // Create or Update
-    if ($request->id) {
-        $sellerNews = SellerNews::where('id', $request->id)
-            ->where('vendor_id', $vendor_id)
-            ->first();
-
-        if (!$sellerNews) {
+    public function saveNews(Request $request)
+    {
+        if (!auth()->check()) {
             return back()->with([
                 'alert-type' => 'error',
-                'message' => 'News not found or unauthorized.'
+                'message' => 'Please login first before accessing this page'
             ]);
         }
-    } else {
-        $sellerNews = new SellerNews();
-    }
 
-    // Generate slug (only if new or title changed)
-    if (!$request->id || $sellerNews->title !== $request->title) {
-        $slug = Str::slug($request->title);
-        $originalSlug = $slug;
-        $count = 1;
+        $vendor_id = auth()->user()->id;
 
-        while (SellerNews::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $count++;
-        }
-        $sellerNews->slug = $slug;
-    }
+        // Dynamic image validation
+        $imageRule = $request->id
+            ? 'nullable|image|mimes:jpeg,png,jpg'
+            : 'required|image|mimes:jpeg,png,jpg';
 
-    // Assign fields
-    $sellerNews->title = $request->title;
-    $sellerNews->category_id = $request->category;
-    $sellerNews->subcategory_id = $request->sub_category;
-    $sellerNews->duration = $request->duration;
-    $sellerNews->vendor_id = $vendor_id;
-    $sellerNews->description = $request->news;
-
-    // Short description
-    $sellerNews->short_description = Str::limit($request->news, 500);
-
-    // Image upload
-    if ($request->hasFile('image')) {
-        $image = $request->file('image');
-        $manager = new ImageManager(['driver' => 'gd']);
-        $fileName = uniqid() . '_' . time() . '.' . $image->getClientOriginalExtension();
-
-        $manager->make($image)
-            ->resize(200, 200)
-            ->save(public_path('uploads/news/' . $fileName));
-
-        $sellerNews->image = $fileName;
-    }
-
-    $sellerNews->save();
-
-    $what = $request->id ? 'edit' : 'add';
-    $message = $request->id
-        ? 'Successfully updated the news.'
-        : 'Successfully published your news.';
-
-    return redirect()
-        ->route('seller.success.news', [$sellerNews->slug, $what])
-        ->with([
-            'alert-type' => 'success',
-            'message' => $message
+        // Validation
+        $validator = Validator::make($request->all(), [
+            'id' => 'nullable|exists:seller_news,id',
+            'title' => 'required|string|max:255',
+            'category' => 'required|exists:category,id',
+            'sub_category' => 'required|exists:category,id',
+            'duration' => 'required|in:7,10,21,28,30',
+            'image' => $imageRule, // 🔴 Mandatory on add
+            'news' => 'required|string',
+        ], [
+            'image.required' => 'Please upload at least one image.'
         ]);
-}
 
-	
-	
-	public function saveNewsold(Request $request)
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with([
+                    'alert-type' => 'error',
+                    'message' => 'Validation failed.'
+                ]);
+        }
+
+        // Create or Update
+        if ($request->id) {
+            $sellerNews = SellerNews::where('id', $request->id)
+                ->where('vendor_id', $vendor_id)
+                ->first();
+
+            if (!$sellerNews) {
+                return back()->with([
+                    'alert-type' => 'error',
+                    'message' => 'News not found or unauthorized.'
+                ]);
+            }
+        } else {
+            $sellerNews = new SellerNews();
+        }
+
+        // Generate slug (only if new or title changed)
+        if (!$request->id || $sellerNews->title !== $request->title) {
+            $slug = Str::slug($request->title);
+            $originalSlug = $slug;
+            $count = 1;
+
+            while (SellerNews::where('slug', $slug)->exists()) {
+                $slug = $originalSlug . '-' . $count++;
+            }
+            $sellerNews->slug = $slug;
+        }
+
+        // Assign fields
+        $sellerNews->title = $request->title;
+        $sellerNews->category_id = $request->category;
+        $sellerNews->subcategory_id = $request->sub_category;
+        $sellerNews->duration = $request->duration;
+        $sellerNews->vendor_id = $vendor_id;
+        $sellerNews->description = $request->news;
+
+        // Short description
+        $sellerNews->short_description = Str::limit($request->news, 500);
+
+        // Image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $manager = new ImageManager(['driver' => 'gd']);
+            $fileName = uniqid() . '_' . time() . '.' . $image->getClientOriginalExtension();
+
+            $manager->make($image)
+                ->resize(200, 200)
+                ->save(public_path('uploads/news/' . $fileName));
+
+            $sellerNews->image = $fileName;
+        }
+
+        $sellerNews->save();
+
+        $what = $request->id ? 'edit' : 'add';
+        $message = $request->id
+            ? 'Successfully updated the news.'
+            : 'Successfully published your news.';
+
+        return redirect()
+            ->route('seller.success.news', [$sellerNews->slug, $what])
+            ->with([
+                'alert-type' => 'success',
+                'message' => $message
+            ]);
+    }
+
+
+
+    public function saveNewsold(Request $request)
     {
         if (isset(auth()->user()->id)) {
             $vendor_id = auth()->user()->id;
@@ -230,9 +231,9 @@ class SellerNewsController extends Controller
             }
 
             $sellerNews->save();
-            $what=$request->id?"edit":"add";
+            $what = $request->id ? "edit" : "add";
             $message = $request->id ? 'Successfully updated the news.' : 'Successfully published your news.';
-            return redirect()->route('seller.success.news',[$sellerNews->slug,$what])->with(['alert-type' => 'success', 'message' => $message]);
+            return redirect()->route('seller.success.news', [$sellerNews->slug, $what])->with(['alert-type' => 'success', 'message' => $message]);
         } else {
             return back()->with(['alert-type' => 'error', 'message' => 'Please login first before accessing this page']);
         }
@@ -240,37 +241,37 @@ class SellerNewsController extends Controller
 
 
     public function mynews()
-{
-    $vendor_id = auth()->user()->id;
+    {
+        $vendor_id = auth()->user()->id;
 
-    $news = SellerNews::where('vendor_id', $vendor_id)
-        ->whereRaw(
-            "DATE_ADD(created_at, INTERVAL duration DAY) >= ?",
-            [Carbon::now()]
-        )
-        ->orderBy('created_at', 'desc')
-        ->get();
+        $news = SellerNews::where('vendor_id', $vendor_id)
+            ->whereRaw(
+                "DATE_ADD(created_at, INTERVAL duration DAY) >= ?",
+                [Carbon::now()]
+            )
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-    return view('seller-vendor.news.my-news', compact('news'));
-}
+        return view('seller-vendor.news.my-news', compact('news'));
+    }
 
-	
-	public function myinactivenews()
-{
-    $vendor_id = auth()->user()->id;
 
-    $news = SellerNews::where('vendor_id', $vendor_id)
-        ->whereRaw(
-            "DATE_ADD(created_at, INTERVAL duration DAY) < ?",
-            [Carbon::now()]
-        )
-        ->orderBy('created_at', 'desc')
-        ->get();
+    public function myinactivenews()
+    {
+        $vendor_id = auth()->user()->id;
 
-    return view('seller-vendor.news.my-news', compact('news'));
-}
-	
-	
+        $news = SellerNews::where('vendor_id', $vendor_id)
+            ->whereRaw(
+                "DATE_ADD(created_at, INTERVAL duration DAY) < ?",
+                [Carbon::now()]
+            )
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('seller-vendor.news.my-news', compact('news'));
+    }
+
+
     public function statusChange(Request $request)
     {
         $news = SellerNews::where('id', $request->id)->first();
@@ -313,17 +314,18 @@ class SellerNewsController extends Controller
         }
     }
 
-    public function successPage($slug,$what="add"){
-        if(isset(auth()->user()->id)){
+    public function successPage($slug, $what = "add")
+    {
+        if (isset(auth()->user()->id)) {
             $seller = User::where('id', auth()->user()->id)->first();
             $packageData = seller_package::latest()->where('seller_id', $seller->id)->with('package')->first();
-            $news = SellerNews::where('slug', $slug)->where('vendor_id',auth()->user()->id)->first();
-            if($news){
-                return view('seller-vendor.news.success-edit-add-news', compact('news','seller','packageData','what'));
-            }else{
+            $news = SellerNews::where('slug', $slug)->where('vendor_id', auth()->user()->id)->first();
+            if ($news) {
+                return view('seller-vendor.news.success-edit-add-news', compact('news', 'seller', 'packageData', 'what'));
+            } else {
                 abort(404, 'News not found!');
             }
-        }else{
+        } else {
             abort(403, 'Forbidden');
         }
     }
