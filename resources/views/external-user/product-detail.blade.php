@@ -703,8 +703,9 @@
                                     <!-- US${{ $yourShippingCost['shipping_cost'] }} WBG International Shipping -->
                                     @if (count($data['countries']))
                                     <div class="text-warning"> Cost by Country: </div>
-                                    @foreach ($data['countries'] as $country)
-                                    <span class="text-warning" style="font-size: 14px;"> {{ $country['name'] }} : {{$country['currency']}}{{$country['symbol']}} {{ number_format($country['cost'], 2) }} </span> <br />
+                                    @foreach ($data['countries'] as $iii=>$country)
+                                    @php $currencyVar = "currency".$iii; @endphp
+                                    <span class="text-warning" style="font-size: 14px;"> {{ $country['name'] }} : {{$product->$currencyVar ?? 'USD'}}$ {{ number_format($country['cost'], 2) }} </span> <br />
                                     @endforeach
                                     @endif
                                     @endif
