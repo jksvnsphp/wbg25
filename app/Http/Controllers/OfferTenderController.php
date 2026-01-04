@@ -95,7 +95,7 @@ class OfferTenderController extends Controller
         'buyer_name'      => auth()->user()->first_name,
         'offer_price'     => number_format($request->offer_price, 2),
         'submission_date' => now()->format('d M Y'),
-        'dashboard_link'  => route('seller.tenders.offers'),
+        'dashboard_link'  => route('seller.received.offer.tender'),
     ], function ($message) use ($seller) {
         $message->to($seller->email)
                 ->subject('New Offer Received on Your Tender!');
@@ -480,6 +480,12 @@ class OfferTenderController extends Controller
     $seller = User::find($tenderOffer->vendor_id);
 
     // ✅ Send notification email to both
+    // sendDynamicMail($buyer->id, 'tender_counter_offer_rejected', [
+    //     '[BUYER_NAME]' => $buyer->first_name,
+    //     '[SELLER_NAME]' => $seller->first_name,
+    //     '[TENDER_ID]' => $tender->id,
+    // ]);
+
     try {
         Mail::send('mails.tender-counter-offer-update', [
             'buyer_name' => $buyer->first_name,

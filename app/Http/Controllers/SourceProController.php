@@ -167,94 +167,96 @@ class SourceProController extends Controller
         }
     }
 
-    public function sendOffer(Request $request)
-    {
-        if (isset(auth()->user()->id)) {
-            if (isset($request->offer_price) && $request->offer_price > 0) {
-                $validate = Validator::make($request->all(), [
-                    'quotation_id' => 'required|exists:quotations,id',
-                    'offer_price' => 'required|numeric|min:1',
-                ]);
-                if ($validate->fails()) {
-                    return response()->json(['status' => false, 'message' => 'Validation failed!', 'error' => $validate->errors()], 200);
-                } else {
-                    $quotation = Quotation::where('id', $request->quotation_id)->first();
-                    if ($quotation) {
-                        if ($quotation->user_id == Auth::user()->id) {
-                            return response()->json(['status' => false, 'message' => 'You are the owner of this Quotation'], 200);
-                        }
-                        $offer = OfferQuotation::where('quotation_id', $request->quotation_id)->where('user_id', Auth::user()->id)->first();
-                        if (!$offer) {
-                            OfferQuotation::create([
-                                'user_id' => Auth::user()->id,
-                                'vendor_id' => $quotation->user_id,
-                                'quotation_id' => $request->quotation_id,
-                                'offer_price' => $request->offer_price,
-                                'status' => 'pending',
-                            ]);
-
-                            // send mail to seller
-                            $seller = User::where('id', $quotation->user_id)->first();
-                            $sellerMail = $seller->email;
-                            $sellerName = $seller->first_name;
-                            $offerPrice = $request->offer_price;
-                            $quotationName = $quotation->product_service;
-                            $seller_subject = "New Quote on $quotationName";
-                            $seller_message = 'You have a new offer on your quotation ' . $quotation->product_service;
-                            $image = asset('uploads/quotation/' . $quotation->image_1);
-                            $btnText = 'View Quotation';
-                            $btnUrl = route('user.source-pro.detail', $quotation->slug);
-                            $mailData = [
-                                'seller_name' => $sellerName,
-                                'seller_subject' => $seller_subject,
-                                'seller_message' => $seller_message,
-                                'image' => $image,
-                                'btnText' => $btnText,
-                                'btnUrl' => $btnUrl,
-                                'tenderName' => $quotationName,
-                                'offer_price' => $offerPrice,
-                                'tenderPrice' => '0',
-                                'user_name' => auth()->user()->first_name . ' ' . auth()->user()->last_name,
-                                'user_email' => auth()->user()->email,
-                            ];
-                            Mail::send('mail.quotation-offer', $mailData, function ($message) use ($sellerMail, $seller_subject) {
-                                $message->to($sellerMail);
-                                $message->subject($seller_subject);
-                            });
-                            session()->flash('success', 'Congratulation, Your Quote has been submitted successfully!');
-                            if (auth()->user()->account_type == "seller") {
-                                $rurl = route('seller.success.offer.tender', $quotation->slug);
-                            } else {
-                                $rurl = route('buyer.success.offer.tender', $quotation->slug);
-                            }
-                            return response()->json([
-                                'status' => true,
-                                'message' => 'Your Quote has been submitted successfully!',
-                                'url' => $rurl
-                            ], 200);
-                        } else {
-                            return response()->json(['status' => false, 'message' => 'You have already submitted
-                            a quote for this quotation'], 200);
-                        }
-                    } else {
-                        return response()->json([
-                            'status' => false,
-                            'message' => 'Quotation not found!',
-                        ], 200);
-                    }
-                }
-            } else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'You are not allowed to submit an offer for this quotation. Offer price should be greater than 0',
-                ], 200);
-            }
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'You must be logged in to submit an offer!',
-                'code' => 403
-            ], 200);
-        }
+   public function sendOffer(Request $request)
+{
+    if (!auth()->check()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'You must be logged in to submit an offer!',
+            'code' => 403
+        ], 200);
     }
+
+    // Validation
+    $validator = Validator::make($request->all(), [
+        'quotation_id' => 'required|exists:quotations,id',
+        'offer_price'  => 'required|numeric|min:1',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Validation failed!',
+            'error' => $validator->errors()
+        ], 200);
+    }
+
+    $quotation = Quotation::find($request->quotation_id);
+
+    if (!$quotation) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Quotation not found!'
+        ], 200);
+    }
+
+    // Owner check
+    if ($quotation->user_id == auth()->id()) {
+        return response()->json([
+            'status' => false,
+            'message' => 'You are the owner of this quotation.'
+        ], 200);
+    }
+
+    // Duplicate offer check
+    $alreadyOffered = OfferQuotation::where([
+        'quotation_id' => $quotation->id,
+        'user_id'      => auth()->id()
+    ])->exists();
+
+    if ($alreadyOffered) {
+        return response()->json([
+            'status' => false,
+            'message' => 'You have already submitted a quote for this quotation.'
+        ], 200);
+    }
+
+    // Create offer
+    OfferQuotation::create([
+        'user_id'      => auth()->id(),
+        'vendor_id'    => $quotation->user_id,
+        'quotation_id' => $quotation->id,
+        'offer_price'  => $request->offer_price,
+        'status'       => 'pending',
+    ]);
+
+    // ---------------- SEND MAIL (USING HELPER) ----------------
+    $seller = User::find($quotation->user_id);
+
+    sendDynamicMail(
+        $seller->id,
+        'quotation_new_offer_seller', // slug from email_templates
+        [
+            '[Seller Name]'     => $seller->first_name,
+            '[Quotation Name]'  => $quotation->product_service,
+            '[Offer Price]'     => $request->offer_price,
+            '[Buyer Name]'      => auth()->user()->first_name . ' ' . auth()->user()->last_name,
+            '[Buyer Email]'     => auth()->user()->email,
+            '[Button URL]'      => route('user.source-pro.detail', $quotation->slug),
+        ]
+    );
+
+    session()->flash('success', 'Congratulations! Your quote has been submitted successfully.');
+
+    $redirectUrl = auth()->user()->account_type === 'seller'
+        ? route('seller.success.offer.tender', $quotation->slug)
+        : route('buyer.success.offer.tender', $quotation->slug);
+
+    return response()->json([
+        'status'  => true,
+        'message' => 'Your Quote has been submitted successfully!',
+        'url'     => $redirectUrl
+    ], 200);
+}
+
 }

@@ -960,10 +960,11 @@
 
                 const img = new Image();
                 img.onload = () => {
-                    if (img.width !== REQUIRED_WIDTH || img.height !== REQUIRED_HEIGHT) {
-                        fail(`Invalid image size. Use ${REQUIRED_WIDTH}×${REQUIRED_HEIGHT}px.`);
-                        return;
-                    }
+
+                    // if (img.width !== REQUIRED_WIDTH || img.height !== REQUIRED_HEIGHT) {
+                    //     fail(`Invalid image size. Use ${REQUIRED_WIDTH}×${REQUIRED_HEIGHT}px.`);
+                    //     return;
+                    // }
 
                     preview.src = img.src;
                     preview.style.display = 'block';

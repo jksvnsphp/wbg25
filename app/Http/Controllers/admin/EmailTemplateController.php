@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\EmailTemplate;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class EmailTemplateController extends Controller
 {
@@ -23,22 +24,46 @@ class EmailTemplateController extends Controller
     }
 
     // Store new template
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'type' => 'required|string|max:255|unique:email_templates,type',
-            'subject' => 'required|string|max:255',
-            'body' => 'required|string',
-            'status' => 'required|boolean',
-        ]);
+   public function store(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'type'    => 'required|string|max:255|unique:email_templates,type',
+        'subject' => 'required|string|max:255',
+        'body'    => 'required|string',
+        'status'  => 'required|boolean',
+    ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        EmailTemplate::create($request->only('type', 'subject', 'body', 'status'));
-        return redirect()->route('admin.email_templates.index')->with('success', 'Email template created successfully!');
+    if ($validator->fails()) {
+        return redirect()
+            ->back()
+            ->withErrors($validator)
+            ->withInput();
     }
+
+    // Generate slug from type
+    $slug = Str::slug($request->type, '_');
+
+    // Extra safety: ensure slug uniqueness
+    if (EmailTemplate::where('slug', $slug)->exists()) {
+        return redirect()
+            ->back()
+            ->withErrors(['type' => 'An email template with a similar name already exists.'])
+            ->withInput();
+    }
+
+    EmailTemplate::create([
+        'type'    => $request->type,
+        'slug'    => $slug,
+        'subject' => $request->subject,
+        'body'    => $request->body,
+        'status'  => $request->status,
+    ]);
+
+    return redirect()
+        ->route('admin.email_templates.index')
+        ->with('success', 'Email template created successfully!');
+}
+
 
     // Show edit form
     public function edit($id)

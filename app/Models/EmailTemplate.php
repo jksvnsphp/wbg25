@@ -12,6 +12,7 @@ class EmailTemplate extends Model
     // Allow these columns to be mass-assigned
     protected $fillable = [
         'type',
+        'slug',
         'subject',
         'body',
         'status',
