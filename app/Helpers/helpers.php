@@ -1198,3 +1198,91 @@ if (!function_exists('seo')) {
         ];
     }
 }
+
+if (!function_exists('sendDynamicMail')) {
+
+    /**
+     * Send dynamic email using template and placeholders
+     *
+     * @param int    $userId
+     * @param string $type          // email_templates.type
+     * @param array  $placeholders  // ['[KEY]' => 'value']
+     * @return bool
+     */
+    function sendDynamicMail(int $userId = null, string $type, array $placeholders = []): bool
+    {
+        // Fetch user
+        $user = DB::table('users')->where('id', $userId)->first();
+        if (!$user || empty($user->email)) {
+            return false;
+        }
+
+        // Fetch email template
+        $template = DB::table('email_templates')
+            ->where('type', $type)
+            ->first();
+
+        if (!$template) {
+             $template = DB::table('email_templates')
+            ->where('slug', $type)
+            ->first();
+
+            if (!$template) {
+                return false;
+            }
+        }
+
+        // Replace placeholders dynamically
+        $body = str_replace(
+            array_keys($placeholders),
+            array_values($placeholders),
+            $template->body
+        );
+
+        // Send email
+        Mail::to($user->email)->send(
+            new DynamicMail($template->subject, $body)
+        );
+
+        return true;
+    }
+}
+
+
+
+if (!function_exists('sendDynamicMailNoLoginIn')) {
+
+    /**
+     * Send dynamic email using template and placeholders
+     *
+     * @param int    $userId
+     * @param string $type          // email_templates.type
+     * @param array  $placeholders  // ['[KEY]' => 'value']
+     * @return bool
+     */
+    function sendDynamicMailNoLoginIn(string $email, string $type, array $placeholders = []): bool
+    {
+        // Fetch email template
+        
+        $template = DB::table('email_templates')
+            ->where('slug', $type)
+            ->first(); 
+        if (!$template) {
+            return false;
+        }
+
+        // Replace placeholders dynamically
+        $body = str_replace(
+            array_keys($placeholders),
+            array_values($placeholders),
+            $template->body
+        );
+
+        // Send email
+       
+        Mail::to($email)->send(
+            new DynamicMail($template->subject, $body)
+        );  
+        return true;
+    }
+}

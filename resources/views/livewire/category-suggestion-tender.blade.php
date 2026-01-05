@@ -48,6 +48,25 @@
 
 
     </div>
+     <div class="col-md-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <h6 class="fw-bold mb-3">How to set Tender Category</h6>
+
+                <div class="ratio ratio-16x9">
+                     
+                        <video controls preload="metadata" style="width:100%; border-radius:6px;">
+                            <source src="{{ asset('uploads/member_packages/How to set Tender Category.mp4') }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                </div>
+
+                <small class="text-muted d-block mt-2">
+                    Watch this video to understand  How to set Tender Category
+                </small>
+            </div>
+        </div>
+    </div>
     @if ($isEmpty && count($suggestions) === 0)
         <strong class="fw-bold text-primary mt-5 pt-4">Select Category Manual</strong>
         <div class="col-md-9">
