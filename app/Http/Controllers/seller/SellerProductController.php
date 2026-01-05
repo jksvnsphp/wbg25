@@ -863,7 +863,7 @@ class SellerProductController extends Controller
                 $product->isDailyDeal = $request->isDailyDeal == "on" ? 1 : 0;
                 $product->isBulkBuy = $request->isBulkBuy == "on" ? 1 : 0;
                 $product->isHotProduct = $request->isHotProduct == "on" ? 1 : 0;
-                $product->duration = 7;
+                $product->duration = 0;
 
                 $product->currency0 = (isset($request->currency[0]) && $request->currency[0] != '') ? $request->currency[0] : "USD";
                 $product->currency1 = (isset($request->currency[1]) && $request->currency[1] != '') ? $request->currency[1] : "USD";
@@ -1769,51 +1769,78 @@ class SellerProductController extends Controller
     public function myMultiplyProduct($status = 1)
     {
         if (isset(auth()->user()->id)) {
-            if ($status == 1) {
-                $products = products::latest()
-                    ->where('vendor_id', auth()->user()->id)
-                    ->where('isMultiple', 1)
-                    ->with('gallery')
-                    ->get()
-                    ->filter(function ($product) {
-                        $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
-                        return now()->lessThan($expiryDate);
-                    });
-            } else {
-                $products = products::latest()
-                    ->where('vendor_id', auth()->user()->id)
-                    ->where('isMultiple', 1)
-                    ->with('gallery')
-                    ->get()
-                    ->filter(function ($product) {
-                        $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
-                        return now()->greaterThanOrEqualTo($expiryDate);
-                    });
-            }
-            $unReadProducts = products::latest()->where('vendor_id', auth()->user()->id)->where('isMultiple', 1)->where('isRead', 0)->get();
-            if ($products) {
-                foreach ($products as $product) {
-                    $soldQty = OrderItem::where('product_id', $product->id)
-                        ->whereHas('order', function ($query) {
-                            $query->where('payment_status', '!=', 'processing');
-                        })->sum('quantity');
-                    $soldPrice = OrderItem::where('product_id', $product->id)
-                        ->whereHas('order', function ($query) {
-                            $query->where('payment_status', '!=', 'processing');
-                        })->sum('total_price');
-                    $product->sold = $soldQty;
-                    $product->sold_price = $soldPrice;
+
+            $status = (int) $status;
+            $unReadProducts = products::where('vendor_id', auth()->user()->id)
+                ->where('isMultiple', 1)
+                ->where('isRead', 0)
+                ->update(['isRead' => 1]);
+
+            $allProducts = products::latest()
+                ->where('vendor_id', auth()->user()->id)
+                ->where('isMultiple', 1)
+                ->with('gallery')
+                ->get();
+
+            $products = collect();
+
+            foreach ($allProducts as $product) {
+
+                $soldQty = OrderItem::where('product_id', $product->id)
+                    ->whereHas('order', function ($query) {
+                        $query->where('payment_status', '!=', 'processing');
+                    })
+                    ->sum('quantity');
+
+                $soldPrice = OrderItem::where('product_id', $product->id)
+                    ->whereHas('order', function ($query) {
+                        $query->where('payment_status', '!=', 'processing');
+                    })
+                    ->sum('total_price');
+
+                $totalQty = 0;
+
+                $variants = is_string($product->variants) ? json_decode($product->variants, true) : $product->variants;
+
+                $variants = is_array($variants) ? $variants : [];
+
+                foreach ($variants as $variant) {
+                    $totalQty += isset($variant['quantity'])
+                        ? (int) $variant['quantity']
+                        : 0;
+                }
+
+                $remainingQty = $totalQty - $soldQty;
+
+                // Attach values (for view)
+                $product->sold = $soldQty;
+                $product->total_qty = $totalQty;
+                $product->remaining_qty = $remainingQty;
+
+                /**
+                 * FINAL LOGIC
+                 * remaining_qty == 0 → INACTIVE
+                 * remaining_qty > 0  → ACTIVE
+                 */
+                if ($status === 1) {
+                    // ACTIVE
+                    if ($remainingQty > 0) {
+                        $products->push($product);
+                    }
+                } else {
+                    // INACTIVE
+                    if ($remainingQty === 0) {
+                        $products->push($product);
+                    }
                 }
             }
-            foreach ($unReadProducts ?? [] as $unProduct) {
-                $unProduct->isRead = 1;
-                $unProduct->save();
-            }
+
             return view('seller-vendor.product.my-multiply-products', compact('products'));
         } else {
             return response()->json(['error' => ['message' => "Unauthrized access this page!"]], 422);
         }
     }
+
     public function updateProductAddon(Request $request)
     {
         $product = products::find($request->product_id);
