@@ -490,6 +490,26 @@ class SellerTenderController extends Controller
         ));
     }
 
+public function successTender($slug)
+{
+     
+
+    
+
+    if (isset(auth()->user()->id)) {
+            $seller = User::where('id', auth()->user()->id)->first();
+            $packageData = seller_package::latest()->where('seller_id', $seller->id)->with('package')->first();
+            $tender = Tender::where('slug', $slug)->where('vendor_id', auth()->user()->id)->first();
+            if ($tender) {
+              
+                return view('seller-vendor.tenders.success', compact('tender', 'seller', 'packageData'));
+            } else {
+                abort(404, 'Tender not found!');
+            }
+        } else {
+            abort(403, 'Forbidden');
+        }
+}
 
 
     public function editTenderold($slug)
