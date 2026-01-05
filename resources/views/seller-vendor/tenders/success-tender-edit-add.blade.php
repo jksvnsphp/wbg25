@@ -54,7 +54,7 @@
                                             </div>
                                             <div class="col-md-8">
                                                 <h5 class="text-dark fw-bolder"> {{ $tender->name }}</h5>
-                                                <a class="d-block text-primary mt-2" href="">View Listed Tender</a>
+                                                <a class="d-block text-primary mt-2" href="{{route('seller.success.view.tender',$tender->slug)}}">View Listed Tender</a>
                                                
                                                 <a class="d-block text-primary mt-2" href="{{ route('seller.edit.tender',$tender->slug) }}">Edit Listed Tender</a>
                                                 <a class="d-block text-primary mt-2" href="{{ route('seller.add.tender') }}">Add New Tender</a>

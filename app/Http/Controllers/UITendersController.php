@@ -472,6 +472,8 @@ class UITendersController extends Controller
         $tender = Tender::where('slug', $slug)->where('status', 1)->where('isDeal', 0)->with('parentcategory', 'category', 'childcategory', 'endchildcategory', 'vendor.company')->first();
         if ($tender) {
             $shippingData = $this->getShippingData($tender->rate_table_id);
+            // echo "<pre/>";
+            // print_r($shippingData);die;
             $yourShippingCost = $this->getShippingCostByIp($tender->rate_table_id);
 
             $expiryDate = Carbon::parse($tender->created_at)->addDays($tender->duration);

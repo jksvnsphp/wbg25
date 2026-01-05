@@ -259,11 +259,24 @@
                         </div>
                         <div class="col-md-8">
                             <p class="fontp">
+                                <?php 
+                                 
+                                  $data=$tender->shippingData->toArray();
+                                  $data=$data[0]; ?>         
                                 <strong
-                                    class="fw-bolder">{{ isset($yourShippingCost['shipping_cost']) ? 'US$' . $yourShippingCost['shipping_cost'] : 'No Shipping Zone' }}
-                                    WBG International shipping</strong>
+                                    class="fw-bolder">
+                                       @if ($data['is_worldwide'])
+                    {{ $data['is_worldwide']['status'] }}
+                    @else
+                    {{ implode(', ', collect($data['regions'])->pluck('name')->toArray()) }}
+                    @if (count($data['countries']))
+                    , {{ implode(', ', collect($data['countries'])->pluck('name')->toArray()) }}
+                    @endif
+                    @endif
+                                     </strong>
 
                             </p>
+                               
                             <p class="text-muted" style="font-size: 12px">
                                 Located in:
                                 {{ isset($tender->vendor->city) ? $tender->vendor->city : '' }},{{ isset($tender->state->name) ? $tender->state->name : '' }},{{ isset($tender->country->name) ? $tender->country->name : '' }}
@@ -271,6 +284,52 @@
                             </p>
                         </div>
                     </div>
+                     <div class="row mb-3">
+                        <div class="col-md-4">
+                            <p class="fw-bolder fontp">Shipping Cost:</p>
+                        </div>
+                        <div class="col-md-8">
+                            <p class="fontp">
+                                
+                                <strong class="fw-semibold"> 
+                                     @if ($data['is_worldwide'])
+                    {{ $data['is_worldwide']['status'] }}
+                    @else
+                    {{ implode(', ', collect($data['regions'])->pluck('cost')->toArray()) }}
+                    @if (count($data['countries']))
+                    , {{ implode(', ', collect($data['countries'])->pluck('cost')->toArray()) }}
+                    @endif
+                    @endif
+                    </strong>
+                            </p>
+                        </div>
+                    </div>
+
+                     <div class="row mb-3">
+                        <div class="col-md-4">
+                            <p class="fw-bolder fontp">Shipping Partner:</p>
+                        </div>
+                        <div class="col-md-8">
+                            <p class="fontp">
+                                @if (isset($data['shipping_partner']) && $data['shipping_partner'])
+                                <strong class="fw-semibold">{{ $data['shipping_partner'] }}</strong>
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <p class="fw-bolder fontp">Shipping Method:</p>
+                        </div>
+                        <div class="col-md-8">
+                            <p class="fontp">
+                                @if (isset($data['shipping_method']) && $data['shipping_method'])
+                                <strong class="fw-semibold">{{ $data['shipping_method'] }}</strong>
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <p class="fw-bolder fontp">Returns:</p>

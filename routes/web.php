@@ -806,9 +806,13 @@ Route::middleware(['role:seller'])->group(function () {
       Route::post('/status-change-tender', 'statusChange')->name('seller.status.tender');
       Route::post('/delete-tender', 'deleteTender')->name('seller.delete.tender');
       Route::post('/image/delete-tender', 'deleteTenderImg')->name('delete.tender-img');
+      Route::get('/success/{slug}/tender/view', 'successTender')->name('seller.success.view.tender');
       Route::get('/offered-tender', 'offeredTender')->name('seller.offered.tender');
       Route::get('/delete-tender-offer/{offer_id}', 'deleteTenderOffer')->name('seller.delete.tender-offer');
+
       Route::get('/success/{slug}/tender/{what?}', 'successPage')->name('seller.success.tender');
+      
+
       Route::get('/deal-tender/{slug}/{offer_id}/detail', 'dealTenderDetail')->name('seller.deal-detail.tender');
       Route::post('/deal/status-change-tender', 'statusDealChange')->name('seller.status.deal-tender');
    });
