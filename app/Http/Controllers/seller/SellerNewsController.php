@@ -246,10 +246,10 @@ class SellerNewsController extends Controller
 
         $news = SellerNews::where('vendor_id', $vendor_id)
             ->whereRaw(
-                "DATE_ADD(created_at, INTERVAL duration DAY) >= ?",
+                "DATE_ADD(updated_at, INTERVAL duration DAY) >= ?",
                 [Carbon::now()]
             )
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->get();
 
         return view('seller-vendor.news.my-news', compact('news'));
@@ -262,10 +262,10 @@ class SellerNewsController extends Controller
 
         $news = SellerNews::where('vendor_id', $vendor_id)
             ->whereRaw(
-                "DATE_ADD(created_at, INTERVAL duration DAY) < ?",
+                "DATE_ADD(updated_at, INTERVAL duration DAY) < ?",
                 [Carbon::now()]
             )
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->get();
 
         return view('seller-vendor.news.my-news', compact('news'));

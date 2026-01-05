@@ -362,7 +362,7 @@ class SellerProductController extends Controller
 
     public function storeProduct(Request $request)
     {
-        // dd($request->all());
+        dd($request->all());
         if (isset(auth()->user()->id)) {
             $vendor_id = auth()->user()->id;
             $validate = Validator::make(
@@ -864,6 +864,11 @@ class SellerProductController extends Controller
                 $product->isBulkBuy = $request->isBulkBuy == "on" ? 1 : 0;
                 $product->isHotProduct = $request->isHotProduct == "on" ? 1 : 0;
                 $product->duration = 7;
+
+                $product->currency0 = (isset($request->currency[0]) && $request->currency[0] != '') ? $request->currency[0] : "USD";
+                $product->currency1 = (isset($request->currency[1]) && $request->currency[1] != '') ? $request->currency[1] : "USD";
+                $product->currency2 = (isset($request->currency[2]) && $request->currency[2] != '') ? $request->currency[2] : "USD";
+
                 $product->save();
 
 
@@ -1930,9 +1935,9 @@ class SellerProductController extends Controller
             ->whereHas('order', function ($query) {
                 $query->where('user_id', Auth::user()->id);
             })
-            ->with('order', 'rate', 'product.vendor.payment_info', 'product.gallery')
+            ->with('order', 'rate', 'product.vendor.payment_info', 'product.vendor.countryData', 'product.vendor.stateData', 'product.gallery')
             ->first();
-        // dd($item);
+        // dd($item->toArray());
         if ($item) {
             return view('seller-vendor.product.buy-product-details', compact('item'));
         } else {
