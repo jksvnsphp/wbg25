@@ -831,7 +831,7 @@ class UserProductController extends Controller
             $countriesWithCost = $rate->shipping_rate_costs->flatMap(function ($cost) {
                 return $cost->shipping_regions->map(function ($region) use ($cost) {
                     return !$region->isWorldwide && $region->country
-                        ? ['name' => $region->country->name, 'cost' => $cost->cost, 'iso2' => $region->country->iso2, 'iso3' => $region->country->iso3, 'currency' => $region->country->currency]
+                        ? ['name' => $region->country->name, 'cost' => $cost->cost, 'iso2' => $region->country->iso2, 'iso3' => $region->country->iso3, 'currency' => $region->country->currency, 'symbol' => $region->country->currency_symbol]
                         : null;
                 });
             })->filter()->unique()->values()->all();

@@ -769,7 +769,7 @@ Route::middleware(['role:seller'])->group(function () {
       Route::post('/delete-product', 'deleteProduct')->name('seller.delete.product');
       Route::get('/my-product', 'myProduct')->name('seller.get.products');
       Route::get('/my-inactive-product', 'myInactiveProduct')->name('seller.get.inactive.products');
-      Route::get('/my-multiply-products', 'myMultiplyProduct')->name('seller.get.multiply.products');
+      Route::get('/my-multiply-products/{status?}', 'myMultiplyProduct')->name('seller.get.multiply.products');
       Route::get('/edit/{product_id}/product', 'editProduct')->name('seller.edit.product');
       Route::get('/edit/{product_id}/multiply-listing', 'editMultiplyListing')->name('seller.edit.multiply-list');
       Route::get('/delete/product/gallery/{image_id?}', 'deleteGalleryImage')->name('seller.delete.product.image');

@@ -190,8 +190,13 @@
 
                                 <div style="border-right: 1px solid #ddd" class="col d-flex flex-column justify-content-start">
                                     <h6 class="fw-bold mb-3">Supplier Details</h6>
-                                    <p>
-                                    </p>
+                                    <div> {{$item->product->vendor->first_name ?? ''}} {{$item->product->vendor->last_name ?? ''}} </div>
+                                    @if($item->product->vendor->street != null || $item->product->vendor->house_no != null)
+                                    <div> {{$item->product->vendor->street ?? ''}} {{$item->product->vendor->house_no ?? ''}} </div>
+                                    @endif
+                                    <div> {{$item->product->vendor->city ?? ''}} </div>
+                                    <div> {{$item->product->vendor->stateData->name ?? 'ss'}}, {{$item->product->vendor->countryData->name ?? 'ss'}} </div>
+                                    <div> {{$item->product->vendor->zip ?? ''}} </div>
                                 </div>
 
                                 <div style="border-right: 1px solid #ddd" class="col d-flex flex-column justify-content-start">

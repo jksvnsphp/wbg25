@@ -51,6 +51,11 @@ class User extends Authenticatable
         return $this->hasOne(countries::class, 'id');
     }
 
+    public function stateData()
+    {
+        return $this->hasOne(states::class, 'id');
+    }
+
     public function company()
     {
         return $this->hasOne(company::class, 'vendor_id');
