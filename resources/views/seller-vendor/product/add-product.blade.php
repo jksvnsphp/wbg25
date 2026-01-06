@@ -352,7 +352,7 @@
                                             <div class="col-md-12">
 
                                                 <div class="d-flex ">
-                                                    <h5 class="fs-6 fw-bold me-3">Shipping cost settings</h5>
+                                                    <h5 class="fs-6 fw-bold me-3">Shipping settings</h5>
 
                                                 </div>
                                                 <div id="shippingFormSection">

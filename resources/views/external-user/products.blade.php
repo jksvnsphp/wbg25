@@ -400,19 +400,10 @@
                                     <h5 class="text-center fw-bolder fs-6 mt-2 text-primary">
                                         {{ isset($product->vendor->company->name) ? $product->vendor->company->name : '' }}
                                     </h5>
-
-
+                                    <span class="text-primary">
+                                        {{ isset($product->vendor->company->business_type) ? $product->vendor->company->business_type : '' }}
+                                    </span>
                                 </div>
-
-                                <div class="position-absolute"
-                                    style="bottom: 30px;right: 50%;transform: translateX(50%);">
-                                    <p class="text-center text-muted">
-                                        <span class="text-primary">
-                                            {{ isset($product->vendor->company->business_type) ? $product->vendor->company->business_type : '' }}
-                                        </span>
-                                    </p>
-                                </div>
-
                             </div>
                         </div>
                     </div>

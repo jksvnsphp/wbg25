@@ -147,7 +147,9 @@
             <div class="col-md-3 mt-2 col-sm-4 col-lg-2">
                 <div class="card shadow latest_list rounded-0 position-relative">
                     <div class="card-img">
-                        <img src="{{ asset('uploads/tender/' . $tender->image_1) }}" alt="" style="max-width:100% !important; height:unset !important;" />
+                        <a class="text-primary" href="{{ route('show.tender', $tender->slug) }}">
+                            <img src="{{ asset('uploads/tender/' . $tender->image_1) }}" alt="" style="max-width:100% !important; height:unset !important;" />
+                        </a>
                     </div>
                     <div class="card-footer bg-white">
                         <h6 class="text-one-line text-center fs-5 text-primary  fw-bolder" style="line-height: 2">
@@ -161,7 +163,7 @@
 
                             <div class=" fw-bolder mt-2 text-danger">
 
-                                 Ends in: {{ $tender->expiry_date }}
+                                Ends in: {{ $tender->expiry_date }}
 
                             </div>
                             <a class="btn btn-secondary my-2" href="{{ route('show.tender', $tender->slug) }}">View Details</a>

@@ -60,7 +60,7 @@
                     <div class="row justify-content-center">
                         <div class="col-md-11">
                             <div class="table-responsive">
-                                <table class="table table-striped table-bordered align-middle">
+                                <table class="table table-striped table-bordered">
                                     <tbody>
                                         <tr>
                                             <td>
@@ -76,7 +76,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="fw-bold mb-2" style="color: #FF7519;">Product Title : </div>
+                                                <div class="fw-bold mb-2" style="color: #FF7519;">Quantity : </div>
                                                 <div class="fw-bold mb-2" style="color: #2E2B70;">
                                                     {{ $item->quantity }}
                                                 </div>

@@ -501,8 +501,22 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td>$
-                                                            {{ isset($yourShippingCost['shipping_cost']) ? $yourShippingCost['shipping_cost'] : 'No Shipping Zone' }}
+                                                        <td>
+                                                            @if(isset($yourShippingCost['shipping_cost']))
+                                                            @if($yourShippingCost['shipping_cost'] == 0)
+                                                            Free International Shipping
+                                                            @else
+                                                            <!-- US${{ $yourShippingCost['shipping_cost'] }} WBG International Shipping -->
+                                                            @if (count($data['countries']))
+                                                            @foreach ($data['countries'] as $iii=>$country)
+                                                            @php $currencyVar = "currency".$iii; @endphp
+                                                            <span class="text-warning" style="font-size: 14px;"> {{ $country['name'] }} : {{$product->$currencyVar ?? 'USD'}}$ {{ number_format($country['cost'], 2) }} </span> <br />
+                                                            @endforeach
+                                                            @endif
+                                                            @endif
+                                                            @else
+                                                            No Shipping Zone
+                                                            @endif
                                                         </td>
                                                         <td>{{ isset($data['shipping_partner']) ? $data['shipping_partner'] : 'N/A' }}</td>
                                                         <td>{{ isset($data['shipping_method']) ? $data['shipping_method'] : 'N/A' }}</td>

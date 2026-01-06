@@ -174,6 +174,8 @@
 
                             </div>
                         </div>
+                    </div>
+                    <div class="row mt-4">
                         <div class="col-md-9 my-3">
                             <div class="form-group mb-2">
                                 <label for="div_editor1" class="form-label">Add Description
@@ -342,10 +344,12 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="col-md-9">
+                    <div class="row mt-4">
+                        <div class="col-md-12">
                             <div class="d-flex ">
-                                <h5 class="fs-6 fw-bold me-3">Shipping cost settings</h5>
+                                <h5 class="fs-6 fw-bold me-3">Shipping settings</h5>
                             </div>
                             <div id="shippingFormSection">
                                 <div class="row">
@@ -379,7 +383,7 @@
                                         </div>
                                     </div>
                                     <!-- Shipping Table -->
-                                    <div class="col-md-12 mb-3">
+                                    <div class="col-md-8 mb-3">
                                         <h6 class="fs-6 fw-bold py-3 pb-1">Set Shipping Cost</h6>
                                         <div class="table-responsive">
                                             <table class="table table-bordered table-striped">
@@ -406,6 +410,28 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card shadow-sm h-100">
+                                            <div class="card-body text-center">
+                                                <h6 class="fw-bold mb-3">How to set Shipping Cost</h6>
+
+                                                <div class="ratio ratio-16x9">
+
+                                                    <video
+                                                        controls
+                                                        preload="metadata"
+                                                        style="width:100%; border-radius:6px;">
+                                                        <source src="{{ asset('uploads/member_packages/How-to-set-Shipping-Cost.mp4') }}" type="video/mp4">
+                                                        Your browser does not support the video tag.
+                                                    </video>
+                                                </div>
+
+                                                <small class="text-muted d-block mt-2">
+                                                    Watch this video to understand region & country based shipping
+                                                </small>
+                                            </div>
                                         </div>
                                     </div>
 

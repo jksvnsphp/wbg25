@@ -322,7 +322,7 @@
                                             <div class="col-md-12">
 
                                                 <div class="d-flex ">
-                                                    <h5 class="fs-6 fw-bold me-3">Shipping cost settings</h5>
+                                                    <h5 class="fs-6 fw-bold me-3">Shipping settings</h5>
                                                     {{-- <div class="form-check form-switch">
                                                         <input class="form-check-input" type="checkbox"
                                                             id="flexSwitchCheckChecked" name="isRateTable" checked>
