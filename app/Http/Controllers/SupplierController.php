@@ -14,7 +14,7 @@ class SupplierController extends Controller
     //
     public function allsuppliers(Request $request)
     {
-        $pageItem = 4;
+        $pageItem = 25;
         $countries = countries::orderBy('name', 'ASC')->get();
         $categories = CustomeCategory::where('status', "1")->where('deleted', "0")->where('parent_id', "0")->orderBy('category_name', 'ASC')->get();
         $querySuppliers = User::query()
@@ -22,7 +22,7 @@ class SupplierController extends Controller
             ->with(['sellerPackageOne' => function ($q) {
                 $q->whereNotNull('expire_at');
             }])
-            ->with('company', 'exports', 'symbols','sellerPackageOne.package')
+            ->with('company', 'exports', 'symbols', 'sellerPackageOne.package')
             ->whereHas('company', function ($sq) {
                 $sq->where('id', "!=", "");
             });
@@ -93,7 +93,7 @@ class SupplierController extends Controller
                 });
             });
         }
-        
+
         // $suppliers = $querySuppliers->orderByRaw("
         // (CASE 
         //     WHEN EXISTS (SELECT 1 FROM seller_packages sp 
@@ -131,7 +131,7 @@ class SupplierController extends Controller
     END
 ")->paginate($pageItem);
 
-        
+
 
         foreach ($suppliers as $seller) {
             $seller->average_rating = null;

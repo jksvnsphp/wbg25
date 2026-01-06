@@ -1014,7 +1014,7 @@ class UserProductController extends Controller
                     ->limit(1)
             ])
             ->first();
-        //  dd($seller);   
+        // dd($seller->toArray());
         if ($seller) {
             $countries = countries::orderBy('name', 'ASC')->get();
             $categories = parent_category::where('status', "1")->orderBy('name', 'ASC')->get();
