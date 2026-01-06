@@ -48,19 +48,19 @@ class User extends Authenticatable
 
     public function countryData()
     {
-        return $this->hasOne(countries::class, 'id');
+        return $this->belongsTo(countries::class, 'country');
     }
 
     public function stateData()
     {
-        return $this->hasOne(states::class, 'id');
+        return $this->belongsTo(states::class, 'state');
     }
 
     public function company()
     {
         return $this->hasOne(company::class, 'vendor_id');
     }
-    
+
     public function exports()
     {
         return $this->hasOne(export_region::class, 'vendor_id');
@@ -118,5 +118,4 @@ class User extends Authenticatable
     {
         $this->notify(new CustomResetPassword($token));
     }
-
 }

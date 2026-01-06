@@ -854,7 +854,7 @@
 
 
     let rowIndex = 0;
-    const shippingRateCosts = {!! json_encode($product->rate_table->shipping_rate_costs ?? []) !!};
+    const shippingRateCosts = <?php echo json_encode($product->rate_table->shipping_rate_costs ?? []) ?>;
     populateRows('expeditedTableBody', shippingRateCosts);
 
     function populateRows(tableId, shippingRateCosts) {
@@ -869,11 +869,11 @@
         const isRegion = data && data.shipping_type === "region";
         const isCountry = data && data.shipping_type === "country";
         const cost = data ? data.cost : "";
-        const productCurrencies = @json([
-            $product->currency0 ?? 'USD',
-            $product->currency1 ?? 'USD',
-            $product->currency2 ?? 'USD'
-        ]);
+        const productCurrencies = <?php echo json_encode([
+                                        $product->currency0 ?? 'USD',
+                                        $product->currency1 ?? 'USD',
+                                        $product->currency2 ?? 'USD'
+                                    ]) ?>;
 
         // Check if "worldwide" is selected
         const isWorldwide = isRegion && data.shipping_regions.some(region => region.isWorldwide === 1);
@@ -1045,7 +1045,7 @@
 </script>
 <script>
     let combinations = [];
-    const combinationsOld = JSON.parse(@json($product->variants));
+    const combinationsOld = JSON.parse(<?php echo json_encode($product->variants ?? []); ?>);
 
     let combinationImages = {};
     $(document).ready(function() {
@@ -1400,36 +1400,51 @@
             var formData = new FormData(this);
 
             combinations.forEach(function(combination, index) {
-                // For each slot, add either the old image or new file (if provided)
-                for (var i = 0; i < combinationsOld[index].images.length; i++) {
+                if (
+                    !combinationsOld ||
+                    !combinationsOld[index] ||
+                    !Array.isArray(combinationsOld[index].images)
+                ) {
+                    return;
+                }
 
-                    if (combinationsOld[index].images[i] && combinationsOld[index].images[i]
-                        .startsWith(
-                            'data:image')) {
-                        const file = base64ToFile(combinationsOld[index].images[i],
-                            `image${i}.${combinationsOld[index].images[i].split(';')[0].split('/')[1]}`
-                        );
-                        // combinationObj.images.push(file);
-                        formData.append(`combinations[${index}][gallery][${i}]`, file || null);
+                const images = combinationsOld[index].images;
+
+                for (let i = 0; i < images.length; i++) {
+
+                    if (images[i] && images[i].startsWith('data:image')) {
+
+                        const ext = images[i].split(';')[0].split('/')[1];
+                        const file = base64ToFile(images[i], `image${i}.${ext}`);
+
+                        formData.append(`combinations[${index}][gallery][${i}]`, file);
                     } else {
-                        formData.append(`combinations[${index}][gallery][${i}]`,
-                            combinationsOld[index].images[i] || null);
-                        // combinationObj.images.push(combinationsOld[index].images[i] || null);
+                        formData.append(
+                            `combinations[${index}][gallery][${i}]`,
+                            images[i] || null
+                        );
                     }
                 }
             });
 
             mimages.forEach((image, index) => {
-                // console.log(image);
-                const input = $(`#mimage-${index}`)[0];
-                const file = input.files[0];
+
+                const inputEl = document.getElementById(`mimage-${index}`);
+
+                // If input does not exist, skip safely
+                if (!inputEl || !inputEl.files) {
+                    return;
+                }
+
+                const file = inputEl.files[0];
 
                 if (file) {
                     formData.append(`main_gallery_images[${index}]`, file);
                 } else if (image && image.image) {
-                    formData.append(`existing_images[${index}]`, image.image); // Existing image
+                    formData.append(`existing_images[${index}]`, image.image);
                 }
             });
+
             $.ajax({
                 url: '{{ route("seller.update.product.multiply") }}',
                 type: 'POST',
