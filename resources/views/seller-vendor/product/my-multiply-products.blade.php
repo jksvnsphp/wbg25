@@ -42,6 +42,10 @@
                                     <th>Total Selling Amount</th>
                                     <th>Additional show case</th>
                                     <th>Status</th>
+                                    @if($status == 2)
+                                    <th>Expired On</th>
+                                    <th>ReList/Edit</th>
+                                    @endif
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -243,16 +247,26 @@
                                                 {{ $product->isList ? 'checked' : '' }}>
                                         </div>
                                     </td>
+                                    @if($status == 2)
                                     <td>
-
-                                        <a href="
-                                                @if ($product->isMultiple == 1) {{ route('seller.edit.multiply-list', $product->id) }}
+                                        {{ $product->expired_at ? date('d M, Y', strtotime($product->expired_at)) : 'N/A' }}
+                                    </td>
+                                    <td>
+                                        <a style="white-space: nowrap;" href="{{ route('seller.edit.multiply-list', $product->id) }}" title="ReList" class="btn btn-sm btn-secondary">
+                                            <i class="fa fa-rotate"></i> Re-List / Edit
+                                        </a>
+                                    </td>
+                                    @endif
+                                    <td>
+                                        @if($status == 1)
+                                        <a href="@if ($product->isMultiple == 1) {{ route('seller.edit.multiply-list', $product->id) }}
                                                   @else
                                                   {{ route('seller.edit.product', $product->id) }} @endif
                                                  "
                                             title="Edit" class="btn btn-info me-2">
                                             <i class="fa fs-5 text-white fa-pencil-square" aria-hidden="true"></i>
                                         </a>
+                                        @endif
                                         <a href="javascript:void(0);" title="Delete"
                                             class="btn btn-primary me-2 delete-product"
                                             data-product-id="{{ $product->id }}">

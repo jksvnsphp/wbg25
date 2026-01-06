@@ -1784,23 +1784,67 @@ class SellerProductController extends Controller
 
             $products = collect();
 
+            // foreach ($allProducts as $product) {
+
+            //     $soldQty = OrderItem::where('product_id', $product->id)
+            //         ->whereHas('order', function ($query) {
+            //             $query->where('payment_status', '!=', 'processing');
+            //         })
+            //         ->sum('quantity');
+
+            //     $soldPrice = OrderItem::where('product_id', $product->id)
+            //         ->whereHas('order', function ($query) {
+            //             $query->where('payment_status', '!=', 'processing');
+            //         })
+            //         ->sum('total_price');
+
+            //     $totalQty = 0;
+
+            //     $variants = is_string($product->variants) ? json_decode($product->variants, true) : $product->variants;
+
+            //     $variants = is_array($variants) ? $variants : [];
+
+            //     foreach ($variants as $variant) {
+            //         $totalQty += isset($variant['quantity'])
+            //             ? (int) $variant['quantity']
+            //             : 0;
+            //     }
+
+            //     $remainingQty = $totalQty - $soldQty;
+
+            //     // Attach values (for view)
+            //     $product->sold = $soldQty;
+            //     $product->total_qty = $totalQty;
+            //     $product->remaining_qty = $remainingQty;
+
+            //     /**
+            //      * FINAL LOGIC
+            //      * remaining_qty == 0 → INACTIVE
+            //      * remaining_qty > 0  → ACTIVE
+            //      */
+            //     if ($status === 1) {
+            //         // ACTIVE
+            //         if ($remainingQty > 0) {
+            //             $products->push($product);
+            //         }
+            //     } else {
+            //         // INACTIVE
+            //         if ($remainingQty === 0) {
+            //             $products->push($product);
+            //         }
+            //     }
+            // }
+
             foreach ($allProducts as $product) {
 
-                $soldQty = OrderItem::where('product_id', $product->id)
-                    ->whereHas('order', function ($query) {
-                        $query->where('payment_status', '!=', 'processing');
-                    })
-                    ->sum('quantity');
-
-                $soldPrice = OrderItem::where('product_id', $product->id)
-                    ->whereHas('order', function ($query) {
-                        $query->where('payment_status', '!=', 'processing');
-                    })
-                    ->sum('total_price');
-
+                /**
+                 * 1️⃣ TOTAL QTY FROM VARIANTS
+                 */
                 $totalQty = 0;
 
-                $variants = is_string($product->variants) ? json_decode($product->variants, true) : $product->variants;
+                $variants = is_string($product->variants)
+                    ? json_decode($product->variants, true)
+                    : $product->variants;
 
                 $variants = is_array($variants) ? $variants : [];
 
@@ -1810,31 +1854,57 @@ class SellerProductController extends Controller
                         : 0;
                 }
 
-                $remainingQty = $totalQty - $soldQty;
+                /**
+                 * 2️⃣ FETCH ORDER ITEMS IN ORDER (OLD → NEW)
+                 */
+                $orderItems = OrderItem::where('product_id', $product->id)
+                    ->whereHas('order', function ($query) {
+                        $query->where('payment_status', '!=', 'processing');
+                    })
+                    ->orderBy('created_at', 'asc')
+                    ->get();
 
-                // Attach values (for view)
+                $soldQty = 0;
+                $expiredAt = null;
+
+                foreach ($orderItems as $item) {
+                    $soldQty += (int) $item->quantity;
+
+                    // 🔥 THIS IS THE MOMENT STOCK BECOMES ZERO
+                    if ($soldQty >= $totalQty) {
+                        $expiredAt = $item->created_at;
+                        break;
+                    }
+                }
+
+                $remainingQty = max(0, $totalQty - $soldQty);
+
+                /**
+                 * 3️⃣ SAVE expired_at ONLY ONCE
+                 */
+                if ($remainingQty === 0 && $expiredAt) {
+                    $product->expired_at = $expiredAt;
+                }
+
+                // Attach computed values
                 $product->sold = $soldQty;
                 $product->total_qty = $totalQty;
                 $product->remaining_qty = $remainingQty;
 
                 /**
-                 * FINAL LOGIC
-                 * remaining_qty == 0 → INACTIVE
-                 * remaining_qty > 0  → ACTIVE
+                 * 4️⃣ ACTIVE / INACTIVE FILTER
                  */
                 if ($status === 1) {
-                    // ACTIVE
                     if ($remainingQty > 0) {
                         $products->push($product);
                     }
                 } else {
-                    // INACTIVE
                     if ($remainingQty === 0) {
                         $products->push($product);
                     }
                 }
             }
-
+            // dd($products->toArray());
             return view('seller-vendor.product.my-multiply-products', compact('products'));
         } else {
             return response()->json(['error' => ['message' => "Unauthrized access this page!"]], 422);
