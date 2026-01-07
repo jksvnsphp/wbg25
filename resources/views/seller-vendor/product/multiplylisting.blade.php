@@ -137,8 +137,7 @@
                     <div class="row">
                         <div class="col-md-9">
                             <h6 class="fw-bold text-primary fs-5">
-                                Start your mulitply listing and make Money selling on World Business
-                                Guide - www.wbg24.com
+                                Start your mulitply listing and make Money selling on World Business Guide - www.wbg24.com
                             </h6>
 
                         </div>
@@ -630,7 +629,7 @@
 <script>
     const mimages = {};
     $(document).ready(function() {
-        const placeholder = 'https://placehold.co/400';
+        const placeholder = 'https://placehold.co/500';
 
         // Render image grid
 
@@ -638,9 +637,8 @@
             const $imageGrid = $('#imageGrid');
             $imageGrid.empty();
 
-            for (let index = 0; index < 12; index++) {
-                const src = mimages[index] ||
-                    placeholder;
+            for (let index = 0; index < 1; index++) {
+                const src = mimages[index] || placeholder;
                 const label = index === 0 ? 'Main Image' : `Image-${index + 1}`;
                 const html = `
                     <div class="col-lg-2 col-md-3 col-6 mb-3">
@@ -1014,11 +1012,11 @@
                     </div>
                     <div class="mt-2">
                         ${variant.values.map((value, valIndex) => `
-                                                                                                                                <span class="badge rounded-0 py-2 px-2 bg-primary">
-                                                                                                                                    ${value} 
-                                                                                                                                    <i class="fa fa-edit text-white edit-value mx-2" data-variant="${index}" data-value="${valIndex}" style="cursor:pointer;"></i>
-                                                                                                                                    <i class="fa fa-trash text-white delete-value" data-variant="${index}" data-value="${valIndex}" style="cursor:pointer;"></i>
-                                                                                                                                </span>`).join(" ")}
+                            <span class="badge rounded-0 py-2 px-2 bg-primary">
+                                ${value} 
+                                <i class="fa fa-edit text-white edit-value mx-2" data-variant="${index}" data-value="${valIndex}" style="cursor:pointer;"></i>
+                                <i class="fa fa-trash text-white delete-value" data-variant="${index}" data-value="${valIndex}" style="cursor:pointer;"></i>
+                            </span>`).join(" ")}
                     </div>
                 </div>`;
             });
@@ -1123,7 +1121,7 @@
                 }).join("");
                 return `
             <tr>
-                <td>${Object.entries(comb).map(([key, value]) => `${value}`).join(" - ")}</td>
+                <td class="col" clgstr-index="${index}">${Object.entries(comb).map(([key, value]) => `${value}`).join(" - ")}</td>
                 <td>
                     <button type="button" class="btn btn-sm btn-primary open-gallery-btn" data-index="${index}">
                        <i class="fa-regular fa-image me-2"></i> Image Gallery
@@ -1151,7 +1149,7 @@
 
         // Render Gallery Modals for Each Combination
         // Open Gallery Modal
-        function openGalleryModal(index) {
+        function openGalleryModal(index, titleName) {
             const images = combinationImages[index] || {};
             const imageHandle = Array.from({
                 length: 12
@@ -1159,7 +1157,7 @@
                         <div class="col-lg-2 col-md-3 col-6 mb-3">
                           <span>${i === 0 ? 'Main Image' : `Image-${i + 1}`}</span>
                           <label for="image-${i}" class="d-block" style="cursor:pointer;">
-                            <img id="preview-${i}" src="${images[i] || 'https://placehold.co/400'}" class="img-thumbnail p-0 mt-2" style="width: 100px; height: 100px;">
+                            <img id="preview-${i}" src="${images[i] || 'https://placehold.co/500'}" class="img-thumbnail p-0 mt-2" style="width: 100px; height: 100px;">
                           </label>
                           <input type="file" id="image-${i}" class="form-control d-none upload-image" data-index="${index}" data-slot="${i}" accept="image/*">
                         </div>
@@ -1169,7 +1167,7 @@
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Gallery for Combination ${index+1}</h5>
+                            <h5 class="modal-title">${titleName}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -1193,7 +1191,8 @@
         function attachCombinationEvents() {
             $(".open-gallery-btn").click(function() {
                 const index = $(this).data("index");
-                openGalleryModal(index);
+                const titleName = $(this).closest("tr").find("td").first().text();
+                openGalleryModal(index, titleName);
             });
 
             $(".delete-combination-btn").click(function() {

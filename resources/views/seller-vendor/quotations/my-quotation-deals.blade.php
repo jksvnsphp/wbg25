@@ -39,8 +39,8 @@
                     {{$heading ?? 'All Deal Quotes'}}
                 </h6>
                 <a href="{{ route('seller.quote-deal') }}" class="btn btn-sm me-3 {{ Route::currentRouteName() == 'seller.quote-deal' ? 'btn-secondary disabled' : 'btn-light' }}">All Deals</a>
-                <a href="{{ route('seller.my-quote-deal') }}" class="btn btn-sm me-3 {{ Route::currentRouteName() == 'seller.my-quote-deal' ? 'btn-secondary disabled' : 'btn-light' }}">Suppliers (Quotation) (Tender) Deals</a>
-                <a href="{{ route('seller.supplier-quote-deal') }}" class="btn btn-sm {{ Route::currentRouteName() == 'seller.supplier-quote-deal' ? 'btn-secondary disabled' : 'btn-light' }}">My (Quotation) (Tender) Deals</a>
+                <a href="{{ route('seller.my-quote-deal') }}" class="btn btn-sm me-3 {{ Route::currentRouteName() == 'seller.my-quote-deal' ? 'btn-secondary disabled' : 'btn-light' }}">Suppliers Quotation Deals</a>
+                <a href="{{ route('seller.supplier-quote-deal') }}" class="btn btn-sm {{ Route::currentRouteName() == 'seller.supplier-quote-deal' ? 'btn-secondary disabled' : 'btn-light' }}">My Quotation Deals</a>
             </div>
             <div class="card rounded-0">
                 <div class="card-body">
