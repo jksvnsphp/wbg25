@@ -40,7 +40,7 @@
                                             <div class="form-group mb-2">
                                                 <label for="profile" class="form-label fw-bold">
                                                     Profile Picture
-                                                    <span class="text-secondary">(Max Size: 200 × 200 px)</span>
+                                                    <span class="text-secondary">(Max Size: 500 × 500 px)</span>
                                                 </label>
 
                                                 <input
@@ -48,8 +48,8 @@
                                                     id="profile"
                                                     name="profile"
                                                     class="form-control image-validate"
-                                                    data-width="200"
-                                                    data-height="200">
+                                                    data-width="500"
+                                                    data-height="500">
                                             </div>
 
                                             <div class="preview-wrapper mt-2">
@@ -78,7 +78,7 @@
                                             <div class="form-group mb-2">
                                                 <label for="company_logo" class="form-label fw-bold">
                                                     Company Logo
-                                                    <span class="text-secondary">(Max Size: 200 × 200 px)</span>
+                                                    <span class="text-secondary">(Max Size: 500 × 500 px)</span>
                                                 </label>
 
                                                 <input
@@ -86,8 +86,8 @@
                                                     id="company_logo"
                                                     name="company_logo"
                                                     class="form-control image-validate"
-                                                    data-width="200"
-                                                    data-height="200">
+                                                    data-width="500"
+                                                    data-height="500">
                                             </div>
 
                                             <div class="preview-wrapper mt-2">
@@ -160,7 +160,7 @@
                                                     <div class="form-group mb-2">
                                                         <label for="image_1" class="form-label fw-bold">
                                                             Image 1
-                                                            <span class="text-secondary">(Max Size: 400 × 400 px)</span>
+                                                            <span class="text-secondary">(Max Size: 500 × 500 px)</span>
                                                         </label>
 
                                                         <input
@@ -168,8 +168,8 @@
                                                             id="image_1"
                                                             name="image_1"
                                                             class="form-control image-validate"
-                                                            data-width="400"
-                                                            data-height="400">
+                                                            data-width="500"
+                                                            data-height="500">
                                                         <input type="hidden" name="col[]" value="image_1">
                                                     </div>
 
@@ -209,7 +209,7 @@
                                                     <div class="form-group mb-2">
                                                         <label for="image_2" class="form-label fw-bold">
                                                             Image 2
-                                                            <span class="text-secondary">(Max Size: 400 × 400 px)</span>
+                                                            <span class="text-secondary">(Max Size: 500 × 500 px)</span>
                                                         </label>
 
                                                         <input
@@ -217,8 +217,8 @@
                                                             id="image_2"
                                                             name="image_2"
                                                             class="form-control image-validate"
-                                                            data-width="400"
-                                                            data-height="400">
+                                                            data-width="500"
+                                                            data-height="500">
                                                         <input type="hidden" name="col[]" value="image_2">
                                                     </div>
 
@@ -258,7 +258,7 @@
                                                     <div class="form-group mb-2">
                                                         <label for="image_3" class="form-label fw-bold">
                                                             Image 3
-                                                            <span class="text-secondary">(Max Size: 400 × 400 px)</span>
+                                                            <span class="text-secondary">(Max Size: 500 × 500 px)</span>
                                                         </label>
 
                                                         <input
@@ -266,8 +266,8 @@
                                                             id="image_3"
                                                             name="image_3"
                                                             class="form-control image-validate"
-                                                            data-width="400"
-                                                            data-height="400">
+                                                            data-width="500"
+                                                            data-height="500">
                                                         <input type="hidden" name="col[]" value="image_3">
                                                     </div>
 
@@ -307,7 +307,7 @@
                                                     <div class="form-group mb-2">
                                                         <label for="image_4" class="form-label fw-bold">
                                                             Image 4
-                                                            <span class="text-secondary">(Max Size: 400 × 400 px)</span>
+                                                            <span class="text-secondary">(Max Size: 500 × 500 px)</span>
                                                         </label>
 
                                                         <input
@@ -315,8 +315,8 @@
                                                             id="image_4"
                                                             name="image_4"
                                                             class="form-control image-validate"
-                                                            data-width="400"
-                                                            data-height="400">
+                                                            data-width="500"
+                                                            data-height="500">
                                                         <input type="hidden" name="col[]" value="image_4">
                                                     </div>
 

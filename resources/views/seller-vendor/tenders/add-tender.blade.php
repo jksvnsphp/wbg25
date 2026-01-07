@@ -190,7 +190,7 @@
                                     <div class="card shadow">
                                         <div class="card-body">
                                             <label for="image1" class="form-label">Image 1
-                                                <small class="text-danger">(480px X 360px) <i class="fa fa-asterisk text-secondary" style="font-size:10px;" aria-hidden="true"></i></small>
+                                                <small class="text-danger">(500px X 500px) <i class="fa fa-asterisk text-secondary" style="font-size:10px;" aria-hidden="true"></i></small>
                                             </label>
 
                                             <input type="file"
@@ -218,7 +218,7 @@
                                     <div class="card shadow">
                                         <div class="card-body">
                                             <label for="image2" class="form-label">Image 2
-                                                <small class="text-danger">(480px X 360px)</small>
+                                                <small class="text-danger">(500px X 500px)</small>
                                             </label>
 
                                             <input type="file"
@@ -245,7 +245,7 @@
                                 <div class="col-md-4 mb-4">
                                     <div class="card shadow">
                                         <div class="card-body">
-                                            <label for="image3" class="form-label">Image 3 <small class="text-danger">(480px X 360px)</small></label>
+                                            <label for="image3" class="form-label">Image 3 <small class="text-danger">(500px X 500px)</small></label>
 
                                             <input type="file"
                                                 class="form-control file-input"
@@ -270,7 +270,7 @@
                                 <div class="col-md-4 mb-4">
                                     <div class="card shadow">
                                         <div class="card-body">
-                                            <label for="image4" class="form-label">Image 4 <small class="text-danger">(480px X 360px)</small></label>
+                                            <label for="image4" class="form-label">Image 4 <small class="text-danger">(500px X 500px)</small></label>
 
                                             <input type="file"
                                                 class="form-control file-input"
@@ -295,7 +295,7 @@
                                 <div class="col-md-4 mb-4">
                                     <div class="card shadow">
                                         <div class="card-body">
-                                            <label for="image5" class="form-label">Image 5 <small class="text-danger">(480px X 360px)</small></label>
+                                            <label for="image5" class="form-label">Image 5 <small class="text-danger">(500px X 500px)</small></label>
 
                                             <input type="file"
                                                 class="form-control file-input"
@@ -320,7 +320,7 @@
                                 <div class="col-md-4 mb-4">
                                     <div class="card shadow">
                                         <div class="card-body">
-                                            <label for="image6" class="form-label">Image 6 <small class="text-danger">(480px X 360px)</small> </label>
+                                            <label for="image6" class="form-label">Image 6 <small class="text-danger">(500px X 500px)</small> </label>
 
                                             <input type="file"
                                                 class="form-control file-input"
@@ -951,8 +951,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        const REQUIRED_WIDTH = 480;
-        const REQUIRED_HEIGHT = 360;
+        const REQUIRED_WIDTH = 500;
+        const REQUIRED_HEIGHT = 500;
         const MAX_SIZE_MB = 2;
 
         let requiredImageValid = false;
@@ -1025,7 +1025,7 @@
         document.querySelector('form').addEventListener('submit', function(e) {
             if (!requiredImageValid) {
                 e.preventDefault();
-                alert('Certificate Image 1 is required and must be valid (480 × 360).');
+                alert('Certificate Image 1 is required and must be valid (500 × 500).');
             }
         });
 

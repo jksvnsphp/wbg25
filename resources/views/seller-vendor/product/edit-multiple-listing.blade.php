@@ -1235,7 +1235,7 @@
 
                 return `
             <tr>
-                <td>${Object.entries(comb)
+                <td class="col" clgstr-index="${index}">${Object.entries(comb)
                     .map(([_, value]) => `${value}`)
                     .join(" - ")}</td>
                 <td>
@@ -1265,7 +1265,7 @@
         // Render Gallery Modals for Each Combination
         // Open Gallery Modal
 
-        function openGalleryModal(index) {
+        function openGalleryModal(index, titleName) {
             const combinationOldData = combinationsOld[index] || {};
             const images = combinationOldData.images || [];
             const baseUrl = "{{ asset('uploads/products/') }}/";
@@ -1301,7 +1301,7 @@
                 <div class="modal-dialog modal-dialog-centered modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Gallery for Combination ${index+1}</h5>
+                            <h5 class="modal-title">${titleName}</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -1325,7 +1325,8 @@
         function attachCombinationEvents() {
             $(".open-gallery-btn").click(function() {
                 const index = $(this).data("index");
-                openGalleryModal(index);
+                const titleName = $(this).closest("tr").find("td").first().text();
+                openGalleryModal(index, titleName);
             });
 
             $(".delete-combination-btn").click(function() {

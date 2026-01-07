@@ -94,7 +94,7 @@
                                         <div class="form-group mb-3">
                                             <label for="news_image" class="form-label fw-bold">
                                                 News Picture
-                                                <span class="text-secondary">(Max Size: 200×200 px)</span>
+                                                <span class="text-secondary">(Max Size: 500×500 px)</span>
                                                 <i class="fa fa-asterisk text-danger" style="font-size:12px;"></i>
                                             </label>
 
@@ -103,8 +103,8 @@
                                                 class="form-control image-validate"
                                                 name="image"
                                                 id="news_image"
-                                                data-width="200"
-                                                data-height="200" />
+                                                data-width="500"
+                                                data-height="500" />
                                         </div>
                                     </div>
 
@@ -230,7 +230,7 @@
         form.addEventListener('submit', function(e) {
             if (!newsImageValid) {
                 e.preventDefault();
-                alert('News Image is required and must be valid (max 200×200 px).');
+                alert('News Image is required and must be valid (max 500×500 px).');
             }
         });
 

@@ -142,7 +142,7 @@
                         <div class="col-md-6 d-flex mt-3 align-items-center">
                             <div class="card shadow">
                                 <div class="card-body">
-                                    <label for="imageCertificatedGallery1" class="form-label fw-bold">Certificate Image 1 <small class="text-danger">(480px X 360px)</small> <i class="fa fa-asterisk text-secondary" style="font-size:10px;" aria-hidden="true"></i></label>
+                                    <label for="imageCertificatedGallery1" class="form-label fw-bold">Certificate Image 1 <small class="text-danger">(500px X 500px)</small> <i class="fa fa-asterisk text-secondary" style="font-size:10px;" aria-hidden="true"></i></label>
                                     <div class="input-group">
                                         <input type="file" id="imageCertificatedGallery1" class="form-control file-input" name="images[]" />
                                     </div>
@@ -165,7 +165,7 @@
                         <div class="col-md-6 d-flex mt-3 align-items-center">
                             <div class="card shadow">
                                 <div class="card-body">
-                                    <label for="imageCertificatedGallery2" class="form-label fw-bold">Certificate Image 2 <small class="text-danger">(480px X 360px)</small></label>
+                                    <label for="imageCertificatedGallery2" class="form-label fw-bold">Certificate Image 2 <small class="text-danger">(500px X 500px)</small></label>
                                     <div class="input-group">
                                         <input type="file" id="imageCertificatedGallery2" class="form-control file-input" name="images[]" />
                                     </div>
@@ -185,7 +185,7 @@
                         <div class="col-md-6 d-flex mt-3 align-items-center">
                             <div class="card shadow">
                                 <div class="card-body">
-                                    <label for="imageCertificatedGallery3" class="form-label fw-bold">Certificate Image 3 <small class="text-danger">(480px X 360px)</small></label>
+                                    <label for="imageCertificatedGallery3" class="form-label fw-bold">Certificate Image 3 <small class="text-danger">(500px X 500px)</small></label>
                                     <div class="input-group">
                                         <input type="file" id="imageCertificatedGallery3" class="form-control file-input" name="images[]" />
                                     </div>
@@ -205,7 +205,7 @@
                         <div class="col-md-6 d-flex mt-3 align-items-center">
                             <div class="card shadow">
                                 <div class="card-body">
-                                    <label for="imageCertificatedGallery4" class="form-label fw-bold">Certificate Image 4 <small class="text-danger">(480px X 360px)</small></label>
+                                    <label for="imageCertificatedGallery4" class="form-label fw-bold">Certificate Image 4 <small class="text-danger">(500px X 500px)</small></label>
                                     <div class="input-group">
                                         <input type="file" id="imageCertificatedGallery4" class="form-control file-input" name="images[]" />
                                     </div>
@@ -260,8 +260,8 @@
 
         const form = document.getElementById('certificateForm');
 
-        const REQUIRED_WIDTH = 480;
-        const REQUIRED_HEIGHT = 360;
+        const REQUIRED_WIDTH = 500;
+        const REQUIRED_HEIGHT = 500;
         const MAX_SIZE_MB = 2;
 
         let image1Valid = false;
@@ -346,7 +346,7 @@
             // If no certificates exist AND image 1 is invalid/missing
             if (!hasExistingCertificates && !image1Valid) {
                 e.preventDefault();
-                alert('Certificate Image 1 is required and must be valid (480 × 360).');
+                alert('Certificate Image 1 is required and must be valid (500 × 500).');
             }
         });
 
