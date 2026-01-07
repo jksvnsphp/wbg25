@@ -30,4 +30,4 @@ yarn-error.log
 /storage/framework/*
 /storage/logs/*
 /public/vendor/livewire/
-#/public/uploads/
+/public/uploads/
