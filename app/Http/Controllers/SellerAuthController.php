@@ -2,47 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\UserCreated;
-use App\Models\business_profile_symbol;
-use App\Models\company;
-use App\Models\company_certificate;
-use App\Models\CounterOfferQuotation;
-use App\Models\CounterOfferTender;
-use App\Models\countries;
-use App\Models\Coupon;
-use App\Models\CustomeCategory;
-use App\Models\export_region;
-use App\Models\inbox;
-use App\Models\memberPackage;
-use App\Models\MetaData;
-use App\Models\OfferQuotation;
-use App\Models\OfferTender;
-use App\Models\Order;
-use App\Models\packageService;
-use App\Models\products;
-use App\Models\ProfileMetaData;
-use App\Models\Quotation;
-use App\Models\Rating;
-use App\Models\seller_package;
-use App\Models\SellerNews;
-use App\Models\states;
-use App\Models\StoreSearchKey;
-use App\Models\Tender;
-use App\Models\User;
-use App\Models\Wallet;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\inbox;
+use App\Models\Order;
+use App\Models\Coupon;
+use App\Models\Rating;
+use App\Models\states;
+use App\Models\Tender;
+use App\Models\Wallet;
+use App\Models\company;
+use App\Models\MetaData;
+use App\Models\products;
+use App\Models\countries;
+use App\Models\Quotation;
+use App\Models\SellerNews;
+use App\Events\UserCreated;
+use App\Models\OfferTender;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\export_region;
+use App\Models\memberPackage;
+use App\Models\OfferQuotation;
+use App\Models\packageService;
+use App\Models\seller_package;
+use App\Models\StoreSearchKey;
+use App\Models\CustomeCategory;
+use App\Models\ProfileMetaData;
+use App\Services\TwilioService;
+use App\Models\CounterOfferTender;
+use Illuminate\Support\Facades\DB;
+use App\Models\company_certificate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Intervention\Image\ImageManager;
+use App\Models\CounterOfferQuotation;
+use Illuminate\Support\Facades\Cache;
+use App\Models\business_profile_symbol;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
-use App\Services\TwilioService;
-use Illuminate\Support\Facades\DB;
 
 class SellerAuthController extends Controller
 {
@@ -1174,16 +1175,17 @@ class SellerAuthController extends Controller
         $user = User::where('id', $id)->with('company')->first();
         return view('seller-vendor.micro-web-devs.create-microweb', compact('user'));
     }
+
     public function updateDomain(Request $request)
     {
         if (isset(auth()->user()->id)) {
             $request->validate([
                 'spotlight_name' => 'required|string|unique:users,ref_no,' . auth()->user()->id,
-                'spotlight_banner' => 'nullable|image',
-                'spotlight_image1' => 'nullable|image',
-                'spotlight_image2' => 'nullable|image',
-                'spotlight_image3' => 'nullable|image',
-                'spotlight_image4' => 'nullable|image',
+                'spotlight_banner' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'spotlight_image1' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'spotlight_image2' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'spotlight_image3' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'spotlight_image4' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             ]);
 
             $spotlightName = Str::slug($request->input('spotlight_name'));
@@ -1195,32 +1197,75 @@ class SellerAuthController extends Controller
             $manager = new ImageManager(['driver' => 'gd']);
 
             if (!empty($company)) {
-                for ($i = 1; $i <= 4; $i++) {
-                    if ($request->hasFile('spotlight_image' . $i)) {
-                        $file = $request->file('spotlight_image' . $i);
-                        $ext = $file->getClientOriginalExtension();
-                        $fileName = uniqid('spt_product_' . $user->id) . '.' . $ext;
-                        $manager->make($file)->resize(400, 400)->save(public_path('uploads/profile/' . $fileName));
-                        $path = public_path('/uploads/profile/' . $user->profile);
-                        if (File::exists($path)) {
-                            File::delete($path);
-                        }
-                        $company['spotlight_preview' . $i] = $fileName;
-                        $company->save();
-                    }
-                }
+                try {
+                    // 🔹 Spotlight Featured Images (500x500)
+                    for ($i = 1; $i <= 4; $i++) {
+                        $inputName = 'spotlight_image' . $i;
 
-                if ($request->hasFile('spotlight_banner')) {
-                    $file = $request->file('spotlight_banner');
-                    $ext = $file->getClientOriginalExtension();
-                    $fileName = uniqid('spotlight_banner_' . $company->id) . '.' . $ext;
-                    $manager->make($file)->resize(2520, 622)->save(public_path('uploads/profile/' . $fileName));
-                    $path = public_path('/uploads/profile/' . $company->spotlight_banner);
-                    if (File::exists($path)) {
-                        File::delete($path);
+                        if ($request->hasFile($inputName)) {
+                            $file = $request->file($inputName);
+
+                            if (!$file->isValid()) {
+                                throw new \Exception("Invalid image uploaded for {$inputName}");
+                            }
+
+                            $ext = $file->getClientOriginalExtension();
+                            $fileName = uniqid("spt_product_{$user->id}_{$i}_") . '.' . $ext;
+
+                            // Resize exactly as JS validation (500x500)
+                            $manager->make($file)
+                                ->resize(500, 500, function ($constraint) {
+                                    $constraint->upsize();
+                                })
+                                ->save(public_path("uploads/profile/{$fileName}"));
+
+                            // Delete old image (correct field)
+                            $oldImage = $company->{'spotlight_preview' . $i};
+                            if ($oldImage && File::exists(public_path("uploads/profile/{$oldImage}"))) {
+                                File::delete(public_path("uploads/profile/{$oldImage}"));
+                            }
+
+                            $company->{'spotlight_preview' . $i} = $fileName;
+                        }
                     }
-                    $company->spotlight_banner = $fileName;
+
+                    // 🔹 Spotlight Banner Image (2520x620)
+                    if ($request->hasFile('spotlight_banner')) {
+                        $file = $request->file('spotlight_banner');
+
+                        if (!$file->isValid()) {
+                            throw new \Exception('Invalid spotlight banner image');
+                        }
+
+                        $ext = $file->getClientOriginalExtension();
+                        $fileName = uniqid("spotlight_banner_{$company->id}_") . '.' . $ext;
+
+                        $manager->make($file)
+                            ->resize(2520, 620, function ($constraint) {
+                                $constraint->upsize();
+                            })
+                            ->save(public_path("uploads/profile/{$fileName}"));
+
+                        // Delete old banner
+                        if (
+                            $company->spotlight_banner &&
+                            File::exists(public_path("uploads/profile/{$company->spotlight_banner}"))
+                        ) {
+                            File::delete(public_path("uploads/profile/{$company->spotlight_banner}"));
+                        }
+
+                        $company->spotlight_banner = $fileName;
+                    }
+
+                    // Save once
                     $company->save();
+                } catch (\Exception $e) {
+                    Log::error('Spotlight Image Upload Error', [
+                        'user_id' => $user->id,
+                        'message' => $e->getMessage(),
+                    ]);
+
+                    return back()->with('error', 'Image upload failed. Please upload valid images.');
                 }
             }
 

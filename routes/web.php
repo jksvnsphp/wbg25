@@ -811,7 +811,7 @@ Route::middleware(['role:seller'])->group(function () {
       Route::get('/delete-tender-offer/{offer_id}', 'deleteTenderOffer')->name('seller.delete.tender-offer');
 
       Route::get('/success/{slug}/tender/{what?}', 'successPage')->name('seller.success.tender');
-      
+
 
       Route::get('/deal-tender/{slug}/{offer_id}/detail', 'dealTenderDetail')->name('seller.deal-detail.tender');
       Route::post('/deal/status-change-tender', 'statusDealChange')->name('seller.status.deal-tender');
