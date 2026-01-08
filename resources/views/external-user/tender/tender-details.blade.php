@@ -259,24 +259,24 @@
                         </div>
                         <div class="col-md-8">
                             <p class="fontp">
-                                <?php 
-                                 
-                                  $data=$tender->shippingData->toArray();
-                                  $data=$data[0]; ?>         
+                                <?php
+
+                                $data = $tender->shippingData->toArray();
+                                $data = $data[0]; ?>
                                 <strong
                                     class="fw-bolder">
-                                       @if ($data['is_worldwide'])
-                    {{ $data['is_worldwide']['status'] }}
-                    @else
-                    {{ implode(', ', collect($data['regions'])->pluck('name')->toArray()) }}
-                    @if (count($data['countries']))
-                    , {{ implode(', ', collect($data['countries'])->pluck('name')->toArray()) }}
-                    @endif
-                    @endif
-                                     </strong>
+                                    @if ($data['is_worldwide'])
+                                    {{ $data['is_worldwide']['status'] }}
+                                    @else
+                                    {{ implode(', ', collect($data['regions'])->pluck('name')->toArray()) }}
+                                    @if (count($data['countries']))
+                                    , {{ implode(', ', collect($data['countries'])->pluck('name')->toArray()) }}
+                                    @endif
+                                    @endif
+                                </strong>
 
                             </p>
-                               
+
                             <p class="text-muted" style="font-size: 12px">
                                 Located in:
                                 {{ isset($tender->vendor->city) ? $tender->vendor->city : '' }},{{ isset($tender->state->name) ? $tender->state->name : '' }},{{ isset($tender->country->name) ? $tender->country->name : '' }}
@@ -284,28 +284,28 @@
                             </p>
                         </div>
                     </div>
-                     <div class="row mb-3">
+                    <div class="row mb-3">
                         <div class="col-md-4">
                             <p class="fw-bolder fontp">Shipping Cost:</p>
                         </div>
                         <div class="col-md-8">
                             <p class="fontp">
-                                
-                                <strong class="fw-semibold"> 
-                                     @if ($data['is_worldwide'])
-                    {{ $data['is_worldwide']['status'] }}
-                    @else
-                    {{ implode(', ', collect($data['regions'])->pluck('cost')->toArray()) }}
-                    @if (count($data['countries']))
-                    , {{ implode(', ', collect($data['countries'])->pluck('cost')->toArray()) }}
-                    @endif
-                    @endif
-                    </strong>
+
+                                <strong class="fw-semibold">
+                                    @if ($data['is_worldwide'])
+                                    {{ $data['is_worldwide']['status'] }}
+                                    @else
+                                    {{ implode(', ', collect($data['regions'])->pluck('cost')->toArray()) }}
+                                    @if (count($data['countries']))
+                                    , {{ implode(', ', collect($data['countries'])->pluck('cost')->toArray()) }}
+                                    @endif
+                                    @endif
+                                </strong>
                             </p>
                         </div>
                     </div>
 
-                     <div class="row mb-3">
+                    <div class="row mb-3">
                         <div class="col-md-4">
                             <p class="fw-bolder fontp">Shipping Partner:</p>
                         </div>
@@ -391,12 +391,17 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
-
 </section>
 @include('external-user.inc-parts.listCard')
+
+<div class="container-fluid my-3">
+    <a href="{{ url()->previous() }}" class="btn btn-primary">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+</div>
+
 @endsection
 @section('custom-js-external')
 <script>

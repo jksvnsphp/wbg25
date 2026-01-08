@@ -1784,57 +1784,6 @@ class SellerProductController extends Controller
 
             $products = collect();
 
-            // foreach ($allProducts as $product) {
-
-            //     $soldQty = OrderItem::where('product_id', $product->id)
-            //         ->whereHas('order', function ($query) {
-            //             $query->where('payment_status', '!=', 'processing');
-            //         })
-            //         ->sum('quantity');
-
-            //     $soldPrice = OrderItem::where('product_id', $product->id)
-            //         ->whereHas('order', function ($query) {
-            //             $query->where('payment_status', '!=', 'processing');
-            //         })
-            //         ->sum('total_price');
-
-            //     $totalQty = 0;
-
-            //     $variants = is_string($product->variants) ? json_decode($product->variants, true) : $product->variants;
-
-            //     $variants = is_array($variants) ? $variants : [];
-
-            //     foreach ($variants as $variant) {
-            //         $totalQty += isset($variant['quantity'])
-            //             ? (int) $variant['quantity']
-            //             : 0;
-            //     }
-
-            //     $remainingQty = $totalQty - $soldQty;
-
-            //     // Attach values (for view)
-            //     $product->sold = $soldQty;
-            //     $product->total_qty = $totalQty;
-            //     $product->remaining_qty = $remainingQty;
-
-            //     /**
-            //      * FINAL LOGIC
-            //      * remaining_qty == 0 → INACTIVE
-            //      * remaining_qty > 0  → ACTIVE
-            //      */
-            //     if ($status === 1) {
-            //         // ACTIVE
-            //         if ($remainingQty > 0) {
-            //             $products->push($product);
-            //         }
-            //     } else {
-            //         // INACTIVE
-            //         if ($remainingQty === 0) {
-            //             $products->push($product);
-            //         }
-            //     }
-            // }
-
             foreach ($allProducts as $product) {
 
                 /**
