@@ -189,8 +189,9 @@ public function payWithPayPal()
     else {
 
         Session::put('payment_temp.payment_mode', 'FREE');
-
+ 
         // Redirect directly to PayPal success (no payment)
+       // die('Feee package debug');
         return redirect()->route('paypal.free.success');
     }
 }
@@ -293,17 +294,27 @@ public function paypalStatus(Request $request)
         // 5. BUSINESS SYMBOL
         //--------------------------------
         $this->functionHandleBusinessSymbole($paymentTemp['package_type'], $user->id);
-        $type ='Welcome Mail - Silver Package';
+        $type ='welcome_mail__silver_package';
          //--------------------------------
         if($package_type=='gold'){    
-            $type = 'Welcome Mail - Gold Package';
+            $type = 'welcome_mail__gold_package';
         }else if($package_type=='silver'){    
-            $type = 'Welcome Mail - Silver Package';    
+            $type = 'welcome_mail__silver_package';    
         }   else if($package_type=='platinum'){    
-            $type = 'Welcome Mail - Platinum Package';    
+            $type = 'welcome_mail__platinum_package';    
         }
 
-        sendWelcomeMail($user->id, $type,$signup['password'] = null);
+        //sendWelcomeMail($user->id, $type,$signup['password'] = null);
+
+        sendDynamicMail(
+            $user->id,
+            $type, // slug from email_templates
+            [
+                '[User Name]' =>$user->first_name, 
+                '[Email]'     =>$user->email,
+                '[Password]'  => $signup['password']
+            ]
+        );
         //--------------------------------
         // 6. LOGIN USER
         //--------------------------------
@@ -323,9 +334,9 @@ public function paypalStatus(Request $request)
 
     } catch (\Exception $e) {
         DB::rollback();
-		dd($e->getMessage(), $e->getTraceAsString());
+		//dd($e->getMessage(), $e->getTraceAsString());
 		//echo 'error';
-        //return redirect()->route('home')->with('error', $e->getMessage());
+        return redirect()->route('home')->with('error', $e->getMessage());
     }
 
 	
@@ -339,9 +350,7 @@ public function paypalFreeSuccess()
 {
     $signup = Session::get('signup_data');
     $paymentTemp = Session::get('payment_temp');
-    // echo "<pre/>";
-    // print_r($signup);
-    // print_r($paymentTemp);die;
+    
 
     if (!$signup || !$paymentTemp) {
         return redirect()->route('register')->with('error', 'Session expired. Please register again.');
@@ -351,10 +360,13 @@ public function paypalFreeSuccess()
     $paymentId = strtoupper($paymentTemp['payment_mode']) . '_' . uniqid();
 
       $this->finalizeUserAndPackage($signup, $paymentTemp, $paymentId);
+      
        return redirect()->route('home')->with('success', 'Account created successfully.');
 }
 private function finalizeUserAndPackage($signup, $paymentTemp, $paymentId)
 {
+
+    
     DB::beginTransaction();
 
     try {
@@ -363,7 +375,7 @@ private function finalizeUserAndPackage($signup, $paymentTemp, $paymentId)
         //--------------------------------
         $user = new User();
         $user->first_name = $signup['first_name'];
-        $user->last_name = $signup['last_name'];
+        //$user->last_name = $signup['first_name'];
         $user->email = $signup['email'];
         $user->phone = $signup['phone'];
         $user->password = bcrypt($signup['password']);
@@ -377,6 +389,7 @@ private function finalizeUserAndPackage($signup, $paymentTemp, $paymentId)
         $user->ref_no = uniqid(true);
         $user->isComplete = 1;
         $user->save();
+         
 
         //--------------------------------
         // 2. CREATE COMPANY
@@ -424,7 +437,17 @@ private function finalizeUserAndPackage($signup, $paymentTemp, $paymentId)
         // 5. BUSINESS SYMBOL
         //--------------------------------
         $this->functionHandleBusinessSymbole($paymentTemp['package_type'], $user->id);
-        sendBronzeWelcomeMail($user->id, $signup['password'] = null);
+        //sendBronzeWelcomeMail($user->id, $signup['password'] = null);
+     
+        sendDynamicMail(
+            $user->id,
+            'welcome_mail__bronce_package', // slug from email_templates
+            [
+                '[User Name]' =>$user->first_name, 
+                '[Email]'     =>$user->email,
+                '[Password]'  => $signup['password']
+            ]
+        );
 
         //--------------------------------
         // 6. LOGIN USER
@@ -445,7 +468,12 @@ private function finalizeUserAndPackage($signup, $paymentTemp, $paymentId)
 
     } catch (\Exception $e) {
         DB::rollback();
-        //return redirect()->route('home')->with('error', $e->getMessage());
+         
+		//dd($e->getMessage(), $e->getTraceAsString());
+    
+      /// print_r($e->getMessage());die;
+        
+        return redirect()->route('home')->with('error', $e->getMessage());
     }
 }
 
