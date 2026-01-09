@@ -446,7 +446,7 @@ if(isset($tsupplier->sellerPackage[0]->package_id)){
                      @endif"
                  class="card-img-top" style="height: 8rem; width: 8rem" alt="" />
         </div>
-        <div class="card-body px-2">
+        <div class="card-body px-2 text-center text">
             <p>{{ $tsupplier->company->name ?? $tsupplier->first_name }}</p>
             <span class="text-secondary mt-2 d-block fw-bold fs-6">
                 {{ $tsupplier->total_sold }}+ Products sold
@@ -612,13 +612,17 @@ if(isset($tsupplier->sellerPackage[0]->package_id)){
                                             <div class="card-body">
                                                 <p class="product-title">
                                                     {{ $BulkProduct->name }}
+                                                    <br>
+                                                     Price: $
+
+                                                    {{ number_format($BulkProduct->minPrice, 2) }}
                                                 </p>
-                                                <span class="text-primary product-price d-block text-center">
+                                                <!-- <span class="text-primary product-price d-block text-center">
                                                     Price: $
 
                                                     {{ number_format($BulkProduct->minPrice, 2) }}
 
-                                                </span>
+                                                </span> -->
                                             </div>
                                         </a>
                                     @endforeach
