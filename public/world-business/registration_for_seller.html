@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WBG</title>
+  <!-- favicon here -->
+  <link rel="shortcut icon" href="images/logos/logo.png" />
+  <!-- bootstrap 5 css cdn here -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+
+  <!-- custome css file link here -->
+  <link rel="stylesheet" href="./assets/styles/style.css" />
+  <!-- font awesome css cdn link here -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        {
+          pageLanguage: "en",
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+        },
+        "google_translate_element"
+      );
+    }
+  </script>
+  <script type="text/javascript"
+    src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <style>
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .goog-te-gadget-simple {
+      background-color: #fff;
+      border: 1px solid #ddd !important;
+      display: inline-block;
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+      cursor: pointer;
+    }
+
+    .goog-te-gadget-icon {
+      display: none !important;
+    }
+
+    .nav-pills .active {
+      background-color: #ff7519 !important;
+      color: white !important;
+    }
+
+    .nav-pills .nav-item {
+      margin-right: 10px !important;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- header section start here -->
+  <header class="container-fluid px-0">
+    <div class="row px-2">
+      <div class="col-xl-2 d-xl-block d-none">
+        <a class="navbar-brand" href="./index.html">
+          <img
+            class="mt-2"
+            src="./images/logos/logo.png"
+            style="height: 75%; width: 100%"
+            alt=""
+          />
+        </a>
+      </div>
+      <div class="col-xl-10">
+        <nav class="navbar navbar-expand-xl p-0 bg-white">
+          <a class="navbar-brand d-xl-none d-block" href="./index.html">
+            <img
+              src="./images/logos/logo.png"
+              width="140"
+              height="70"
+              alt=""
+            />
+          </a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav py-1 navbar-left">
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  For Buyers
+                </a>
+                <ul class="dropdown-menu p-3">
+                  
+                  <li>
+                    <a
+                      class="dropdown-item fw-bolder mx-0 px-0"
+                      href="./register-vendor.html"
+                      >Free Registration</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item mx-0 px-0" href="./get-quote.html"
+                      >Get Quote</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item mx-0 px-0"
+                      href="./all-vendors.html"
+                      >Supplier Listing</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item mx-0 px-0" href="./product.html"
+                      >Product Listing</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item mx-0 px-0"
+                      href="./tender-home.html"
+                      >Tender Listing</a
+                    >
+                  </li>
+                 
+                </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  For Suppliers
+                </a>
+                <ul class="dropdown-menu p-2 pl-3">
+                  <li>
+                    <a
+                      class="dropdown-item fw-bolder mx-0 px-0"
+                      href="./join-member-package.html"
+                      >Join Member Package</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item mx-0 px-0"
+                      href="./source-pro.html"
+                      >Source PRO</a
+                    >
+                  </li>
+                  
+                  <li>
+                    <a
+                      class="dropdown-item mx-0 px-0"
+                      href="./tender-home.html"
+                      >Buy Tender List</a
+                    >
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item ">
+                <a
+                  class="nav-link "
+                  href="./help-and-community.html"
+                >
+                  Help & Community
+                </a>
+                
+              </li>
+            </ul>
+            <ul class="navbar-nav py-1 navbar-right">
+              <li class="nav-item">
+                <a href="" class="nav-link">All Categories | </a>
+              </li>
+              <li class="nav-item">
+                <a href="./all-vendors.html" class="nav-link">Suppliers |</a>
+              </li>
+              <li class="nav-item">
+                <a href="./product.html" class="nav-link">Products |</a>
+              </li>
+              <li class="nav-item">
+                <a href="./tender-home.html" class="nav-link">Tenders</a>
+              </li>
+            </ul>
+            <div class="navbar-nav py-1 d-flex justify-content-center">
+              <a href="" style="height: 3rem">
+                <img style="height: 100%" src="./images/cartl.jpg" alt="" />
+              </a>
+            </div>
+            <ul class="navbar-nav py-1 navbar-right">
+              <li>
+                <div id="google_translate_element"></div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+        <div class="row d-xl-flex d-none align-items-center mt-0 mb-3">
+          <div class="col-md-6 mt-2">
+            <div class="row">
+              <!-- Search -->
+              <div class="col-12">
+                <div class="form-search d-flex">
+                  <select name="category" id="category">
+                    <option value="Option 1">Option 1</option>
+                    <option value="Option 2">Option 2</option>
+                    <option value="Option 3">Option 3</option>
+                  </select>
+                  <input
+                    type="search"
+                    placeholder="Search your requirement..."
+                  />
+                  <button
+                    type="submit"
+                    class="btn btn-primary d-flex justify-content-around align-items-center"
+                  >
+                    <i class="fa fa-search me-md-2 me-0"></i>
+                    <span class="d-md-block d-none">Search</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mt-2">
+            <div class="row d-flex align-items-center justify-content-around">
+              <div
+                class="col-md-4 mt-md-0 mt-3 d-flex justify-content-center log-profile"
+              >
+                <div class="d-flex align-items-center">
+                  <!--<i class="fa-regular fs-1 fa-user" style="color: #8f8e8e;"></i>-->
+                  <div class="profile">
+                    <img src="./images/signin.jpg" alt="" />
+                  </div>
+                  <div class="info-log">
+                    <h6><a href="./login.html">Sign In</a></h6>
+                    <p>
+                      <a
+                        href="./join-member-package.html"
+                        class="pt-2 d-block"
+                        >Join Free</a
+                      >
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="col-md-8 mt-md-0 mt-3 block-btn d-flex justify-content-around align-items-center"
+              >
+                <a
+                  href="./benefits-for-buyers.html"
+                  class="btn hbtn btn-secondary px-4"
+                  >Get Quote</a
+                >
+                <a href="./source-pro.html" class="btn hbtn btn-primary px-4"
+                  >Source PRO</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-12">
+        <div class="row d-xl-none d-flex align-items-center my-4 mt-0">
+          <div class="col-xl-6 mt-3">
+            <div class="row">
+              <!-- Search -->
+              <div class="col-xl-12">
+                <div class="form-search d-flex">
+                  <select name="category" id="category">
+                    <option value="Option 1">Option 1</option>
+                    <option value="Option 2">Option 2</option>
+                    <option value="Option 3">Option 3</option>
+                  </select>
+                  <input
+                    type="search"
+                    placeholder="Search your requirement..."
+                  />
+                  <button
+                    type="submit"
+                    class="btn btn-primary d-flex justify-content-around align-items-center"
+                  >
+                    <i class="fa fa-search me-md-2 me-0"></i>
+                    <span class="d-md-block d-none">Search</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-6 mt-3">
+            <div class="row d-flex align-items-center justify-content-around">
+              <div
+                class="col-md-4 mt-md-0 mt-3 d-flex justify-content-center log-profile"
+              >
+                <div class="d-flex align-items-center">
+                  <!-- <i class="fa-regular fs-1 fa-user" style="color: #8f8e8e;"></i> -->
+                  <div class="profile">
+                    <img src="./images/signin.jpg" alt="" />
+                  </div>
+                  <div class="info-log">
+                    <h6><a href="./login.html">Sign In</a></h6>
+                    <p>
+                      <a
+                        href="./join-member-package.html"
+                        class="pt-2 d-block"
+                        >Join Free</a
+                      >
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="col-md-8 mt-md-0 mt-3 block-btn d-flex justify-content-around align-items-center"
+              >
+                <a
+                  href="./benefits-for-buyers.html"
+                  class="btn hbtn btn-secondary px-4"
+                  >Get Quote</a
+                >
+                <a href="./source-pro.html" class="btn hbtn btn-primary px-4"
+                  >Source PRO</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+ 
+  <!-- header section end here -->
+
+  <!-- information section -->
+  <section class="container-fluid">
+    <div class="row">
+      <div class="col-md-12 mt-2 bg-primary py-3">
+        <div class="d-flex">
+          <h6 class="fs-5 text-light py-2 px-3">Registration form for seller</h6>
+          
+        </div>
+
+        <div class="card rounded-0">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="" class="form-label">Company Name</label>
+                  <input type="text" class="form-control" placeholder="Enter your company name" />
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <label for="" class="form-label">Contact person </label>
+                      <input type="text" class="form-control" placeholder="Enter your first name" />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <label for="" class="form-label"> </label>
+                      <input type="text" class="form-control mt-2" placeholder="Enter your last name" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="" class="form-label">Email Address</label>
+                  <input type="email" class="form-control" placeholder="Enter your email address" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="" class="form-label">Mobile</label>
+                  <input type="tel" class="form-control" placeholder="Enter your mobile number" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group mb-3">
+                  <label for="" class="form-label">Company Registration Year</label>
+                  <select class="form-select" name="registration_no" id="registration_no"></select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group mb-3">
+                  <label for="" class="form-label">Key Personnal</label>
+                  <select class="form-select" name="key_personnal" id="key_personnal"></select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group mb-3">
+                  <label for="" class="form-label">Business Type</label>
+                  <select class="form-select" name="business_type" id="business_type"></select>
+                </div>
+              </div>
+              <h6 class="mt-3 fw-bold">Certification</h6>
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-2">
+                    <ul class="mx-0 px-0">
+                      <li class="d-flex">
+                        <input class="me-3" type="checkbox" name="" id="" />
+                        HACCP
+                      </li>
+                      <li class="d-flex">
+                        <input class="me-3" type="checkbox" name="" id="" />
+                        ISO 9001:2000
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="col-md-2">
+                    <ul class="mx-0 px-0">
+                      <li class="d-flex">
+                        <input class="me-3" type="checkbox" name="" id="" />
+                        ISO 9001:2008
+                      </li>
+                      <li class="d-flex">
+                        <input class="me-3" type="checkbox" name="" id="" />
+                        QS-9000
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="col-md-2">
+                    <ul class="mx-0 px-0">
+                      <li class="d-flex">
+                        <input class="me-3" type="checkbox" name="" id="" />
+                        ISO 14001:2004
+                      </li>
+                      <li class="d-flex">
+                        <input class="me-3" type="checkbox" name="" id="" />
+                        ISO/TS 16949
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="col-md-2">
+                    <ul class="mx-0 px-0">
+                      <li class="d-flex">
+                        <input class="me-3" type="checkbox" name="" id="" />
+                        SA8000
+                      </li>
+                      <li class="d-flex">
+                        <input class="me-3" type="checkbox" name="" id="" />
+                        ISO 17799
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="col-md-2">
+                    <ul class="mx-0 px-0">
+                      <li class="d-flex">
+                        <input class="me-3" type="checkbox" name="" id="" />
+                        OHSAS 18001
+                      </li>
+                      <li class="d-flex">
+                        <input class="me-3" type="checkbox" name="" id="" />
+                        TL 9000
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="col-md-2">
+                    <ul class="mx-0 px-0">
+                      <li class="d-flex">
+                        <input class="me-3" type="checkbox" name="" id="" />
+                        Other
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="form-group mb-3">
+                  <label for="" class="form-label">Country</label>
+                  <select name="country" id="country" class="form-select">
+                    <option value="">Select Country</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group mb-3">
+                  <label for="" class="form-label">State</label>
+                  <select name="state" id="state" class="form-select">
+                    <option value="">Select State</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group mb-3">
+                  <label for="" class="form-label">City</label>
+                  <select name="city" id="city" class="form-select">
+                    <option value="">Select city</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group mb-3">
+                  <label for="" class="form-label">ZIP Code</label>
+                  <input type="text" class="form-control" placeholder="Enter Zip Code" />
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group mb-3">
+                  <label for="" class="form-label">Street</label>
+                  <input type="text" class="form-control" placeholder="Enter street name" />
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group mb-3">
+                  <label for="" class="form-label">House Number</label>
+                  <input type="number" class="form-control" placeholder="House Number" />
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="form-group mb-2">
+                      <label for="" class="form-label">Company Category 1</label>
+                      <select name="company_category_1" id="" class="form-select">
+                        <option value="">Select Category</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group mb-2">
+                      <label for="" class="form-label">Company Category 2</label>
+                      <select name="company_category_2" id="" class="form-select">
+                        <option value="">Select Category</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group mb-2">
+                      <label for="" class="form-label">Company Category 3</label>
+                      <select name="company_category_3" id="" class="form-select">
+                        <option value="">Select Category</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group mb-2">
+                      <label for="" class="form-label">Company Category 4</label>
+                      <select name="company_category_4" id="" class="form-select">
+                        <option value="">Select Category</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <button class="btn btn-secondary mt-3">Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="card shadow border-top-0 rounded-0 py-4 mb-4"></div>
+  <!-- start of footer section -->
+  <section class="container-fluid px-0 mx-0">
+    <div class="card mx-0 py-4 pt-0 px-3 px-md-5 rounded-0">
+      <div class="row py-2 pt-1">
+        <div class="col-md-3 mt-3 footer_menu">
+          <h5 class="text-every fs-5 fw-bold">Information</h5>
+          <ul>
+            <li><a href="./index.html">Home</a></li>
+            <li><a href="">Privacy Policy</a></li>
+            <li><a href="">Data Protection</a></li>
+            <li><a href="#">Imprint</a></li>
+            <li><a href="">Terms & Conditions</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mt-3 footer_menu">
+          <h5 class="text-every fs-5 fw-bold">Customer Service </h5>
+          <ul>
+            <li><a href="./help-and-community.html">Help & Community</a></li>
+            <li><a href="./secure-payment.html">Secure Payment</a></li>
+            <li><a href="#">Support</a></li>
+
+          </ul>
+        </div>
+        <div class="col-md-3 mt-3 footer_menu">
+          <h5 class="text-every fs-5 fw-bold">Buy on WBG24.com</h5>
+          <ul>
+            <li><a href="">Buy Product</a></li>
+            <li><a href="">Buy Tender</a></li>
+            <li><a href="./get-quote.html">Get Quote</a></li>
+            <li><a href="./how-to-buy.html">How to Buy</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mt-3 footer_menu">
+          <h5 class="text-every fs-5 fw-bold">Sell on WBG24.com</h5>
+          <ul>
+            <li><a href="">Upload Product</a></li>
+            <li><a href="">Upload Tender</a></li>
+            <li><a href="./source-pro-inner.html">Send Quote</a></li>
+            
+            <li><a href="./how-to-sell.html">How to Sell</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div
+      class="row justify-content-center"
+      style="border-top: 1px solid #ddd"
+    >
+      <div class="col-md-11">
+        <div class="footer_sec pt-4">
+          <a href="">Apparel Garments | </a>
+          <a href="">Arts Crafts | </a>
+          <a href="">Automobile | </a>
+          <a href="">Ayurvedic Herbal Products | </a>
+          <a href="">Bicycles Rickshaws | </a>
+        </div>
+        <hr />
+        <div class="footer_sec py-3 pt-1">
+          <a href="">Advertisements With Us</a> | <a href=""> Job</a> |
+          <a href=""> Franchisee</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- last footer -->
+  <footer class="container-fluid px-0">
+    <div class="row py-2 px-4">
+      <div class="col-md-3"></div>
+      <div class="col-md-6 text-center">
+        <a href="http://wbg24.com">
+          <!-- write copyright message here -->
+          Copyright &copy; 2024 World Business Guide - www.wbg24.com . All Rights Reserved
+        </a>
+      </div>
+      <div class="col-md-3 text-md-end text-center">
+        <a href="" class="fs-5 text-primary me-2"><i class="fa-brands fa-square-facebook"></i></a>
+        <a href="" class="fs-5 text-primary"><i class="fa-brands fa-square-instagram"></i></a>
+      </div>
+    </div>
+  </footer>
+  <!-- end of footer -->
+
+  <!-- jquery cdn here -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <!-- bootstrap 5 cdn here -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- mega hover menu plugin here -->
+  <script src="./assets/plugins/js/jquery.menu-aim.js"></script>
+  <script src="./assets/plugins/js/main.js"></script>
+
+  <!-- custome scripts -->
+</body>
+
+</html>

@@ -283,6 +283,18 @@ class SellerTenderController extends Controller
                 $setting->pincode = $request->zip;
                 $setting->save();
                 $url = route('seller.success.tender', [$tender->slug, 'add']);
+                $seller = User::find($tender->user_id);
+
+                    sendDynamicMail(
+                        $seller->id,
+                        'confirmation_of_your_tender_listing', // slug from email_templates
+                        [
+                            '[User Name]'     => $seller->first_name,
+                            '[Tender]'          => $tender->name,
+                            '[Title of the Listing]'     => $tender->name,
+                            '[Listing Link]'      =>  '',
+                        ]
+                    );
                 return response()->json(['success' => true, 'message' => 'Tender publish successfully', 'url' => $url], 200);
             }
         } else {
