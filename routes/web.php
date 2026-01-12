@@ -121,7 +121,6 @@ Route::controller(UIProductVideoShowController::class)->group(function () {
    Route::get('/product-videos', 'index')->name('all.product-video.show');
 });
 Route::controller(UINewsController::class)->group(function () {
-
    Route::get('/news', 'index')->name('all.news.show');
 
    Route::get('/news/{slug}', 'readNews')
