@@ -227,6 +227,19 @@ class UserQuotationController extends Controller
                     }
                 }
                 $quotation->save();
+
+                //send email to user
+                $seller = auth()->user();
+                sendDynamicMail(
+                    $seller->id,
+                    'confirmation_of_your_rfq_listing', // slug from email_templates
+                    [ 
+                        '[User Name]' => $seller->first_name,
+                        '[RFQ]'     => 'FRQ',
+                        '[Title of the Listing]'  => $quotation->product_service,
+                        '[Listing Link]'    =>  route('myquotations.show' )
+                    ]
+                );
                 session()->flash('success', 'Congratulation, Your quotation has been published and online now!');
                 if (auth()->user()->account_type == "seller") {
                     return redirect()->route('seller.success.offer.tender', $quotation->slug)->with(['alert-type' => 'success', 'message' => 'Successfully saved your data!']);

@@ -730,31 +730,58 @@ class UICheckoutController extends Controller
     // 📨 Send confirmation emails
     try {
         // Buyer email
-        Mail::send('mails.order-confirmation-buyer', [
-            'buyer_name' => $buyer->first_name,
-            'order_id' => $order->order_number,
-            'product_name' => $carts->first()->product->name ?? 'Product',
-            'quantity' => $carts->sum('quantity'),
-            'seller_name' => $vendor->first_name ?? 'Seller',
-            'delivery_date' => now()->addDays(7)->format('d M Y'),
-        ], function ($message) use ($buyer) {
-            $message->to($buyer->email)
-                ->subject('Order Confirmed – Thank You for Your Purchase!');
-        });
+        // Mail::send('mails.order-confirmation-buyer', [
+        //     'buyer_name' => $buyer->first_name,
+        //     'order_id' => $order->order_number,
+        //     'product_name' => $carts->first()->product->name ?? 'Product',
+        //     'quantity' => $carts->sum('quantity'),
+        //     'seller_name' => $vendor->first_name ?? 'Seller',
+        //     'delivery_date' => now()->addDays(7)->format('d M Y'),
+        // ], function ($message) use ($buyer) {
+        //     $message->to($buyer->email)
+        //         ->subject('Order Confirmed – Thank You for Your Purchase!');
+        // });
+         //$seller = getUserDataByEmail($buyer->email);
+                sendDynamicMail(
+                    $buyer->id,
+                    'your_payment_is_received_–_order_being_processed_(for_buyer)', // slug from email_templates
+                    [ 
+                        '[Buyer Name]' => $buyer->first_name,
+                        '[Product Name]' => $carts->first()->product->name ?? 'Product', 
+                        '[Quantity]' => $carts->sum('quantity'),
+                        '[Seller Name]'    =>  $vendor->first_name ?? 'Seller',
+                        '[Shipping Date]'   => now()->addDays(7)->format('d M Y'),
+                        '[Order ID]'    =>  $order->order_number
+                    ]
+                );
 
         // Seller email
-        Mail::send('mails.order-confirmation-seller', [
-            'seller_name' => $vendor->first_name,
-            'buyer_name' => $buyer->first_name,
-            'order_id' => $order->order_number,
-            'product_name' => $carts->first()->product->name ?? 'Product',
-            'quantity' => $carts->sum('quantity'),
-            'buyer_address' => $formattedAddress,
-            'dashboard_link' => route('seller.orders.index'),
-        ], function ($message) use ($vendor) {
-            $message->to($vendor->email)
-                ->subject('New Order Received – Process Now!');
-        });
+        // Mail::send('mails.order-confirmation-seller', [
+        //     'seller_name' => $vendor->first_name,
+        //     'buyer_name' => $buyer->first_name,
+        //     'order_id' => $order->order_number,
+        //     'product_name' => $carts->first()->product->name ?? 'Product',
+        //     'quantity' => $carts->sum('quantity'),
+        //     'buyer_address' => $formattedAddress,
+        //     'dashboard_link' => route('seller.orders.index'),
+        // ], function ($message) use ($vendor) {
+        //     $message->to($vendor->email)
+        //         ->subject('New Order Received – Process Now!');
+        // });
+
+          sendDynamicMail(
+                    $vendor->id,
+                    'payment_received_–_order_processing_(for_seller)', // slug from email_templates
+                    [ 
+                        '[Buyer Name]' => $buyer->first_name,
+                        '[Product Name]' => $carts->first()->product->name ?? 'Product', 
+                        '[Quantity]' => $carts->sum('quantity'),
+                        '[Seller Name]'    =>  $vendor->first_name ?? 'Seller',
+                        '[Buyer Address]'   => $formattedAddress,
+                        '[Seller Dashboard Link]'   => route('seller.orders.index'),
+                        '[Order ID]'    =>  $order->order_number
+                    ]
+                );
     } catch (\Exception $e) {
         \Log::error('Order email send failed: ' . $e->getMessage());
     }
