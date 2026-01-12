@@ -21,12 +21,12 @@ ul{padding-left:18px;}
 <div class="email-container">
 {!! $body !!}
 
-<p>For help: <a href="mailto:Support@WorldBusinessGuide.com">Support@WorldBusinessGuide.com</a></p>
+<!-- <p>For help: <a href="mailto:Support@WorldBusinessGuide.com">Support@WorldBusinessGuide.com</a></p>
 
 <p>With Best Regards,<br><strong>WBG24 Team</strong></p>
  
 
-<div class="footer">© {{ date('Y') }} WBG24. All rights reserved.</div>
+<div class="footer">© {{ date('Y') }} WBG24. All rights reserved.</div> -->
 </div>
 </body>
 </html>

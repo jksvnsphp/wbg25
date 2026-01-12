@@ -145,7 +145,7 @@ class SourceProController extends Controller
     
     public function sourceProDetail($slug)
     {
-        $quotation = Quotation::where('slug', $slug)
+        $quotation = Quotation::where('slug', $slug) 
             ->where('status', 'pending')
             ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
             ->with('vendor')

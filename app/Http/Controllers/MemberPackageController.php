@@ -435,6 +435,22 @@ class MemberPackageController extends Controller
                 $wallet->save();
             }
             $this->functionHandleBusinessSymbole($packageData->type, $user->id);
+        // Send dynamic email to user
+
+        sendDynamicMail(
+            $user->id,
+            'membership_package', // slug from email_templates
+            [
+                '[User’s Name]' =>$user->first_name, 
+                '[Email]'     =>$user->email,
+                '[Upgraded Plan Name]'  => $packageData->name,
+                '[Date]'    => date('Y-m-d'),
+                '[E-Date]'   => date('Y-m-d', strtotime('+360 days')),
+                '[Key Benefits of the Upgraded Plan]'=>' - Post up to '.$packageData->productLimit.' products - Access to '.$packageData->tradeLeadsInclude
+
+            ]
+        );
+
             session()->flash('success', 'Congratulation, Your account has been successfully upgraded!');
             $url = route('seller.success.gallery');
             return redirect($url);

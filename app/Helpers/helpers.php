@@ -1233,15 +1233,21 @@ if (!function_exists('sendDynamicMail')) {
         }
 
         // Replace placeholders dynamically
+        $subject = str_replace(
+            array_keys($placeholders),
+            array_values($placeholders),
+            $template->subject
+        );
+
         $body = str_replace(
             array_keys($placeholders),
             array_values($placeholders),
             $template->body
         );
-
         // Send email
+        
         Mail::to($user->email)->send(
-            new DynamicMail($template->subject, $body)
+            new DynamicMail($subject, $body)
         );
 
         return true;

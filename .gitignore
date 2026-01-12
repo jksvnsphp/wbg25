@@ -2,7 +2,7 @@
 /node_modules
 /public/build
 /public/hot
-/public/world-business
+#/public/world-business
 /public/dashboard
 /public/vendor
 /public/storage
@@ -30,4 +30,4 @@ yarn-error.log
 /storage/framework/*
 /storage/logs/*
 /public/vendor/livewire/
-/public/uploads/
+#/public/uploads/
