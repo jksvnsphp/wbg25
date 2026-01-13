@@ -453,7 +453,7 @@
                      @endif"
                                 class="card-img-top" style="height: 8rem; width: 8rem" alt="" />
                         </div>
-                        <div class="card-body px-2">
+                        <div class="card-body px-2 text-center">
                             <p>{{ $tsupplier->company->name ?? $tsupplier->first_name }}</p>
                             <span class="text-secondary mt-2 d-block fw-bold fs-6">
                                 {{ $tsupplier->total_sold }}+ Products sold
