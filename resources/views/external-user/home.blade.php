@@ -429,10 +429,9 @@
                     @foreach ($top_suppliers as $tsupplier)
 
                     <?php
-                    //echo '<pre>';
-                    //print_r($tsupplier);						
-                    //echo '</pre>';
-
+                    // echo '<pre>';
+                    // print_r($tsupplier);
+                    // echo '</pre>';
                     ?>
                     @php
                     if(isset($tsupplier->sellerPackage[0]->package_id)){
@@ -443,7 +442,7 @@
                     @endphp
 
                     @if(in_array($pktype, ['Platinum Package', 'Gold Package']))
-                    <a href="{{ route('seller.profile.view', $tsupplier->company->slug) }}"
+                    <a href="{{ route('seller.profile.view', $tsupplier->ref_no) }}"
                         class="card p-2 border-0">
                         <div class="w-100 d-flex justify-content-center">
                             <img src="@if(isset($tsupplier->company->company_logo) && $tsupplier->company->company_logo != '')
