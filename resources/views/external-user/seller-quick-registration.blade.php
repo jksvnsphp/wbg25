@@ -1,9 +1,10 @@
 @extends('external-user.external-frame')
 
 @section('external-main-content')
-<section class="container-fluid py-3">
+<section class="container-fluid seller-hero">
+
     <div class="row justify-content-center">
-        <div class="col-md-11 login_forma">
+        <div class="col-md-11 login_forma_m">
             <div class="row my-3 justify-content-end">
                 <div class="col-md-6 mt-3 buyer_rg">
                     <div class="card shadow rounded-0" style="max-height: 29rem">
