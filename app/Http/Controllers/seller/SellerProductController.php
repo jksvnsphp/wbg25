@@ -688,6 +688,7 @@ class SellerProductController extends Controller
                             '[Product Link]'    => $url
                         ]
                     );
+                    
                 // here need to send message for success
                
                 return response()->json(['success' => true, 'message' => 'Product added successfully', 'url' => $url], 200);
