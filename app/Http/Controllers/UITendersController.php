@@ -180,7 +180,7 @@ class UITendersController extends Controller
             $hours = $now->copy()->addDays($days)->diffInHours($expiryDate, false);
 
             // Final format
-            $tender->expiry_date = $expiryDate->format('d-M-Y') . " | {$days}d {$hours}h";
+            $tender->expiry_date = "{$days}d {$hours}h";
             $tender->is_expired = now()->greaterThanOrEqualTo($expiryDate);
         }
 

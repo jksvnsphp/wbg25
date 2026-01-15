@@ -31,8 +31,8 @@
                     @php
                     $heading = match(Route::currentRouteName()) {
                     'seller.deal.offer.tender' => 'All Deals On Tender',
-                    'seller.my-deal.offer.tender' => 'My Activity Deals',
-                    'seller.supplier-deal.offer.tender' => 'Supplier Deals',
+                    'seller.my-deal.offer.tender' => 'My Tender Deals',
+                    'seller.supplier-deal.offer.tender' => 'Suplliers Tender Deals',
                     default => 'My Deals On Tender',
                     };
                     @endphp
@@ -128,6 +128,7 @@
                                                 class="btn btn-primary btn-sm contact-btn">
                                                 Buyer Contact
                                             </button>
+
                                             @endif
 
                                         </div>

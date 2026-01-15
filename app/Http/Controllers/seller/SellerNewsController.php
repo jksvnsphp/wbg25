@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\ImageManager;
 use Carbon\Carbon;
+use App\Models\bank_details;
 
 class SellerNewsController extends Controller
 {
@@ -22,6 +23,20 @@ class SellerNewsController extends Controller
     public function addNews()
     {
         $vendor_id = auth()->user()->id;
+        $vendorBankDetails = bank_details::where('vendor_id', $vendor_id)->first();
+        if (
+            !$vendorBankDetails ||
+            (
+                isset($vendorBankDetails->isPayPal, $vendorBankDetails->isBankDetail, $vendorBankDetails->isGooglePay, $vendorBankDetails->isOther) &&
+                !$vendorBankDetails->isPayPal &&
+                !$vendorBankDetails->isBankDetail &&
+                !$vendorBankDetails->isGooglePay &&
+                !$vendorBankDetails->isOther
+            )
+        ) {
+            return redirect()->route('seller.add.bank.detail')->with(['alert-type' => 'error', 'message' => 'First complete your bank details.']);
+        }
+
         $seller = User::where('id', $vendor_id)->first();
 
         $packageData = seller_package::latest()->where('seller_id', $seller->id)->with('package')->first();
@@ -45,17 +60,17 @@ class SellerNewsController extends Controller
             //         ->subject('Your News listing limit has been expired!');
             // });
 
-              $seller = auth()->user();
-                sendDynamicMail(
-                    $seller->id,
-                    'news_posting_limit_reached_–_expand_your_visibility!', // slug from email_templates
-                    [ 
-                        '[Seller Name]' => $seller->first_name,
-                        '[Member Type]' => $packageType, 
-                        '[Insert Limit]' => $listingLimit,
-                        '[Insert Upgrade Link]'    =>  route('user.member.package' )
-                    ]
-                );
+            $seller = auth()->user();
+            sendDynamicMail(
+                $seller->id,
+                'news_posting_limit_reached_–_expand_your_visibility!', // slug from email_templates
+                [
+                    '[Seller Name]' => $seller->first_name,
+                    '[Member Type]' => $packageType,
+                    '[Insert Limit]' => $listingLimit,
+                    '[Insert Upgrade Link]'    =>  route('user.member.package')
+                ]
+            );
             return redirect()->route('seller.upgrade.limit')->with(['alert-type' => 'warning', 'message' => 'Your product listing limit has been complete!']);
         }
         $categories = CustomeCategory::where('status', "1")->where('deleted', "0")->where('parent_id', "0")->orderBy('category_name', 'ASC')->get();
@@ -115,7 +130,7 @@ class SellerNewsController extends Controller
             }
         } else {
             // Check if the vendor has reached their news listing limit
-               
+
             // if (!checkPlanLimit(auth()->id(), 'news')) {
 
             //     $seller = auth()->user();
@@ -178,20 +193,20 @@ class SellerNewsController extends Controller
         }
 
         $sellerNews->save();
-        
-        if(!$request->id){
+
+        if (!$request->id) {
             $seller = auth()->user();
-            
-                sendDynamicMail(
-                    $seller->id,
-                    'confirmation_of_your_news_listing', // slug from email_templates
-                    [ 
-                        '[User Name]' => $seller->first_name,
-                        '[News]'     => 'News Published',
-                        '[Title of the Listing]'  => $sellerNews->title,
-                        '[Listing Link]'    =>  route('seller.my.news' )
-                    ]
-                );
+
+            sendDynamicMail(
+                $seller->id,
+                'confirmation_of_your_news_listing', // slug from email_templates
+                [
+                    '[User Name]' => $seller->first_name,
+                    '[News]'     => 'News Published',
+                    '[Title of the Listing]'  => $sellerNews->title,
+                    '[Listing Link]'    =>  route('seller.my.news')
+                ]
+            );
         }
         $what = $request->id ? 'edit' : 'add';
         $message = $request->id

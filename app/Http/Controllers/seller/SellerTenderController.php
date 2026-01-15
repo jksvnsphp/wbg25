@@ -2,31 +2,47 @@
 
 namespace App\Http\Controllers\seller;
 
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use App\Models\User;
+use App\Models\region;
+use App\Models\Tender;
 use App\Models\countries;
 use App\Models\OfferTender;
-use App\Models\region;
-use App\Models\seller_package;
-use App\Models\shipping_rate_cost;
-use App\Models\shipping_rate_cost_region;
-use App\Models\shipping_rate_tables;
-use App\Models\Tender;
-use App\Models\tender_setting;
-use App\Models\User;
-use Carbon\Carbon;
+use Illuminate\Support\Str;
+use App\Models\bank_details;
 use Illuminate\Http\Request;
+use App\Models\seller_package;
+use App\Models\tender_setting;
+use App\Models\shipping_rate_cost;
+use App\Http\Controllers\Controller;
+use App\Models\shipping_rate_tables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
+use App\Models\shipping_rate_cost_region;
+use Illuminate\Support\Facades\Validator;
 
 class SellerTenderController extends Controller
 {
     public function index()
     {
         $vendor_id = auth()->user()->id;
+        $vendorBankDetails = bank_details::where('vendor_id', $vendor_id)->first();
+        if (
+            !$vendorBankDetails ||
+            (
+                isset($vendorBankDetails->isPayPal, $vendorBankDetails->isBankDetail, $vendorBankDetails->isGooglePay, $vendorBankDetails->isOther) &&
+                !$vendorBankDetails->isPayPal &&
+                !$vendorBankDetails->isBankDetail &&
+                !$vendorBankDetails->isGooglePay &&
+                !$vendorBankDetails->isOther
+            )
+        ) {
+            return redirect()->route('seller.add.bank.detail')->with(['alert-type' => 'error', 'message' => 'First complete your bank details.']);
+        }
+
+
         $seller = User::where('id', $vendor_id)->first();
 
         $packageData = seller_package::latest()->where('seller_id', $seller->id)->with('package')->first();

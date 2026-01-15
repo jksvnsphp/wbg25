@@ -44,6 +44,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Models\business_profile_symbol;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use App\Models\bank_details;
 
 class SellerAuthController extends Controller
 {
@@ -1171,6 +1172,21 @@ class SellerAuthController extends Controller
     }
     public function createWebsite()
     {
+        $vendor_id = auth()->user()->id;
+        $vendorBankDetails = bank_details::where('vendor_id', $vendor_id)->first();
+        if (
+            !$vendorBankDetails ||
+            (
+                isset($vendorBankDetails->isPayPal, $vendorBankDetails->isBankDetail, $vendorBankDetails->isGooglePay, $vendorBankDetails->isOther) &&
+                !$vendorBankDetails->isPayPal &&
+                !$vendorBankDetails->isBankDetail &&
+                !$vendorBankDetails->isGooglePay &&
+                !$vendorBankDetails->isOther
+            )
+        ) {
+            return redirect()->route('seller.add.bank.detail')->with(['alert-type' => 'error', 'message' => 'First complete your bank details.']);
+        }
+
         $id = auth()->user()->id;
         $user = User::where('id', $id)->with('company')->first();
         return view('seller-vendor.micro-web-devs.create-microweb', compact('user'));

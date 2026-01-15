@@ -61,9 +61,9 @@
                                                 <span class="text-secondary fw-semibold">
                                                     Tender Price
                                                     @if ($tender->currency == 'usd')
-                                                    USD &dollar; {{ $tender->price }}
+                                                    USD &dollar;{{ $tender->price }}
                                                     @else
-                                                    EURO &euro; {{ $tender->price }}
+                                                    EURO &euro;{{ $tender->price }}
                                                     @endif
                                                 </span>
                                             </td>
@@ -71,9 +71,9 @@
                                                 <span class="text-secondary fw-semibold">
                                                     Sale Provision
                                                     @if ($tender->currency == 'usd')
-                                                    USD &dollar; {{ $tenderOffer->offer_price ?? 0 }}
+                                                    USD &dollar;{{ ($tenderOffer->offer_price*5)/100 ?? 0 }}
                                                     @else
-                                                    EURO &euro; {{ $tenderOffer->offer_price ?? 0 }}
+                                                    EURO &euro;{{ ($tenderOffer->offer_price*5)/100 ?? 0 }}
                                                     @endif
                                                 </span>
                                             </td>

@@ -14,7 +14,8 @@ use Intervention\Image\ImageManager;
 use App\Models\CounterOfferQuotation;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
-//use Carbon\Carbon;
+use App\Models\bank_details;
+
 class UserQuotationController extends Controller
 {
     private function createUniqueSlug($title, $id = null)
@@ -38,6 +39,21 @@ class UserQuotationController extends Controller
 
     public function getQuotePage()
     {
+        $vendor_id = auth()->user()->id;
+        $vendorBankDetails = bank_details::where('vendor_id', $vendor_id)->first();
+        if (
+            !$vendorBankDetails ||
+            (
+                isset($vendorBankDetails->isPayPal, $vendorBankDetails->isBankDetail, $vendorBankDetails->isGooglePay, $vendorBankDetails->isOther) &&
+                !$vendorBankDetails->isPayPal &&
+                !$vendorBankDetails->isBankDetail &&
+                !$vendorBankDetails->isGooglePay &&
+                !$vendorBankDetails->isOther
+            )
+        ) {
+            return redirect()->route('seller.add.bank.detail')->with(['alert-type' => 'error', 'message' => 'First complete your bank details.']);
+        }
+
         $categories = CustomeCategory::where('status', 1)
             ->where('deleted', '0')
             ->where('parent_id', '0')
@@ -233,11 +249,11 @@ class UserQuotationController extends Controller
                 sendDynamicMail(
                     $seller->id,
                     'confirmation_of_your_rfq_listing', // slug from email_templates
-                    [ 
+                    [
                         '[User Name]' => $seller->first_name,
                         '[RFQ]'     => 'FRQ',
                         '[Title of the Listing]'  => $quotation->product_service,
-                        '[Listing Link]'    =>  route('myquotations.show' )
+                        '[Listing Link]'    =>  route('myquotations.show')
                     ]
                 );
                 session()->flash('success', 'Congratulation, Your quotation has been published and online now!');
@@ -494,9 +510,9 @@ class UserQuotationController extends Controller
             return redirect()->route('login')->with(['alert-type' => 'error', 'message' => 'Please login first.']);
         }
     }
+    
     public function dealQuotes()
     {
-
         if (isset(auth()->user()->id)) {
             $id = auth()->user()->id;
             $quotations = OfferQuotation::where(function ($query) use ($id) {
