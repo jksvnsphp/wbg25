@@ -280,22 +280,37 @@ class UserProductController extends Controller
             }
 
             $product->totalQty = $totalQty;
-            $product->remaining_qty = $totalQty - $product->sold_quantity;
+            $product->remaining_qty = max($totalQty - $product->sold_quantity, 0);
         }
 
         // Paginate
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $items = $sortedResults->slice(($currentPage - 1) * $pageItem, $pageItem)->values();
-        $paginatedResults = new LengthAwarePaginator($items, $sortedResults->count(), $pageItem, $currentPage, [
-            'path' => LengthAwarePaginator::resolveCurrentPath(),
-            'query' => $request->query(),
-        ]);
+        $filteredResults = $sortedResults->filter(function ($product) {
+            return $product->remaining_qty > 0;
+        })->values();
 
-        $products = $paginatedResults;
+        // Pagination
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+
+        $items = $filteredResults
+            ->slice(($currentPage - 1) * $pageItem, $pageItem)
+            ->values();
+
+        $products = new LengthAwarePaginator(
+            $items,
+            $filteredResults->count(),
+            $pageItem,
+            $currentPage,
+            [
+                'path' => LengthAwarePaginator::resolveCurrentPath(),
+                'query' => $request->query(),
+            ]
+        );
+
         $premiumProducts = $this->premiumProducts($request);
 
         // echo '<pre>';
         // print_r($products->toArray());
+        // die;
         // echo '</pre>';
 
         return view('external-user.products', compact('categories', 'countries', 'products', 'premiumProducts'));

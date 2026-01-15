@@ -285,16 +285,16 @@ class SellerTenderController extends Controller
                 $url = route('seller.success.tender', [$tender->slug, 'add']);
                 $seller = User::find($tender->user_id);
 
-                    sendDynamicMail(
-                        $seller->id,
-                        'confirmation_of_your_tender_listing', // slug from email_templates
-                        [
-                            '[User Name]'     => $seller->first_name,
-                            '[Tender]'          => $tender->name,
-                            '[Title of the Listing]'     => $tender->name,
-                            '[Listing Link]'      =>  '',
-                        ]
-                    );
+                sendDynamicMail(
+                    $seller->id,
+                    'confirmation_of_your_tender_listing', // slug from email_templates
+                    [
+                        '[User Name]'     => $seller->first_name,
+                        '[Tender]'          => $tender->name,
+                        '[Title of the Listing]'     => $tender->name,
+                        '[Listing Link]'      =>  '',
+                    ]
+                );
                 return response()->json(['success' => true, 'message' => 'Tender publish successfully', 'url' => $url], 200);
             }
         } else {
@@ -502,18 +502,14 @@ class SellerTenderController extends Controller
         ));
     }
 
-public function successTender($slug)
-{
-     
-
-    
-
-    if (isset(auth()->user()->id)) {
+    public function successTender($slug)
+    {
+        if (isset(auth()->user()->id)) {
             $seller = User::where('id', auth()->user()->id)->first();
             $packageData = seller_package::latest()->where('seller_id', $seller->id)->with('package')->first();
             $tender = Tender::where('slug', $slug)->where('vendor_id', auth()->user()->id)->first();
             if ($tender) {
-              
+
                 return view('seller-vendor.tenders.success', compact('tender', 'seller', 'packageData'));
             } else {
                 abort(404, 'Tender not found!');
@@ -521,7 +517,7 @@ public function successTender($slug)
         } else {
             abort(403, 'Forbidden');
         }
-}
+    }
 
 
     public function editTenderold($slug)

@@ -362,7 +362,6 @@ class SellerProductController extends Controller
 
     public function storeProduct(Request $request)
     {
-        dd($request->all());
         if (isset(auth()->user()->id)) {
             $vendor_id = auth()->user()->id;
             $validate = Validator::make(
@@ -671,7 +670,6 @@ class SellerProductController extends Controller
 
     public function storeMultipleProduct(Request $request)
     {
-        // dd($request->all());
         if (isset(auth()->user()->id)) {
             $vendor_id = auth()->user()->id;
             $validate = Validator::make(
