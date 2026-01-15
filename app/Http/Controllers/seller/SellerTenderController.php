@@ -44,10 +44,21 @@ class SellerTenderController extends Controller
                 'message_content' => 'If you would Upload more tenders, please Upgrade your Membership Package first.',
                 'url' => route('user.member.package'),
             ];
-            Mail::send('mail.seller-listing-expired', $data, function ($message) use ($vendorEmail) {
-                $message->to($vendorEmail)
-                    ->subject('Your Tender listing limit has been expired!');
-            });
+            // Mail::send('mail.seller-listing-expired', $data, function ($message) use ($vendorEmail) {
+            //     $message->to($vendorEmail)
+            //         ->subject('Your Tender listing limit has been expired!');
+            // });
+            $seller = auth()->user();
+            sendDynamicMail(
+                $seller->id,
+                'tender_submission_limit_reached_–_unlock_more_opportunities!', // slug from email_templates
+                [
+                    '[Seller Name]' => $seller->first_name,
+                    '[Member Type]' => $packageType,
+                    '[Insert Limit]' => $listingLimit,
+                    '[Insert Upgrade Link]'    =>  route('user.member.package')
+                ]
+            );
             return redirect()->route('seller.upgrade.limit')->with(['alert-type' => 'warning', 'message' => 'Your product listing limit has been complete!']);
         }
         $regions = region::where('status', 1)->with('countries')->orderBy('name', 'ASC')->get();
@@ -283,16 +294,16 @@ class SellerTenderController extends Controller
                 $setting->pincode = $request->zip;
                 $setting->save();
                 $url = route('seller.success.tender', [$tender->slug, 'add']);
-                $seller = User::find($tender->user_id);
+                //$seller = User::find($tender->user_id);
 
                 sendDynamicMail(
-                    $seller->id,
+                    auth()->user()->id,
                     'confirmation_of_your_tender_listing', // slug from email_templates
                     [
-                        '[User Name]'     => $seller->first_name,
+                        '[User Name]'     => auth()->user()->first_name,
                         '[Tender]'          => $tender->name,
                         '[Title of the Listing]'     => $tender->name,
-                        '[Listing Link]'      =>  '',
+                        '[Listing Link]'      =>  route('seller.success.tender', [$tender->slug, 'add']),
                     ]
                 );
                 return response()->json(['success' => true, 'message' => 'Tender publish successfully', 'url' => $url], 200);

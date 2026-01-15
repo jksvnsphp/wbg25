@@ -88,36 +88,64 @@ class OfferTenderController extends Controller
         /** ===============================
          *  SEND MAIL TO SELLER
          *  =============================== */
-        Mail::send('mails.tender-offer-seller', [
-            'seller_name'     => $seller->first_name,
-            'tender_id'       => $tender->id,
-            'tender_title'    => $tender->name,
-            'buyer_name'      => auth()->user()->first_name,
-            'offer_price'     => number_format($request->offer_price, 2),
-            'submission_date' => now()->format('d M Y'),
-            'dashboard_link'  => route('seller.received.offer.tender'),
-        ], function ($message) use ($seller) {
-            $message->to($seller->email)
-                ->subject('New Offer Received on Your Tender!');
-        });
+        // Mail::send('mails.tender-offer-seller', [
+        //     'seller_name'     => $seller->first_name,
+        //     'tender_id'       => $tender->id,
+        //     'tender_title'    => $tender->name,
+        //     'buyer_name'      => auth()->user()->first_name,
+        //     'offer_price'     => number_format($request->offer_price, 2),
+        //     'submission_date' => now()->format('d M Y'),
+        //     'dashboard_link'  => route('seller.received.offer.tender'),
+        // ], function ($message) use ($seller) {
+        //     $message->to($seller->email)
+        //         ->subject('New Offer Received on Your Tender!');
+        // });
+
+         $buyer = auth()->user();
+                sendDynamicMail(
+                    $seller->id,
+                    'new_offer_received_for_your_tender_(for_seller)', // slug from email_templates
+                    [ 
+                        '[Seller Name]' => $seller->first_name,
+                        '[Tender ID]' => $tender->id, 
+                        '[Tender Title]' => $tender->name,
+                        '[Offer Price]' => number_format($request->offer_price, 2),
+                        '[Submission Date]' => now()->format('d M Y'),
+                        '[Seller Dashboard Link]'    => route('seller.received.offer.tender')
+                    ]
+                );
 
         /** ===============================
          *  SEND MAIL TO BUYER (FIXED)
          *  =============================== */
         $buyerEmail = auth()->user()->email;
+       
 
-        Mail::send('mails.tender-offer-buyer', [
-            'buyer_name'      => auth()->user()->first_name,
-            'seller_name'     => $seller->first_name,
-            'tender_id'       => $tender->id,
-            'tender_title'    => $tender->name,
-            'offer_price'     => number_format($request->offer_price, 2),
-            'submission_date' => now()->format('d M Y'),
-            'dashboard_link'  => route('buyer.tenders.received'),
-        ], function ($message) use ($buyerEmail) {
-            $message->to($buyerEmail)
-                ->subject('Your Offer Has Been Submitted Successfully!');
-        });
+        // Mail::send('mails.tender-offer-buyer', [
+        //     'buyer_name'      => auth()->user()->first_name,
+        //     'seller_name'     => $seller->first_name,
+        //     'tender_id'       => $tender->id,
+        //     'tender_title'    => $tender->name,
+        //     'offer_price'     => number_format($request->offer_price, 2),
+        //     'submission_date' => now()->format('d M Y'),
+        //     'dashboard_link'  => route('buyer.tenders.received'),
+        // ], function ($message) use ($buyerEmail) {
+        //     $message->to($buyerEmail)
+        //         ->subject('Your Offer Has Been Submitted Successfully!');
+        // });
+          $buyer = auth()->user();
+                sendDynamicMail(
+                    $buyer->id,
+                    'confirmation_of_offer_submission_(for_buyer)', // slug from email_templates
+                    [ 
+                        '[Buyer Name]' => $buyer->first_name,
+                        '[Tender ID]' => $tender->id, 
+                        '[Tender Title]' => $tender->name,
+                        '[Offer Price]' => number_format($request->offer_price, 2),
+                        '[Submission Date]' => now()->format('d M Y'),
+                        '[Seller Dashboard Link]'    =>  route('buyer.newstate.tender')
+                    ]
+                );
 
         session()->flash('success', 'Congratulations, your offer has been successfully sent!');
 
@@ -317,32 +345,59 @@ class OfferTenderController extends Controller
                     $tenderData = Tender::find($tender->tender_id);
 
                     // Send seller confirmation
-                    Mail::send('mails.tender-deal-seller', [
-                        'seller_name' => $seller->first_name,
-                        'buyer_name' => $buyer->first_name,
-                        'tender_id' => $tenderData->id,
-                        'tender_title' => $tenderData->name,
-                        'final_price' => number_format($tender->offer_price, 2),
-                        'confirmation_date' => now()->format('d M Y'),
-                        'dashboard_link' => route('seller.tenders.deal', $tenderData->slug),
-                    ], function ($message) use ($seller) {
-                        $message->to($seller->email)
-                            ->subject('🎉 Your Deal is Confirmed – Tender RFQ Finalized!');
-                    });
+                    // Mail::send('mails.tender-deal-seller', [
+                    //     'seller_name' => $seller->first_name,
+                    //     'buyer_name' => $buyer->first_name,
+                    //     'tender_id' => $tenderData->id,
+                    //     'tender_title' => $tenderData->name,
+                    //     'final_price' => number_format($tender->offer_price, 2),
+                    //     'confirmation_date' => now()->format('d M Y'),
+                    //     'dashboard_link' => route('seller.tenders.deal', $tenderData->slug),
+                    // ], function ($message) use ($seller) {
+                    //     $message->to($seller->email)
+                    //         ->subject('🎉 Your Deal is Confirmed – Tender RFQ Finalized!');
+                    // });
+                sendDynamicMail(
+                    $seller->id,
+                    'deal_confirmation_(for_seller)', // slug from email_templates
+                    [ 
+                        '[Seller Name]' => $seller->first_name,
+                        '[Tender ID]' => $tender->id, 
+                        '[Buyer Name]' => $buyer->first_name,
+                        '[Tender Title]' => $tender->name,
+                        '[Final Price]' => number_format($request->offer_price, 2),
+                        '[Confirmation Date]' => now()->format('d M Y'),
+                        '[Seller Dashboard Link]'    => route('seller.tenders.deal', $tenderData->slug)
+                    ]
+                );
+
 
                     // Send buyer confirmation
-                    Mail::send('mails.tender-deal-buyer', [
-                        'buyer_name' => $buyer->first_name,
-                        'seller_name' => $seller->first_name,
-                        'tender_id' => $tenderData->id,
-                        'tender_title' => $tenderData->name,
-                        'final_price' => number_format($tender->offer_price, 2),
-                        'confirmation_date' => now()->format('d M Y'),
-                        'dashboard_link' => route('buyer.tenders.deal', $tenderData->slug),
-                    ], function ($message) use ($buyer) {
-                        $message->to($buyer->email)
-                            ->subject('✅ Deal Confirmed – Tender RFQ Successfully Finalized!');
-                    });
+                    // Mail::send('mails.tender-deal-buyer', [
+                    //     'buyer_name' => $buyer->first_name,
+                    //     'seller_name' => $seller->first_name,
+                    //     'tender_id' => $tenderData->id,
+                    //     'tender_title' => $tenderData->name,
+                    //     'final_price' => number_format($tender->offer_price, 2),
+                    //     'confirmation_date' => now()->format('d M Y'),
+                    //     'dashboard_link' => route('buyer.tenders.deal', $tenderData->slug),
+                    // ], function ($message) use ($buyer) {
+                    //     $message->to($buyer->email)
+                    //         ->subject('✅ Deal Confirmed – Tender RFQ Successfully Finalized!');
+                    // });
+                    sendDynamicMail(
+                    $buyer->id,
+                    'deal_confirmation_(for_buyer)', // slug from email_templates
+                    [ 
+                        '[Seller Name]' => $seller->first_name,
+                        '[Tender ID]' => $tender->id, 
+                        '[Buyer Name]' => $buyer->first_name,
+                        '[Tender Title]' => $tender->name,
+                        '[Final Price]' => number_format($request->offer_price, 2),
+                        '[Confirmation Date]' => now()->format('d M Y'),
+                        '[Seller Dashboard Link]'    => route('seller.tenders.deal', $tenderData->slug)
+                    ]
+                );
 
                     // Send general update to both
                     Mail::send('mails.tender-deal-update', [
@@ -357,6 +412,21 @@ class OfferTenderController extends Controller
                         $message->to([$buyer->email, $seller->email])
                             ->subject('Deal Finalized – Next Steps for Tender RFQ!');
                     });
+
+
+                sendDynamicMails(
+                     [$buyer->email, $seller->email],
+                    'deal_confirmation_&_next_steps_(for_both_buyer_&_seller)', // slug from email_templates
+                    [ 
+                        '[Seller Name]' => $seller->first_name,
+                        '[Tender ID]' => $tender->id, 
+                        '[Buyer Name]' => $buyer->first_name,
+                        '[Tender Title]' => $tender->name,
+                        '[Final Price]' => number_format($request->offer_price, 2),
+                        '[Confirmation Date]' => now()->format('d M Y'),
+                        '[Seller Dashboard Link]'    => route('seller.tenders.deal', $tenderData->slug)
+                    ]
+                );
                 } catch (\Exception $e) {
                     \Log::error('Deal Confirmation Email Failed: ' . $e->getMessage());
                 }
@@ -760,10 +830,26 @@ class OfferTenderController extends Controller
                             'user_name' => auth()->user()->first_name . ' ' . auth()->user()->last_name,
                             'user_email' => auth()->user()->email,
                         ];
-                        Mail::send('mail.tender-offer', $mailData, function ($message) use ($sellerMail, $seller_subject) {
-                            $message->to($sellerMail);
-                            $message->subject($seller_subject);
-                        });
+                        // Mail::send('mail.tender-offer', $mailData, function ($message) use ($sellerMail, $seller_subject) {
+                        //     $message->to($sellerMail);
+                        //     $message->subject($seller_subject);
+                        // });
+                        ///
+                      // $seller= getUserDataByEmail($sellerMail);
+
+                        sendDynamicMail(
+                            $seller->id,
+                            'deal_confirmation_(for_seller)', // slug from email_templates
+                            [ 
+                                '[Seller Name]' => $seller->first_name,
+                                '[Tender ID]' => $request->tender_id, 
+                                '[Tender Title]' => $tenderName,
+                                '[Buyer Name]' => auth()->user()->first_name,
+                                '[Final Price]' => number_format($offerPrice, 2),
+                                '[Confirmation Date]' => now()->format('d M Y'),
+                                '[Seller Dashboard Link]' => route('seller.dashboard')
+                            ]
+                        );
                         session()->flash('success', 'Congratulation, Your deal on tender has been successfully sent! Now go to your cart');
                         if (auth()->user()->account_type == "seller") {
                             $rurl = route('seller.success.offer.tender', $tender->slug);

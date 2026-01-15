@@ -902,6 +902,14 @@ li {
     background-size: cover;
 }
 
+.login_forma_m {
+    background: url('../../images/image.jfif');
+    background-position: right top !important;
+    background-repeat: no-repeat !important;
+    background-size: cover;
+}
+
+
 .package_bg {
     background: url('../../images/copy_icon.png');
     background-color: #02368b !important;

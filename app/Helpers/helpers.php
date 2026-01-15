@@ -101,6 +101,7 @@ if (! function_exists('getUserName')) {
         return $user ? $user->first_name." ".$user->last_name : null;
     }
 }
+
 if (! function_exists('getUserEmail')) {
     function getUserEmail($id)
     {
@@ -108,6 +109,15 @@ if (! function_exists('getUserEmail')) {
         return $user ? $user->email : null;
     }
 }
+if (! function_exists('getUserDataByEmail')) {
+    function getUserDataByEmail($email)
+    {
+        $user = User::where('email', $email)->first();
+        return $user ? $user : null;
+    }
+    
+}
+
 if (! function_exists('getUserPhone')) {
     function getUserPhone($id)
     {
@@ -1289,6 +1299,109 @@ if (!function_exists('sendDynamicMailNoLoginIn')) {
         Mail::to($email)->send(
             new DynamicMail($template->subject, $body)
         );  
+        return true;
+    }
+}
+
+if (!function_exists('checkPlanLimit')) {
+
+    function checkPlanLimit($userId, $type)
+    {
+         $user = DB::table('users')->where('id', $userId)->first();
+         $seller_packages = DB::table('seller_packages')->where('seller_id', $userId)->first();
+         $plan = DB::table('member_packages')->where('id', $seller_packages->package_id)->first();
+        
+
+        $plan = DB::table('member_packages')->where('id', $user->member_package_id)->first();
+
+        switch ($type) {
+            case 'single_product':
+                $used = DB::table('products')
+                    ->where('user_id', $userId)
+                    ->where('type', 'single')
+                    ->count();
+                $limit = $plan->single_product_limit;
+                break;
+
+            case 'tender':
+                $used = DB::table('tenders')->where('user_id', $userId)->count();
+                $limit = $plan->tender_limit;
+                break;
+
+            case 'news':
+                $used = DB::table('news')->where('user_id', $userId)->count();
+                $limit = $plan->news_limit;
+                break;
+
+            default:
+                return true;
+        }
+
+        return $used < $limit;
+    }
+}
+if (! function_exists('getTenderType')) {
+    function getTenderType($type)
+    {
+        switch ($type) {
+            case 0:
+                return 'Open';
+            case 1:
+                return 'Closed';
+            default:
+                return 'Unknown';
+        }
+    }
+} 
+
+if (!function_exists('sendDynamicMails')) {
+
+    /**
+     * Send dynamic email using template and placeholders
+     *
+     * @param int    $userId
+     * @param string $type          // email_templates.type
+     * @param array  $placeholders  // ['[KEY]' => 'value']
+     * @return bool
+     */
+    function sendDynamicMails(array $emails, string $type, array $placeholders = []): bool
+    {
+        // Fetch user
+        
+
+        // Fetch email template
+        $template = DB::table('email_templates')
+            ->where('type', $type)
+            ->first();
+
+        if (!$template) {
+             $template = DB::table('email_templates')
+            ->where('slug', $type)
+            ->first();
+
+            if (!$template) {
+                return false;
+            }
+        }
+
+        // Replace placeholders dynamically
+        $subject = str_replace(
+            array_keys($placeholders),
+            array_values($placeholders),
+            $template->subject
+        );
+
+        $body = str_replace(
+            array_keys($placeholders),
+            array_values($placeholders),
+            $template->body
+        );
+        // Send email
+        
+        Mail::to($emails)->send(
+            new DynamicMail($subject, $body)
+        );
+
         return true;
     }
 }

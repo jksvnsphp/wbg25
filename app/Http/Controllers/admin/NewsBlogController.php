@@ -80,6 +80,18 @@ class NewsBlogController extends Controller
                 $news->image = $fileName;
             }
             $news->save();
+            // $seller = auth()->user();
+            
+            //     sendDynamicMail(
+            //         $seller->id,
+            //         'confirmation_of_your_news_listing', // slug from email_templates
+            //         [ 
+            //             '[User Name]' => $seller->first_name,
+            //             '[News]'     => 'News Published',
+            //             '[Title of the Listing]'  => $news->title,
+            //             '[Listing Link]'    =>  route('seller.my.news' )
+            //         ]
+            //     );
             return back()->with(['alert-type' => 'success', 'message' => 'Successfully publish your news'])->withErrors($validator->errors());
         }
     }

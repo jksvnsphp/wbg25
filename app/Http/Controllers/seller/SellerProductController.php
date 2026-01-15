@@ -115,6 +115,7 @@ class SellerProductController extends Controller
 
     public function addMultipleProduct()
     {
+      
         if (isset(auth()->user()->id)) {
             $vendor_id = auth()->user()->id;
             $vendorBankDetails = bank_details::where('vendor_id', $vendor_id)->first();
@@ -154,10 +155,22 @@ class SellerProductController extends Controller
                     'message_content' => 'If you would Upload more products, please Upgrade your Membership Package first.',
                     'url' => route('user.member.package'),
                 ];
-                Mail::send('mail.seller-listing-expired', $data, function ($message) use ($vendorEmail) {
-                    $message->to($vendorEmail)
-                        ->subject('Your Product listing limit has been expired!');
-                });
+                // Mail::send('mail.seller-listing-expired', $data, function ($message) use ($vendorEmail) {
+                //     $message->to($vendorEmail)
+                //         ->subject('Your Product listing limit has been expired!');
+                // });
+
+                $seller = auth()->user();
+                sendDynamicMail(
+                    $seller->id,
+                    'multiple_product_listings_confirmed', // slug from email_templates
+                    [ 
+                        '[Seller Name]' => $seller->first_name,
+                        '[Member Type]' => $packageType, 
+                        '[Insert Limit]' => $listingLimit,
+                        '[Insert Upgrade Link]'    =>  route('user.member.package' )
+                    ]
+                );
                 return redirect()->route('seller.upgrade.limit')->with(['alert-type' => 'warning', 'message' => 'Your product listing limit has been complete!']);
             }
             $regions = region::where('status', 1)->with('countries')->orderBy('name', 'ASC')->get();
@@ -655,12 +668,28 @@ class SellerProductController extends Controller
                     ]
                 ];
                 $vendorEmail = User::find($vendor_id)->email;
-                Mail::send('mail.seller-after-list-product', $data, function ($message) use ($vendorEmail) {
-                    $message->to($vendorEmail)
-                        ->subject('Your Product Has Been Listed!');
-                });
+                // Mail::send('mail.seller-after-list-product', $data, function ($message) use ($vendorEmail) {
+                //     $message->to($vendorEmail)
+                //         ->subject('Your Product Has Been Listed!');
+                // });
+
+                 $url = route('seller.success.list.product', [$product->slug, 'add']);
+
+                 $seller = auth()->user();
+            
+                    sendDynamicMail(
+                        $seller->id,
+                        'confirmation_of_your_product_listing', // slug from email_templates
+                        [ 
+                            '[User Name]' => $seller->first_name,
+                            '[Product Name]' => $product->name, 
+                            '[Listing ID]' => $product->id,
+                            '[Product Link]'    => $url
+                        ]
+                    );
+                    
                 // here need to send message for success
-                $url = route('seller.success.list.product', [$product->slug, 'add']);
+               
                 return response()->json(['success' => true, 'message' => 'Product added successfully', 'url' => $url], 200);
             }
         } else {
@@ -989,12 +1018,25 @@ class SellerProductController extends Controller
                     ]
                 ];
                 $vendorEmail = User::find($vendor_id)->email;
-                Mail::send('mail.seller-after-list-product', $data, function ($message) use ($vendorEmail) {
-                    $message->to($vendorEmail)
-                        ->subject('Your Product Has Been Listed!');
-                });
+                // Mail::send('mail.seller-after-list-product', $data, function ($message) use ($vendorEmail) {
+                //     $message->to($vendorEmail)
+                //         ->subject('Your Product Has Been Listed!');
+                // });
+
+                 $url = route('seller.success.list.product', [$product->slug, 'add']);
+                 $seller = auth()->user();
+            
+                    sendDynamicMail(
+                        $seller->id,
+                        'multiple_product_listings_confirmed', // slug from email_templates
+                        [ 
+                            '[User Name]' => $seller->first_name,
+                            '[Number of Products]' => $product->name, 
+                            '[Dashboard Link]'    => $url
+                        ]
+                    );
                 // here need to send message for success
-                $url = route('seller.success.list.product', [$product->slug, 'add']);
+               
                 return response()->json(['success' => true, 'message' => 'Product added successfully', 'url' => $url], 200);
             }
         } else {
