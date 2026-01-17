@@ -233,7 +233,7 @@ class UserProductController extends Controller
 
         // Fetch results
         $products = $queryp
-            ->with('gallery', 'vendor.company', 'vendor.symbols')
+            ->with('gallery', 'vendor.company', 'vendor.symbols', 'ratings')
             ->withSum(['orderItems as sold_quantity' => function ($q) {
                 $q->where('payment_status', '!=', 'processing');
             }], 'quantity')
