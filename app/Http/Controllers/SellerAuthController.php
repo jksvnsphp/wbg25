@@ -387,7 +387,7 @@ class SellerAuthController extends Controller
             'first_name' => ['required', 'string'],
             'last_name' => ['nullable', 'string'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'phone' => ['required', 'unique:users,phone'],
+            'phone' => ['required'],
             'password' => ['required', 'min:8', 'confirmed'],
             'registration_year' => ['required', 'numeric', 'max:3000', "min:1900"],
             'number_of_employees' => ['required', 'string'],
@@ -513,7 +513,7 @@ class SellerAuthController extends Controller
                 'first_name' => ['required', 'string'],
                 'last_name' => ['nullable', 'string'],
                 'email' => ['required', 'email', 'unique:users,email,' . $request->user_id],
-                'phone' => ['required', 'unique:users,phone,' . $request->user_id],
+                'phone' => ['required'],
                 'password' => ['nullable', 'min:8', 'confirmed'],
                 'registration_year' => ['required', 'numeric', 'max:3000', "min:1900"],
                 'number_of_employees' => ['required', 'string'],
@@ -1382,17 +1382,17 @@ class SellerAuthController extends Controller
             return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
         } else {
 
-            $isUserExist = User::where('phone', $request->phone)->count();
-            if ($isUserExist > 0) {
-                return response()->json(['status' => false, 'message' => 'Phone number is already exist.']);
-            } else {
-                $code = $request->code;
-                // echo "code",$code;die;
+            // $isUserExist = User::where('phone', $request->phone)->count();
+            // if ($isUserExist > 0) {
+            //     return response()->json(['status' => false, 'message' => 'Phone number is already exist.']);
+            // } else {
+            $code = $request->code;
+            // echo "code",$code;die;
 
-                session(['name' => $request->name, 'phone' => $request->phone, 'coupon_code' => $request->coupon_code, 'package_code' => $code]);
+            session(['name' => $request->name, 'phone' => $request->phone, 'coupon_code' => $request->coupon_code, 'package_code' => $code]);
 
-                return response()->json(['status' => true, 'message' => 'OTP sent successfully', 'url' => route('seller.complete.registration', $code)]);
-            }
+            return response()->json(['status' => true, 'message' => 'OTP sent successfully', 'url' => route('seller.complete.registration', $code)]);
+            // }
         }
     }
 }
