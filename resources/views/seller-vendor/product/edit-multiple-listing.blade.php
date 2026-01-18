@@ -856,6 +856,8 @@
     let rowIndex = 0;
     const shippingRateCosts = <?php echo json_encode($product->rate_table->shipping_rate_costs ?? []) ?>;
     populateRows('expeditedTableBody', shippingRateCosts);
+    console.log('shippingRateCosts', shippingRateCosts);
+
 
     function populateRows(tableId, shippingRateCosts) {
         shippingRateCosts.forEach(cost => {
@@ -864,57 +866,94 @@
     }
 
     function addRow(tableId, data = null) {
-        const index = rowIndex++;
 
-        const isRegion = data && data.shipping_type === "region";
-        const isCountry = data && data.shipping_type === "country";
-        const cost = data ? data.cost : "";
+        const index = rowIndex; // ❗ do NOT increment yet
+
+        const isRegion = data?.shipping_type === "region";
+        const isCountry = data?.shipping_type === "country";
+        const cost = data?.cost ?? "";
+
         const productCurrencies = <?php echo json_encode([
                                         $product->currency0 ?? 'USD',
                                         $product->currency1 ?? 'USD',
                                         $product->currency2 ?? 'USD'
                                     ]) ?>;
 
-        // Check if "worldwide" is selected
-        const isWorldwide = isRegion && data.shipping_regions.some(region => region.isWorldwide === 1);
-        const selectedRegions = isRegion && data.shipping_regions ?
-            isWorldwide ? ['worldwide'] :
-            data.shipping_regions.map(region => region.region_id) : [];
-        const selectedCountry = isCountry && data.shipping_regions.length > 0 ?
+        const currency = productCurrencies[index] || 'USD';
+
+        // ✅ Handle regions correctly
+        let selectedRegions = [];
+        let isWorldwide = false;
+
+        if (isRegion && Array.isArray(data.shipping_regions)) {
+            isWorldwide = data.shipping_regions.some(r => r.isWorldwide == 1);
+
+            if (isWorldwide) {
+                selectedRegions = ['worldwide'];
+            } else {
+                selectedRegions = [...new Set(
+                    data.shipping_regions
+                    .filter(r => r.region_id)
+                    .map(r => String(r.region_id)) // string for select2 safety
+                )];
+            }
+        }
+
+        const selectedCountry =
+            isCountry && data?.shipping_regions?.length ?
             data.shipping_regions[0].country_id :
             "";
 
-        const currency = productCurrencies[index] || 'USD';
+        const newRow = `
+        <tr>
+            <td>
+                <div class="d-flex">
+                    <input type="radio" class="me-2 rate-type"
+                        name="rate_type[${index}]"
+                        value="region" ${isRegion ? "checked" : ""} />
 
-        const newRow =
-            `<tr>
-        <td>
-            <div class="d-flex">
-                <input type="radio" class="me-2" name="rate_type[${index}]" value="region" ${isRegion ? "checked" : ""}/>
-                <select class="form-control region-select" name="rate_regions[${index}][]" multiple="multiple">
-                </select>
-            </div>
-        </td>
-        <td>
-            <div class="d-flex">
-                <input type="radio" class="me-2" name="rate_type[${index}]" value="country" ${isCountry ? "checked" : ""}/>
-                <select class="form-control w-100 country-select" name="rate_country[${index}]">
-                    <option value="">Select Country</option>
-                </select>
-            </div>
-        </td>
-        <td>
-            <div class="input-group">
-                <select name="currency[${index}]" style="width: 5rem !important;flex:unset;" class="form-select input-group-addon">
-                    <option value="USD" ${currency === 'USD' ? 'selected' : ''}>USD</option>
-                    <option value="EUR" ${currency === 'EUR' ? 'selected' : ''}>EUR</option>
-                </select>
-                <input type="number" class="form-control" placeholder="Enter Cost" name="shipping_cost[${index}]" value="${cost}">
-            </div>
-            <small class="text-danger mt-2">Set 0 if shipping cost free</small>
-        </td>
-        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
-     </tr>`;
+                    <select class="form-control region-select"
+                        name="rate_regions[${index}][]" multiple></select>
+                </div>
+            </td>
+
+            <td>
+                <div class="d-flex">
+                    <input type="radio" class="me-2 rate-type"
+                        name="rate_type[${index}]"
+                        value="country" ${isCountry ? "checked" : ""} />
+
+                    <select class="form-control w-100 country-select"
+                        name="rate_country[${index}]">
+                        <option value="">Select Country</option>
+                    </select>
+                </div>
+            </td>
+
+            <td>
+                <div class="input-group">
+                    <select name="currency[${index}]"
+                        class="form-select"
+                        style="width:5rem">
+                        <option value="USD" ${currency === 'USD' ? 'selected' : ''}>USD</option>
+                        <option value="EUR" ${currency === 'EUR' ? 'selected' : ''}>EUR</option>
+                    </select>
+
+                    <input type="number"
+                        class="form-control"
+                        name="shipping_cost[${index}]"
+                        value="${cost}" step="0.01" min="0">
+                </div>
+                <small class="text-danger">Set 0 if shipping cost free</small>
+            </td>
+
+            <td>
+                <button type="button"
+                    class="btn btn-danger btn-sm"
+                    onclick="removeRow(this)">Delete</button>
+            </td>
+        </tr>`;
+
         $('#' + tableId).append(newRow);
 
         const newRegionSelect = $(`[name="rate_regions[${index}][]"]`);
@@ -923,10 +962,14 @@
         initializeRegionSelect(newRegionSelect);
         initializeCountrySelect(newCountrySelect);
 
+        // ✅ Clear old values first
+        newRegionSelect.val(null).trigger('change');
+        newCountrySelect.val(null).trigger('change');
+
         if (isRegion) {
             newRegionSelect.val(selectedRegions).trigger('change');
+            newCountrySelect.prop('disabled', true);
 
-            // Disable all other options if "worldwide" is selected
             if (isWorldwide) {
                 disableOtherOptions(newRegionSelect, true);
             }
@@ -934,7 +977,10 @@
 
         if (isCountry) {
             newCountrySelect.val(selectedCountry).trigger('change');
+            newRegionSelect.prop('disabled', true);
         }
+
+        rowIndex++; // ✅ increment at END
     }
 
 
