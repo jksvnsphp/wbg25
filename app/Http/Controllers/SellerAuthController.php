@@ -169,8 +169,6 @@ class SellerAuthController extends Controller
 
     public function sendOtpAfterLogin(Request $request)
     {
-        //echo $request->otp_method;
-        //  var_dump(auth()->check());die;
         if (auth()->check()) {
             $user = auth()->user();
             $otp  = rand(10000, 99999);
@@ -178,10 +176,8 @@ class SellerAuthController extends Controller
             // Store OTP in cache for 10 minutes
             Cache::put('otp_' . $user->id, $otp, now()->addMinutes(10));
             try {
-
-
                 if ($request->otp_method === 'email') {
-                    Mail::send('mail.send-otp', ['otp' => $otp], function ($message) use ($user) {
+                    Mail::send('mail.send-otp', ['otp' => $otp], function ($message) use ($request) {
                         $message->to($request->email)
                             ->subject('Your OTP Code');
                     });
@@ -189,10 +185,8 @@ class SellerAuthController extends Controller
                     $this->twilio->sendSms(trim($request->phone), 'Your OTP is ' . $otp);
                 }
 
-
                 return response()->json(['success' => true, 'message' => 'OTP sent successfully']);
             } catch (\Exception $e) {
-                // echo "Caught exception: " . $e->getMessage();;die;
                 return response()->json(['success' => false, 'message' => 'Failed to send OTP. Please try again.' . $e->getMessage()]);
             }
         } else {
