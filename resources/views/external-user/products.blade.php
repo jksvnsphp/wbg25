@@ -174,8 +174,8 @@
             <!-- Products -->
             <nav aria-label="breadcrumb" class="mb-2 mt-4 d-flex align-items-center justify-content-between">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#" class="text-primary">Back</a></li>
-                    <li class="breadcrumb-item"><a href="#" class="text-primary">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#" onclick="window.history.back()" class="text-primary">Back</a></li>
+                    <li class="breadcrumb-item"><a href="/" class="text-primary">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">
                         Products
                     </li>

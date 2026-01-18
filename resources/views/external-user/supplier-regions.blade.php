@@ -5,13 +5,20 @@
     <div class="row">
 
         <div class="col-md-12 bg-body-secondary">
-            <div class="row">
+            <div class="row mt-3 mb-3">
                 <div class="col-md-6">
-                    <h6 class="py-3 px-3 fw-semibold fs-6 d-flex">
-                        <a href="">Home</a>/ <span>Find suppliers by region</span>
-                    </h6>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="window.history.back()" class="text-primary">Back</a></li>
+                            <li class="breadcrumb-item"><a href="/" class="text-primary">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                Find suppliers by region
+                            </li>
+                        </ol>
+                    </nav>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-2"></div>
+                <div class="col-md-4">
                     <select class="form-control form-select" name="business_type" id="business_type">
                         <option @selected(request('business_type')=="all" ) value="all">All Suppliers</option>
                         <option @selected(request('business_type')=="Manufacturer" ) value="Manufacturer">Manufacturer</option>
