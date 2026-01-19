@@ -790,7 +790,7 @@
                                     <span class="input-group-text">
                                         USD $
                                     </span>
-                                    <input type="number" class="form-control" placeholder="Enter Cost" name="shipping_cost[${index}]">
+                                    <input type="number" class="form-control" placeholder="Enter Cost" name="shipping_cost[${index}]" step="0.01" min="0">
                                 </div>
                                 <small class="text-danger mt-2">Set 0 if shipping cost free</small>
                                  
@@ -833,7 +833,7 @@
                     <option value="USD">USD</option>
                     <option value="EUR">EUR</option>
                 </select>
-                <input type="number" class="form-control" placeholder="Enter Cost" name="shipping_cost[${index}]">
+                <input type="number" class="form-control" placeholder="Enter Cost" name="shipping_cost[${index}]" step="0.01" min="0">
             </div>
             <small class="text-danger mt-2">Set 0 if shipping cost free</small>
         </td>

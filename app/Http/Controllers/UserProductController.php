@@ -671,7 +671,8 @@ class UserProductController extends Controller
 
                 // Auto unlist if expired
                 if ($isExpired && $product->isList !== 0) {
-                    $product->update(['isList' => 0]);
+                    $product->isList = 0;
+                    $product->save();
                 }
 
                 // Remaining time calculation

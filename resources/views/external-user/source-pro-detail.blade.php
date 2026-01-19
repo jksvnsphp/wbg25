@@ -74,6 +74,7 @@
                         </h1>
                         <div class="row">
                             <div class="col-md-6">
+                                <p class="mx-2 mt-2 d-block fw-bolder">WBG24 Item Number : <span class="text-secondary">Q{{ str_pad($quotation->id, 9, '0', STR_PAD_LEFT) }}</span></p>
                                 <p class="mx-2 mt-2 d-block fw-bolder">Date posted : <span class="text-secondary">{{ date('d M Y | H:i', strtotime($quotation->created_at)) }}</span></p>
                                 <p class="mx-2 mt-2 d-block fw-bolder">Expired On : <span class="text-secondary">{{ $quotation->expiry_date ?? '' }}</span></p>
                             </div>

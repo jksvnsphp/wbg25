@@ -200,8 +200,8 @@
             <!-- Products -->
             <nav aria-label="breadcrumb" class="mb-2 mt-4 d-flex align-items-center justify-content-between">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#" class="text-primary">Back</a></li>
-                    <li class="breadcrumb-item"><a href="#" class="text-primary">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#" onclick="window.history.back()" class="text-primary">Back</a></li>
+                    <li class="breadcrumb-item"><a href="/" class="text-primary">Home</a></li>
                     <li class="breadcrumb-item active text-capitalize" aria-current="page">
                         {{ $retype }}-Products
                     </li>
@@ -507,6 +507,11 @@
     </div>
 </section>
 @include('external-user.inc-parts.listCard')
+<div class="container-fluid my-3">
+    <a href="{{ url()->previous() }}" class="btn btn-primary">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+</div>
 @endsection
 @section('custom-js-external')
 <script>

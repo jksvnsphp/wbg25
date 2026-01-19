@@ -133,7 +133,7 @@ Route::controller(UserProductController::class)->group(function () {
    Route::post('/get-child-categories', 'getChildCategories')->name('public.get.childcategory');
    Route::get('/products', 'allproducts')->name('all.products');
    Route::get('/{type}/products', 'allTypeProducts')->name('all.type.products');
-   Route::get('/store/{code}/{category_slug?}', 'sellerSpotlight')->name('seller.spotlight');
+   // Route::get('/store/{code}/{category_slug?}', 'sellerSpotlight')->name('seller.spotlight');
    Route::get('/product/{slug?}', 'productDetails')->name('product.detail');
    Route::get('/product/category/{slug?}', 'allproducts')->name('categories.show');
    Route::post('/get-products-subcategory', 'getSubCategory')->name('all.products-subcategory');
@@ -860,6 +860,11 @@ Route::middleware(['role:seller'])->group(function () {
       Route::post('/update-quotation', 'updateQuotation')->name('seller.update.quotation');
       Route::post('/deal/update-quotation', 'updateQuotationDealStatus')->name('seller.status.deal-quotation');
    });
+});
+
+Route::controller(UserProductController::class)->group(function () {
+   Route::get('/{code}/{category_slug?}', 'sellerSpotlight')
+      ->name('seller.spotlight');
 });
 
 Route::get('paypal/pay', [PayPalController::class, 'payWithPayPal'])

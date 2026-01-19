@@ -312,28 +312,28 @@ class FrontUIController extends Controller
         $latestTenders = Tender::latest()->where('status', 1)->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])->limit(15)->get();
         $makeCategoryTree = $this->makeCategoryTree();
         // dd($makeCategoryTree);
-     $top_suppliers = User::query()
-    ->where('account_type', 'seller')
-    ->where('users.isComplete', 1)
-    ->where('users.status', 1)
-    ->whereHas('company', function ($query) {
-        $query->where('business_type', '!=', '');
-    })
-    ->with('company')
-    ->select('users.*')
-    ->addSelect([
-        'total_sold' => products::selectRaw('SUM(order_items.quantity)')
-            ->join('order_items', 'order_items.product_id', '=', 'products.id')
-            ->whereColumn('products.vendor_id', 'users.id')
-            ->where('order_items.quantity', '>', 0)
-            ->groupBy('products.vendor_id')
-            ->limit(1)
-    ])
-    // Join seller_packages + member_packages to know membership type
-    ->join('seller_packages', 'seller_packages.seller_id', '=', 'users.id')
-    ->join('member_packages', 'member_packages.id', '=', 'seller_packages.package_id')
-    ->whereIn('member_packages.type', ['platinum', 'gold', 'silver', 'bronce'])
-    ->orderByRaw("
+        $top_suppliers = User::query()
+            ->where('account_type', 'seller')
+            ->where('users.isComplete', 1)
+            ->where('users.status', 1)
+            ->whereHas('company', function ($query) {
+                $query->where('business_type', '!=', '');
+            })
+            ->with('company')
+            ->select('users.*')
+            ->addSelect([
+                'total_sold' => products::selectRaw('SUM(order_items.quantity)')
+                    ->join('order_items', 'order_items.product_id', '=', 'products.id')
+                    ->whereColumn('products.vendor_id', 'users.id')
+                    ->where('order_items.quantity', '>', 0)
+                    ->groupBy('products.vendor_id')
+                    ->limit(1)
+            ])
+            // Join seller_packages + member_packages to know membership type
+            ->join('seller_packages', 'seller_packages.seller_id', '=', 'users.id')
+            ->join('member_packages', 'member_packages.id', '=', 'seller_packages.package_id')
+            ->whereIn('member_packages.type', ['platinum', 'gold', 'silver', 'bronce'])
+            ->orderByRaw("
         CASE member_packages.type
             WHEN 'platinum' THEN 1
             WHEN 'gold' THEN 2
@@ -341,8 +341,8 @@ class FrontUIController extends Controller
             WHEN 'bronce' THEN 4
         END
     ")
-    ->orderByDesc('total_sold')
-    ->get();    
+            ->orderByDesc('total_sold')
+            ->get();
 
 
         //  dd($makeCategoryTree);
@@ -445,7 +445,7 @@ class FrontUIController extends Controller
         if ($request->has('pageItem') && $request->filled('pageItem')) {
             $pageItem = $request->pageItem ?? 4;
         }
-       
+
         $spotlights = $query->orderByRaw("
         (CASE 
             WHEN EXISTS (SELECT 1 FROM seller_packages sp 
@@ -478,7 +478,8 @@ class FrontUIController extends Controller
     public function mywallet()
     {
         if (Auth::check() && Auth::user()->account_type == "seller") {
-            $wallets = Wallet::latest()->where('user_id', Auth::user()->id)->get();
+            $wallets = Wallet::with('orderItem')->latest()->where('user_id', Auth::user()->id)->get();
+            // dd($wallets->toArray());
             return view('seller-vendor.wallet.my-wallet', compact('wallets'));
         } else {
             return redirect()->back()->with(['alert-type' => 'info', 'message' => 'Wallet support only for seller!']);

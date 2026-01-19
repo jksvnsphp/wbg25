@@ -911,7 +911,7 @@
                     <option value="USD">USD</option>
                     <option value="EUR">EUR</option>
                 </select>
-                <input type="number" class="form-control" placeholder="Enter Cost" name="shipping_cost[${index}]" value="${cost}">
+                <input type="number" class="form-control" placeholder="Enter Cost" name="shipping_cost[${index}]" value="${cost}" step="0.01" min="0">
             </div>
         </td>
         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
@@ -1001,7 +1001,6 @@
     });
 </script>
 <script>
-    
     //var editor1 = new RichTextEditor("#div_editor1");
 </script>
 <script>
