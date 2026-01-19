@@ -16,6 +16,9 @@
         width: 100px !important;
     }
 </style>
+<section class="scp_hero mb-0 w-100">
+        <img src="{{ asset('world-business/images/Tender-Slider-Gallery.jpg') }}" class="img-fluid w-100" alt="" />
+    </section>
 <section class="container-fluid">
 
     <div class="row pb-3 pt-3 shadow" style="border: 1px solid #ddd">

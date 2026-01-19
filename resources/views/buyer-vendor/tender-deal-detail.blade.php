@@ -24,7 +24,7 @@
             <div class="col-md-12 mt-2 bg-primary py-3">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h6 class="fs-5 text-light py-2 mt-0 px-3 mb-0">
-                        Tender Details
+                        Tender Details 
                     </h6>
                 </div>
 

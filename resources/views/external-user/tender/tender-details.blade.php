@@ -8,6 +8,9 @@
 @endsection
 @section('external-main-content')
 <!-- product listing here -->
+ <section class="scp_hero mb-0 w-100">
+        <img src="{{ asset('world-business/images/wbg_source_2.png') }}" class="img-fluid w-100" alt="" />
+    </section>
 <section class="container-fluid">
 
     <div class="row">

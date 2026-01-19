@@ -32,7 +32,7 @@
                     $heading = match(Route::currentRouteName()) {
                     'buyer.quote-deal' => 'All Deals On Quotes',
                     'buyer.my-quote-deal' => 'My Activity Deals',
-                    'buyer.supplier-quote-deal' => 'Supplier Deals',
+                    'buyer.supplier-quote-deal' => 'Suplliers Tender Deals',
                     default => 'My Deals On Quotes',
                     };
                     @endphp

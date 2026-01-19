@@ -959,6 +959,23 @@ if (! function_exists('getStatesList')) {
     }       
 }
 
+if (! function_exists('getStateName')) {
+    function getStateName($stateId)
+    {
+        $state = \App\Models\states::find($stateId);
+        return $state ? $state->name : null;
+    }
+}
+
+if (! function_exists('getCountriesName')) {
+    function getCountriesName($countryId)
+    {
+        $country = \App\Models\countries::find($countryId);
+        return $country ? $country->name : null;
+    }
+}
+
+
 if (! function_exists('getCitiesList')) {
     function getCitiesList($stateId)
     {
