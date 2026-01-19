@@ -579,6 +579,8 @@ class SellerProductController extends Controller
                 $product->price = $minPrice;
                 $product->minPrice = $minPrice;
                 $product->maxPrice = $maxPrice;
+                $durationDays = $request->duration; // e.g. 30  
+                $product->duration_date = now()->addDays($durationDays);
                 $product->save();
 
 
@@ -685,10 +687,11 @@ class SellerProductController extends Controller
                             '[User Name]' => $seller->first_name,
                             '[Product Name]' => $product->name, 
                             '[Listing ID]' => $product->id,
-                            '[Product Link]'    => $url
+                            '[Product Link]' => $url,
+                            '[Dashboard Link]' => route('seller.dashboard')
                         ]
                     );
-                    
+
                 // here need to send message for success
                
                 return response()->json(['success' => true, 'message' => 'Product added successfully', 'url' => $url], 200);
@@ -1263,6 +1266,8 @@ class SellerProductController extends Controller
                     $product->price = $minPrice;
                     $product->minPrice = $minPrice;
                     $product->maxPrice = $maxPrice;
+                    $durationDays = $request->duration; // e.g. 30  
+                    $product->duration_date = now()->addDays($durationDays);
                     $product->save();
 
 

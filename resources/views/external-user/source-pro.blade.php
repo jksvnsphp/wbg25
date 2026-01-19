@@ -28,7 +28,7 @@
     </style>
     <!-- information section -->
     <section class="scp_hero mb-0 w-100">
-        <img src="{{ asset('world-business/images/bant.jpg') }}" class="img-fluid w-100" alt="" />
+        <img src="{{ asset('world-business/images/wbg_source_2.png') }}" class="img-fluid w-100" alt="" />
     </section>
     <div class=" w-100">
 
