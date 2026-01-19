@@ -200,6 +200,10 @@
                                     <h6 class="fw-bold mb-3">Payment method</h6>
                                     @php
                                     $payment_infos = $quotation->vendor->payment_infos ?? [];
+                                    //echo "<pre>";
+                                    //print_r($quotation);die;
+                                   $sender = $quotation->vendor;
+
                                     @endphp
 
                                     <div class="row">
@@ -208,6 +212,18 @@
                                             @else
                                             EURO &euro; {{ $quotationOffer->offer_price ?? 0 }}
                                             @endif</p>
+                                        <h5>To:</h5>
+
+                                        <p class="mb-2">
+                                        {{ $sender->street ?? null }}
+                                        {{ $sender->house_no ?? null }} 
+                                       
+                                    </p>
+                                    <p class="mb-2"> {{ $sender->postal_code ?? null }}  {{ $sender->city ?? null }}</p>
+                                    <p class="mb-2"> </p>
+                                    <p class="mb-2">{{ getStateName($sender->state ?? null) }}</p>
+                                    <p class="mb-0">{{ getCountriesName($sender->country ?? null) }}</p>
+
 
                                         @php
                                         $paymentCollection = collect($payment_infos);
@@ -349,7 +365,7 @@
 
                                     <a data-bs-toggle="modal" data-bs-target="#contactseller"
                                         href="javaScript:void(0)" class="btn btn-primary mt-4">
-                                        Contact Seller
+                                        Contact Buyer
                                     </a>
 
                                 </div>

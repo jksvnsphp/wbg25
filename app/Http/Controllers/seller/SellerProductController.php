@@ -578,6 +578,8 @@ class SellerProductController extends Controller
                 $product->price = $minPrice;
                 $product->minPrice = $minPrice;
                 $product->maxPrice = $maxPrice;
+                $durationDays = $request->duration; // e.g. 30  
+                $product->duration_date = now()->addDays($durationDays);
                 $product->save();
 
 
@@ -673,20 +675,21 @@ class SellerProductController extends Controller
                 //         ->subject('Your Product Has Been Listed!');
                 // });
 
-                $url = route('seller.success.list.product', [$product->slug, 'add']);
+                 $url = route('seller.success.list.product', [$product->slug, 'add']);
 
-                $seller = auth()->user();
-
-                sendDynamicMail(
-                    $seller->id,
-                    'confirmation_of_your_product_listing', // slug from email_templates
-                    [
-                        '[User Name]' => $seller->first_name,
-                        '[Product Name]' => $product->name,
-                        '[Listing ID]' => $product->id,
-                        '[Product Link]'    => $url
-                    ]
-                );
+                 $seller = auth()->user();
+            
+                    sendDynamicMail(
+                        $seller->id,
+                        'confirmation_of_your_product_listing', // slug from email_templates
+                        [ 
+                            '[User Name]' => $seller->first_name,
+                            '[Product Name]' => $product->name, 
+                            '[Listing ID]' => $product->id,
+                            '[Product Link]' => $url,
+                            '[Dashboard Link]' => route('seller.dashboard')
+                        ]
+                    );
 
                 // here need to send message for success
 
@@ -1266,6 +1269,8 @@ class SellerProductController extends Controller
                     $product->price = $minPrice;
                     $product->minPrice = $minPrice;
                     $product->maxPrice = $maxPrice;
+                    $durationDays = $request->duration; // e.g. 30  
+                    $product->duration_date = now()->addDays($durationDays);
                     $product->save();
 
 
