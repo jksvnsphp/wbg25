@@ -213,44 +213,51 @@ class SellerTenderController extends Controller
                     $rateTableId = $newRateTable->id;
 
                     foreach ($request->rate_type as $key => $type) {
-                        if ($type == 'region') {
+
+                        if ($type === 'region') {
+
                             $newRate = new shipping_rate_cost();
                             $newRate->shipping_rate_id = $rateTableId;
-                            $newRate->shipping_type = $type;
-                            $newRate->cost = isset($request['shipping_cost'][$key]) ? $request['shipping_cost'][$key] : 0;
-
+                            $newRate->shipping_type = 'region';
+                            $newRate->cost = $request->shipping_cost[$key] ?? 0;
                             $newRate->save();
-                            foreach ($request->rate_regions as $region) {
-                                $regions = isset($region) ? $region : [];
-                                if (isset($regions[0]) && $regions[0] == "worldwide") {
+
+                            // ✅ USE INDEXED REGIONS
+                            $regions = $request->rate_regions[$key] ?? [];
+
+                            if (isset($regions[0]) && $regions[0] === 'worldwide') {
+
+                                $newRegion = new shipping_rate_cost_region();
+                                $newRegion->shipping_rate_cost_id = $newRate->id;
+                                $newRegion->region_id = null;
+                                $newRegion->country_id = null;
+                                $newRegion->isWorldwide = 1;
+                                $newRegion->save();
+                            } else {
+
+                                foreach ($regions as $area) {
                                     $newRegion = new shipping_rate_cost_region();
                                     $newRegion->shipping_rate_cost_id = $newRate->id;
-                                    $newRegion->region_id = null;
-                                    $newRegion->country_id = null;
-                                    $newRegion->isWorldwide = 1;
+                                    $newRegion->region_id = $area;
+                                    $newRegion->isWorldwide = 0;
                                     $newRegion->save();
-                                } else {
-                                    foreach ($regions as $area) {
-                                        $newRegion = new shipping_rate_cost_region();
-                                        $newRegion->shipping_rate_cost_id = $newRate->id;
-                                        $newRegion->region_id = $area;
-                                        $newRegion->save();
-                                    }
                                 }
                             }
-                        } elseif ($type == "country") {
+                        } elseif ($type === 'country') {
+
                             $newRate = new shipping_rate_cost();
                             $newRate->shipping_rate_id = $rateTableId;
-                            $newRate->shipping_type = $type;
-                            $newRate->cost = isset($request['shipping_cost'][$key]) ? $request['shipping_cost'][$key] : 0;
+                            $newRate->shipping_type = 'country';
+                            $newRate->cost = $request->shipping_cost[$key] ?? 0;
                             $newRate->save();
 
-                            $countryId = isset($request->rate_country[$key]) ? $request->rate_country[$key] : 0;
+                            $countryId = $request->rate_country[$key] ?? null;
 
                             if ($countryId) {
                                 $newRegion = new shipping_rate_cost_region();
                                 $newRegion->shipping_rate_cost_id = $newRate->id;
                                 $newRegion->country_id = $countryId;
+                                $newRegion->isWorldwide = 0;
                                 $newRegion->save();
                             }
                         }
@@ -684,46 +691,51 @@ class SellerTenderController extends Controller
                         $rateTableId = $newRateTable->id;
 
                         foreach ($request->rate_type as $key => $type) {
-                            if ($type == 'region') {
+
+                            if ($type === 'region') {
+
                                 $newRate = new shipping_rate_cost();
                                 $newRate->shipping_rate_id = $rateTableId;
-                                $newRate->shipping_type = $type;
-                                $newRate->cost = isset($request['shipping_cost'][$key]) ? $request['shipping_cost'][$key] : 0;
-                                // dd($request['rate'][$key]);
-                                $newRate->save();
-                                foreach ($request->rate_regions as $region) {
-                                    $regions = isset($region) ? $region : [];
-                                    // dd($regions);
-                                    if (isset($regions[0]) && $regions[0] == "worldwide") {
-                                        $newRegion = new shipping_rate_cost_region();
-                                        $newRegion->shipping_rate_cost_id = $newRate->id;
-                                        $newRegion->region_id = null;
-                                        $newRegion->country_id = null;
-                                        $newRegion->isWorldwide = 1;
-                                        $newRegion->save();
-                                    } else {
-                                        foreach ($regions as $area) {
-                                            $newRegion = new shipping_rate_cost_region();
-                                            $newRegion->shipping_rate_cost_id = $newRate->id;
-                                            $newRegion->region_id = $area;
-                                            $newRegion->save();
-                                        }
-                                    }
-                                }
-                            } elseif ($type == "country") {
-                                $newRate = new shipping_rate_cost();
-                                $newRate->shipping_rate_id = $rateTableId;
-                                $newRate->shipping_type = $type;
-                                $newRate->cost = isset($request['shipping_cost'][$key]) ? $request['shipping_cost'][$key] : 0;
-                                // dd($request['rate'][$key]);
+                                $newRate->shipping_type = 'region';
+                                $newRate->cost = $request->shipping_cost[$key] ?? 0;
                                 $newRate->save();
 
-                                $countryId = isset($request->rate_country[$key]) ? $request->rate_country[$key] : 0;
-                                // dd($countryId);
+                                // ✅ USE INDEXED REGIONS
+                                $regions = $request->rate_regions[$key] ?? [];
+
+                                if (isset($regions[0]) && $regions[0] === 'worldwide') {
+
+                                    $newRegion = new shipping_rate_cost_region();
+                                    $newRegion->shipping_rate_cost_id = $newRate->id;
+                                    $newRegion->region_id = null;
+                                    $newRegion->country_id = null;
+                                    $newRegion->isWorldwide = 1;
+                                    $newRegion->save();
+                                } else {
+
+                                    foreach ($regions as $area) {
+                                        $newRegion = new shipping_rate_cost_region();
+                                        $newRegion->shipping_rate_cost_id = $newRate->id;
+                                        $newRegion->region_id = $area;
+                                        $newRegion->isWorldwide = 0;
+                                        $newRegion->save();
+                                    }
+                                }
+                            } elseif ($type === 'country') {
+
+                                $newRate = new shipping_rate_cost();
+                                $newRate->shipping_rate_id = $rateTableId;
+                                $newRate->shipping_type = 'country';
+                                $newRate->cost = $request->shipping_cost[$key] ?? 0;
+                                $newRate->save();
+
+                                $countryId = $request->rate_country[$key] ?? null;
+
                                 if ($countryId) {
                                     $newRegion = new shipping_rate_cost_region();
                                     $newRegion->shipping_rate_cost_id = $newRate->id;
                                     $newRegion->country_id = $countryId;
+                                    $newRegion->isWorldwide = 0;
                                     $newRegion->save();
                                 }
                             }

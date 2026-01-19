@@ -291,7 +291,7 @@ class QuotationController extends Controller
                 $quotation = Quotation::where('id', $request->id)->first();
                 if ($quotation) {
                     $quotation->product_service = $request->input('product_service');
-                    $quotation->slug = $this->createUniqueSlug($request->product_service);
+                    $quotation->slug = $this->createUniqueSlug($request->product_service, $request->id);
                     $quotation->requirement_details = $request->input('requirement_details');
                     $quotation->quantity = $request->input('quantity');
                     $quotation->category_id = $request->input('category');

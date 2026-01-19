@@ -169,8 +169,6 @@ class SellerAuthController extends Controller
 
     public function sendOtpAfterLogin(Request $request)
     {
-        //echo $request->otp_method;
-        //  var_dump(auth()->check());die;
         if (auth()->check()) {
             $user = auth()->user();
             $otp  = rand(10000, 99999);
@@ -178,10 +176,8 @@ class SellerAuthController extends Controller
             // Store OTP in cache for 10 minutes
             Cache::put('otp_' . $user->id, $otp, now()->addMinutes(10));
             try {
-
-
                 if ($request->otp_method === 'email') {
-                    Mail::send('mail.send-otp', ['otp' => $otp], function ($message) use ($user) {
+                    Mail::send('mail.send-otp', ['otp' => $otp], function ($message) use ($request) {
                         $message->to($request->email)
                             ->subject('Your OTP Code');
                     });
@@ -189,10 +185,8 @@ class SellerAuthController extends Controller
                     $this->twilio->sendSms(trim($request->phone), 'Your OTP is ' . $otp);
                 }
 
-
                 return response()->json(['success' => true, 'message' => 'OTP sent successfully']);
             } catch (\Exception $e) {
-                // echo "Caught exception: " . $e->getMessage();;die;
                 return response()->json(['success' => false, 'message' => 'Failed to send OTP. Please try again.' . $e->getMessage()]);
             }
         } else {
@@ -387,7 +381,7 @@ class SellerAuthController extends Controller
             'first_name' => ['required', 'string'],
             'last_name' => ['nullable', 'string'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'phone' => ['required', 'unique:users,phone'],
+            'phone' => ['required'],
             'password' => ['required', 'min:8', 'confirmed'],
             'registration_year' => ['required', 'numeric', 'max:3000', "min:1900"],
             'number_of_employees' => ['required', 'string'],
@@ -513,7 +507,7 @@ class SellerAuthController extends Controller
                 'first_name' => ['required', 'string'],
                 'last_name' => ['nullable', 'string'],
                 'email' => ['required', 'email', 'unique:users,email,' . $request->user_id],
-                'phone' => ['required', 'unique:users,phone,' . $request->user_id],
+                'phone' => ['required'],
                 'password' => ['nullable', 'min:8', 'confirmed'],
                 'registration_year' => ['required', 'numeric', 'max:3000', "min:1900"],
                 'number_of_employees' => ['required', 'string'],
@@ -1382,17 +1376,17 @@ class SellerAuthController extends Controller
             return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
         } else {
 
-            $isUserExist = User::where('phone', $request->phone)->count();
-            if ($isUserExist > 0) {
-                return response()->json(['status' => false, 'message' => 'Phone number is already exist.']);
-            } else {
-                $code = $request->code;
-                // echo "code",$code;die;
+            // $isUserExist = User::where('phone', $request->phone)->count();
+            // if ($isUserExist > 0) {
+            //     return response()->json(['status' => false, 'message' => 'Phone number is already exist.']);
+            // } else {
+            $code = $request->code;
+            // echo "code",$code;die;
 
-                session(['name' => $request->name, 'phone' => $request->phone, 'coupon_code' => $request->coupon_code, 'package_code' => $code]);
+            session(['name' => $request->name, 'phone' => $request->phone, 'coupon_code' => $request->coupon_code, 'package_code' => $code]);
 
-                return response()->json(['status' => true, 'message' => 'OTP sent successfully', 'url' => route('seller.complete.registration', $code)]);
-            }
+            return response()->json(['status' => true, 'message' => 'OTP sent successfully', 'url' => route('seller.complete.registration', $code)]);
+            // }
         }
     }
 }

@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Quotation extends Model
 {
     use HasFactory;
-    public function category(){
-        return $this->belongsTo(CustomeCategory::class,'category_id');
+    public function category()
+    {
+        return $this->belongsTo(CustomeCategory::class, 'category_id');
     }
-    public function vendor(){
-        return $this->belongsTo(User::class,'user_id');
+    public function vendor()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
