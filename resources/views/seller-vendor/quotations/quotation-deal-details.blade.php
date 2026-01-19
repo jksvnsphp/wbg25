@@ -63,7 +63,7 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                {{ $quotation->quantity ?? '' }} Sale Provision
+                                                USD&dollar;{{ ($quotationOffer->offer_price*5)/100 ?? 0 }} Sale Provision
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center justify-content-between">
@@ -224,6 +224,28 @@
                                     <p class="mb-2">{{ getStateName($sender->state ?? null) }}</p>
                                     <p class="mb-0">{{ getCountriesName($sender->country ?? null) }}</p>
 
+
+                                        @php
+                                        $paymentCollection = collect($payment_infos);
+                                        $primary = $paymentCollection->firstWhere('isPayPal', 1)
+                                        ?? $paymentCollection->firstWhere('isGooglePay', 1)
+                                        ?? $paymentCollection->firstWhere('isBankDetail', 1)
+                                        ?? $paymentCollection->first();
+                                        @endphp
+
+                                        @if($primary)
+                                        <h5>To:
+                                            @if(isset($primary->isPayPal) && $primary->isPayPal)
+                                            {{ $primary->email ?? '—' }}
+                                            @elseif(isset($primary->isGooglePay) && $primary->isGooglePay)
+                                            {{ $primary->upi_google ?? '—' }}
+                                            @elseif(isset($primary->isBankDetail) && $primary->isBankDetail)
+                                            {{ $primary->account_holder ?? '' }} @if(isset($primary->bank_name) && $primary->bank_name) - {{ $primary->bank_name }}@endif @if(isset($primary->iban) && $primary->iban) (IBAN: {{ $primary->iban }})@endif
+                                            @else
+                                            {{ $primary->other_value ?? 'N/A' }}
+                                            @endif
+                                        </h5>
+                                        @endif
                                         @foreach ($payment_infos as $bankDetails)
                                         @if ($bankDetails->isPayPal)
                                         <div class="col-md-12 mb-3">

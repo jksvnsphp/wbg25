@@ -106,30 +106,30 @@ class SupplierController extends Controller
         // END)
         // ")->paginate($pageItem);
         $suppliers = $querySuppliers->orderByRaw("
-    CASE 
-        WHEN EXISTS (
-            SELECT 1 FROM seller_packages sp 
-            JOIN member_packages p ON sp.package_id = p.id 
-            WHERE users.id = sp.seller_id AND p.type = 'platinum'
-        ) THEN 1
-        WHEN EXISTS (
-            SELECT 1 FROM seller_packages sp 
-            JOIN member_packages p ON sp.package_id = p.id 
-            WHERE users.id = sp.seller_id AND p.type = 'gold'
-        ) THEN 2
-        WHEN EXISTS (
-            SELECT 1 FROM seller_packages sp 
-            JOIN member_packages p ON sp.package_id = p.id 
-            WHERE users.id = sp.seller_id AND p.type = 'silver'
-        ) THEN 3
-        WHEN EXISTS (
-            SELECT 1 FROM seller_packages sp 
-            JOIN member_packages p ON sp.package_id = p.id 
-            WHERE users.id = sp.seller_id AND p.type = 'bronze'
-        ) THEN 4
-        ELSE 5
-    END
-")->paginate($pageItem);
+            CASE 
+                WHEN EXISTS (
+                    SELECT 1 FROM seller_packages sp 
+                    JOIN member_packages p ON sp.package_id = p.id 
+                    WHERE users.id = sp.seller_id AND p.type = 'platinum'
+                ) THEN 1
+                WHEN EXISTS (
+                    SELECT 1 FROM seller_packages sp 
+                    JOIN member_packages p ON sp.package_id = p.id 
+                    WHERE users.id = sp.seller_id AND p.type = 'gold'
+                ) THEN 2
+                WHEN EXISTS (
+                    SELECT 1 FROM seller_packages sp 
+                    JOIN member_packages p ON sp.package_id = p.id 
+                    WHERE users.id = sp.seller_id AND p.type = 'silver'
+                ) THEN 3
+                WHEN EXISTS (
+                    SELECT 1 FROM seller_packages sp 
+                    JOIN member_packages p ON sp.package_id = p.id 
+                    WHERE users.id = sp.seller_id AND p.type = 'bronze'
+                ) THEN 4
+                ELSE 5
+            END
+        ")->paginate($pageItem);
 
 
 
@@ -142,6 +142,7 @@ class SupplierController extends Controller
         // dd($suppliers);
         return view('external-user.all-suppliers', compact('categories', 'countries', 'suppliers'));
     }
+
     public function getSubCategory(Request $request)
     {
         $categories = [];
@@ -150,6 +151,7 @@ class SupplierController extends Controller
         }
         return response()->json(['status' => true, 'categories' => $categories]);
     }
+
     public function getStates(Request $request)
     {
         $states = [];

@@ -380,20 +380,19 @@
                             <div class="col-md-3 position-relative">
                                 <div class="position-absolute text-center"
                                     style="top: 30px; right: 50%; transform: translateX(50%)">
-                                    <img
-                                        src="https://flagcdn.com/40x30/{{ strtolower($product->country->iso2) }}.png" />
+                                    <img src="https://flagcdn.com/40x30/{{ strtolower($product->country->iso2) }}.png" />
                                     <p class="text-dark  fw-bold">{{ $product->country->name }}</p>
                                     <div class="d-flex mt-2 justify-content-center">
                                         @php
                                         $rating = $product->average_rating ?? 0;
                                         $fullStars = floor($rating);
-                                        $emptyStars = 5 - $fullStars;
+                                        $emptyStars = (5 - $fullStars);
                                         @endphp
 
-                                        @for ($i = 0; $i < $fullStars; $i++)
+                                        @for ($s = 0; $s < $fullStars; $s++)
                                             <i class="fas fa-star text-secondary"></i>
                                             @endfor
-                                            @for ($i = 0; $i < $emptyStars; $i++)
+                                            @for ($s = 0; $s < $emptyStars; $s++)
                                                 <i class="fas fa-star " style="color:gray;"></i>
                                                 @endfor
                                     </div>
@@ -483,6 +482,11 @@
     </div>
 </section>
 @include('external-user.inc-parts.listCard')
+<div class="mt-3 px-3">
+    <button type="button" onclick="window.history.back()" class="btn btn-primary text-light">
+        <i class="fas fa-arrow-left"></i> Back
+    </button>
+</div>
 @endsection
 @section('custom-js-external')
 <script>

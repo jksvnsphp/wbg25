@@ -2,31 +2,47 @@
 
 namespace App\Http\Controllers\seller;
 
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use App\Models\User;
+use App\Models\region;
+use App\Models\Tender;
 use App\Models\countries;
 use App\Models\OfferTender;
-use App\Models\region;
-use App\Models\seller_package;
-use App\Models\shipping_rate_cost;
-use App\Models\shipping_rate_cost_region;
-use App\Models\shipping_rate_tables;
-use App\Models\Tender;
-use App\Models\tender_setting;
-use App\Models\User;
-use Carbon\Carbon;
+use Illuminate\Support\Str;
+use App\Models\bank_details;
 use Illuminate\Http\Request;
+use App\Models\seller_package;
+use App\Models\tender_setting;
+use App\Models\shipping_rate_cost;
+use App\Http\Controllers\Controller;
+use App\Models\shipping_rate_tables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
+use App\Models\shipping_rate_cost_region;
+use Illuminate\Support\Facades\Validator;
 
 class SellerTenderController extends Controller
 {
     public function index()
     {
         $vendor_id = auth()->user()->id;
+        $vendorBankDetails = bank_details::where('vendor_id', $vendor_id)->first();
+        if (
+            !$vendorBankDetails ||
+            (
+                isset($vendorBankDetails->isPayPal, $vendorBankDetails->isBankDetail, $vendorBankDetails->isGooglePay, $vendorBankDetails->isOther) &&
+                !$vendorBankDetails->isPayPal &&
+                !$vendorBankDetails->isBankDetail &&
+                !$vendorBankDetails->isGooglePay &&
+                !$vendorBankDetails->isOther
+            )
+        ) {
+            return redirect()->route('seller.add.bank.detail')->with(['alert-type' => 'error', 'message' => 'First complete your bank details.']);
+        }
+
+
         $seller = User::where('id', $vendor_id)->first();
 
         $packageData = seller_package::latest()->where('seller_id', $seller->id)->with('package')->first();
@@ -48,17 +64,17 @@ class SellerTenderController extends Controller
             //     $message->to($vendorEmail)
             //         ->subject('Your Tender listing limit has been expired!');
             // });
-             $seller = auth()->user();
-                sendDynamicMail(
-                    $seller->id,
-                    'tender_submission_limit_reached_–_unlock_more_opportunities!', // slug from email_templates
-                    [ 
-                        '[Seller Name]' => $seller->first_name,
-                        '[Member Type]' => $packageType, 
-                        '[Insert Limit]' => $listingLimit,
-                        '[Insert Upgrade Link]'    =>  route('user.member.package' )
-                    ]
-                );
+            $seller = auth()->user();
+            sendDynamicMail(
+                $seller->id,
+                'tender_submission_limit_reached_–_unlock_more_opportunities!', // slug from email_templates
+                [
+                    '[Seller Name]' => $seller->first_name,
+                    '[Member Type]' => $packageType,
+                    '[Insert Limit]' => $listingLimit,
+                    '[Insert Upgrade Link]'    =>  route('user.member.package')
+                ]
+            );
             return redirect()->route('seller.upgrade.limit')->with(['alert-type' => 'warning', 'message' => 'Your product listing limit has been complete!']);
         }
         $regions = region::where('status', 1)->with('countries')->orderBy('name', 'ASC')->get();
@@ -296,16 +312,16 @@ class SellerTenderController extends Controller
                 $url = route('seller.success.tender', [$tender->slug, 'add']);
                 //$seller = User::find($tender->user_id);
 
-                    sendDynamicMail(
-                       auth()->user()->id,
-                        'confirmation_of_your_tender_listing', // slug from email_templates
-                        [
-                            '[User Name]'     => auth()->user()->first_name,
-                            '[Tender]'          => $tender->name,
-                            '[Title of the Listing]'     => $tender->name,
-                            '[Listing Link]'      =>  route('seller.success.tender', [$tender->slug,'add']),
-                        ]
-                    );
+                sendDynamicMail(
+                    auth()->user()->id,
+                    'confirmation_of_your_tender_listing', // slug from email_templates
+                    [
+                        '[User Name]'     => auth()->user()->first_name,
+                        '[Tender]'          => $tender->name,
+                        '[Title of the Listing]'     => $tender->name,
+                        '[Listing Link]'      =>  route('seller.success.tender', [$tender->slug, 'add']),
+                    ]
+                );
                 return response()->json(['success' => true, 'message' => 'Tender publish successfully', 'url' => $url], 200);
             }
         } else {
@@ -513,18 +529,14 @@ class SellerTenderController extends Controller
         ));
     }
 
-public function successTender($slug)
-{
-     
-
-    
-
-    if (isset(auth()->user()->id)) {
+    public function successTender($slug)
+    {
+        if (isset(auth()->user()->id)) {
             $seller = User::where('id', auth()->user()->id)->first();
             $packageData = seller_package::latest()->where('seller_id', $seller->id)->with('package')->first();
             $tender = Tender::where('slug', $slug)->where('vendor_id', auth()->user()->id)->first();
             if ($tender) {
-              
+
                 return view('seller-vendor.tenders.success', compact('tender', 'seller', 'packageData'));
             } else {
                 abort(404, 'Tender not found!');
@@ -532,7 +544,7 @@ public function successTender($slug)
         } else {
             abort(403, 'Forbidden');
         }
-}
+    }
 
 
     public function editTenderold($slug)

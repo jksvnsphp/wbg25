@@ -464,7 +464,7 @@
 
                                 <p class="mt-3">Ships to:
                                     <strong class="fw-bold">
-                                        @if ($data['is_worldwide'])
+                                        @if (isset($data['is_worldwide']))
                                         {{ $data['is_worldwide']['status'] }}
                                         @else
                                         {{ implode(', ', collect($data['regions'])->pluck('name')->toArray()) }}
