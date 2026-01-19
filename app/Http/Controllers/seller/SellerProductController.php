@@ -691,6 +691,20 @@ class SellerProductController extends Controller
                         ]
                     );
 
+                 $seller = auth()->user();
+            
+                    sendDynamicMail(
+                        $seller->id,
+                        'confirmation_of_your_product_listing', // slug from email_templates
+                        [ 
+                            '[User Name]' => $seller->first_name,
+                            '[Product Name]' => $product->name, 
+                            '[Listing ID]' => $product->id,
+                            '[Product Link]' => $url,
+                            '[Dashboard Link]' => route('seller.dashboard')
+                        ]
+                    );
+
                 // here need to send message for success
 
                 return response()->json(['success' => true, 'message' => 'Product added successfully', 'url' => $url], 200);
