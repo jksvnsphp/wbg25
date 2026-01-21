@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Wallet;
 use App\Models\Quotation;
 use Illuminate\Support\Str;
+use App\Models\bank_details;
 use Illuminate\Http\Request;
 use App\Models\OfferQuotation;
 use Illuminate\Support\Carbon;
@@ -14,7 +16,6 @@ use Intervention\Image\ImageManager;
 use App\Models\CounterOfferQuotation;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
-use App\Models\bank_details;
 
 class UserQuotationController extends Controller
 {
@@ -396,6 +397,20 @@ class UserQuotationController extends Controller
                 $quotation->counter_price = $quotation->offer_price;
                 $quotation->save();
 
+                // Save to SaleProvision table
+                $totalPrice = $quotation->offer_price;
+                $commissionAmount = 5;
+                $provisionAmount = ($commissionAmount / 100) * $totalPrice;
+
+                $saleProvision = new Wallet();
+                $saleProvision->order_item_id   = 0;
+                $saleProvision->offer_tender_id = 0;
+                $saleProvision->offer_quotation_id = $quotation->id;
+                $saleProvision->user_id         = auth()->user()->id;
+                $saleProvision->credit          = $provisionAmount;
+                $saleProvision->type            = 'sale_provision';
+                $saleProvision->save();
+
                 $otherQuotations = OfferQuotation::where('id', '!=', $quotation->id)->where('quotation_id', $request->quotation_id)->where('vendor_id', auth()->user()->id)->get();
                 foreach ($otherQuotations as $otherQuotation) {
                     $otherQuotation->status = "reject";
@@ -510,7 +525,7 @@ class UserQuotationController extends Controller
             return redirect()->route('login')->with(['alert-type' => 'error', 'message' => 'Please login first.']);
         }
     }
-    
+
     public function dealQuotes()
     {
         if (isset(auth()->user()->id)) {

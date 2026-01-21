@@ -707,27 +707,75 @@
                         </div>
                         <div class="col-md-8">
                             <p class="fontp">
-                                <strong
-                                    class="fw-bolder">
+                                <strong class="fw-bolder">
 
                                     @if(isset($yourShippingCost['shipping_cost']))
+
+                                    {{-- FREE SHIPPING --}}
                                     @if($yourShippingCost['shipping_cost'] == 0)
                                     Free International Shipping
+
+                                    {{-- PAID SHIPPING --}}
                                     @else
-                                    <!-- US${{ $yourShippingCost['shipping_cost'] }} WBG International Shipping -->
-                                    @if (count($data['countries']))
-                                    <div class="text-warning"> Cost by Country: </div>
-                                    @foreach ($data['countries'] as $iii=>$country)
-                                    @php $currencyVar = "currency".$iii; @endphp
-                                    <span class="text-warning" style="font-size: 14px;"> {{ $country['name'] }} : {{$product->$currencyVar ?? 'USD'}}$ {{ number_format($country['cost'], 2) }} </span> <br />
-                                    @endforeach
+
+                                    {{-- COUNTRY LEVEL --}}
+                                    @if(!empty($data['countries']) && count($data['countries']) > 0)
+
+                                    <div style="color:#FF7519;">Cost by Country:</div>
+                                    <div class="shipping-list" id="country-list">
+
+                                        @foreach($data['countries'] as $index => $country)
+                                        @php $currencyVar = "currency".$index; @endphp
+
+                                        <div class="shipping-item {{ $index >= 3 ? 'd-none more-country' : '' }}">
+                                            {{ $country['name'] }} :
+                                            {{ $product->$currencyVar ?? 'USD' }}$
+                                            {{ number_format($country['cost'], 2) }}
+                                        </div>
+                                        @endforeach
+
+                                    </div>
+
+                                    @if(count($data['countries']) > 3)
+                                    <button class="btn btn-primary mt-2 show-more"
+                                        data-target="more-country"
+                                        data-scroll="country-list">
+                                        More
+                                    </button>
                                     @endif
+
+
+                                    {{-- REGION LEVEL --}}
+                                    @elseif(!empty($data['regions']) && count($data['regions']) > 0)
+
+                                    <div style="color:#FF7519;">Cost by Region:</div>
+                                    <div class="shipping-list" id="region-list">
+
+                                        @foreach($data['regions'] as $index => $region)
+                                        <div class="shipping-item {{ $index >= 3 ? 'd-none more-region' : '' }}">
+                                            <strong>{{ $region['name'] }}</strong> :
+                                            USD${{ number_format($region['cost'], 2) }}
+                                        </div>
+                                        @endforeach
+
+                                    </div>
+
+                                    @if(count($data['regions']) > 3)
+                                    <button class="btn btn-primary mt-2 show-more"
+                                        data-target="more-region"
+                                        data-scroll="region-list">
+                                        More
+                                    </button>
                                     @endif
+
                                     @else
                                     No Shipping Zone
                                     @endif
-                                </strong>
 
+                                    @endif
+                                    @endif
+
+                                </strong>
                             </p>
                             <p class="text-muted" style="font-size: 12px">
                                 Located in:
@@ -980,6 +1028,19 @@ $imageGallery = json_decode($product->mainGallery);
 @endphp
 @endsection
 @section('custom-js-external')
+
+<script>
+    document.getElementById('showMoreBtn')?.addEventListener('click', function() {
+
+        // Smooth scroll to expanded content
+        document.getElementById('region-list')
+            .scrollIntoView({
+                behavior: 'smooth'
+            });
+
+        $('#nav-shipping-pay-tab').click()
+    });
+</script>
 
 <script>
     function startCountdown() {
