@@ -24,7 +24,7 @@
         <div class="col-md-12 mt-2 bg-primary py-3">
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <h6 class="fs-5 text-light py-2 mt-0 px-3 mb-0">
-                    Tender Details
+                    Tender Details {{$tenderOffer->shipping_address}}
                 </h6>
             </div>
 
@@ -69,6 +69,13 @@
                                             </td>
                                             <td>
                                                 <span class="text-secondary fw-semibold">
+                                                    @php 
+                                                        $tenderAmount = $tenderOffer->offer_price ?? 0;
+                                                        $commissionRate = 5; // percent 
+                                                        $commission = ($tenderAmount * $commissionRate) / 100; 
+
+                                                    @endphp
+
                                                     Sale Provision
                                                     @if ($tender->currency == 'usd')
                                                     USD &dollar;{{ ($tenderOffer->offer_price*5)/100 ?? 0 }}
@@ -89,15 +96,17 @@
                                     </tbody>
                                 </table>
                             </div>
-                            @if ($tenderOffer->vendor_id == auth()->user()->id)
+                           @if ($tenderOffer->vendor_id == auth()->user()->id) 
+                          {{-- @if ($tenderOffer->status != 'accept') --}} 
                             <div class="row mt-3">
                                 <div class="col-md-4" style="border-right: 1px solid #ddd">
                                     <h6 class="fw-bold mb-3">Shipping Address</h6>
                                     @php
                                     $sender = $tenderOffer->sender ?? [];
+                                    
                                     @endphp
                                     <p class="mb-0">{{ $sender->first_name . ' ' . $sender->last_name }}</p>
-                                    @if (isset($tenderOffer->shipping_address))
+                                    @if (isset($tenderOffer->shipping_address) || $tender->isDeal==1)
                                     @php
                                     $shippingAddress = json_decode(
                                     $tenderOffer->shipping_address,
@@ -117,13 +126,14 @@
                                     );
                                     @endphp
                                     <p class="mb-2">
-                                        {{ $shippingAddress['city'] ?? null }}
-                                        {{ $shippingAddress['house_no'] ?? null }}
-                                        {{ $shippingAddress['street'] ?? null }}
-                                        {{ $shippingAddress['postal_code'] ?? null }}
-                                        {{ $shippingAddress['state_name'] ?? null }}
+                                        {{ $sender->street ?? null }}
+                                        {{ $sender->house_no ?? null }} 
+                                       
                                     </p>
-                                    <p class="mb-0">{{ $shippingAddress['country_name'] ?? null }}</p>
+                                    <p class="mb-2"> {{ $sender->postal_code ?? null }}  {{ $sender->city ?? null }}</p>
+                                    <p class="mb-2"> </p>
+                                    <p class="mb-2">{{ getStateName($sender->state ?? null) }}</p>
+                                    <p class="mb-0">{{ getCountriesName($sender->country ?? null) }}</p>
                                     @else
                                     <p class="btn btn-danger disabled">Deal Not Closed Yet</p>
                                     @endif
@@ -279,7 +289,7 @@
                                     </div>
 
                                     @if($tenderOffer->isDealClose==0)
-                                    <a href="" class="btn mt-3 btn-secondary">Deal Close Now</a>
+                                    <!-- <a href="" class="btn mt-3 btn-secondary">Deal Close Now</a> -->
                                     @endif
                                 </div>
                                 <div style="border-right: 1px solid #ddd"

@@ -109,6 +109,23 @@ class UserProductController extends Controller
             $q->whereNotNull('expire_at');
         }]);
 
+  $queryp = Products::query()
+    ->where(function ($q) {
+        $q->whereNull('duration_date')         // old products
+          ->orWhere('duration_date', '>=', now());
+    })               // active products only
+    ->where('totalQty','>=', 0)             // not sold out
+    ->whereHas('vendor', function ($q) {
+        $q->where('account_type', 'seller');
+    })
+    ->with([
+        'vendor.sellerPackageOne' => function ($q) {
+            $q->whereNotNull('expire_at')
+              ->where('expire_at', '>=', now()); // valid package only
+        }
+    ]);
+
+
         $queryp->where('isList', 1);
 
         // Apply order_type logic
