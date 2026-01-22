@@ -165,12 +165,8 @@
                         ])
 
                         <div class="col-md-9">
-
                             <div class="row justify-content-between">
-
                                 <div class="col-12">
-
-
                                     {{-- photos --}}
                                     <div class="row mt-4">
                                         <h6 class="text-uppercase fw-bold fs-6">
@@ -433,328 +429,340 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-12">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row justify-content-between">
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
 
-                                            <div class="d-flex ">
-                                                <h5 class="fs-6 fw-bold me-3">Shipping settings</h5>
+                                        <div class="d-flex ">
+                                            <h5 class="fs-6 fw-bold me-3">Shipping settings</h5>
 
-                                            </div>
-                                            <div id="shippingFormSection">
-                                                <div class="row">
-                                                    <div class="col-12">
-                                                        <div class="row mt-3">
-                                                            <div class="col-md-4">
-                                                                <div class="form-group mb-2">
-                                                                    <label for="rate_table" class="form-label">Enter
-                                                                        Shipping Partner</label>
-                                                                    <input type="text" name="shipping_partner"
-                                                                        id="shipping_partner" class="form-control"
-                                                                        value="{{ isset($product->rate_table->shipping_partner) ? $product->rate_table->shipping_partner : '' }}">
-
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-md-4">
-                                                                <div class="form-group mb-2">
-                                                                    <label for="shipping_method"
-                                                                        class="form-label">Shipping Method</label>
-                                                                    <select name="shipping_method"
-                                                                        class="form-select">
-                                                                        <option @selected(isset($product->rate_table->shipping_method) && $product->rate_table->shipping_method == 'Standard Shipping')
-                                                                            value="Standard Shipping">Standard
-                                                                            Shipping</option>
-                                                                        <option @selected(isset($product->rate_table->shipping_method) && $product->rate_table->shipping_method == 'Express Shipping')
-                                                                            value="Express Shipping">Express
-                                                                            Shipping</option>
-                                                                        <option @selected(isset($product->rate_table->shipping_method) && $product->rate_table->shipping_method == 'Overnight Shipping')
-                                                                            value="Overnight Shipping">Overnight
-                                                                            Shipping</option>
-                                                                        <option @selected(isset($product->rate_table->shipping_method) && $product->rate_table->shipping_method == 'International Shipping')
-                                                                            value="International Shipping">
-                                                                            International Shipping</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                    <!-- Shipping Table -->
+                                        </div>
+                                        <div id="shippingFormSection">
+                                            <div class="row">
+                                                <div class="col-12">
                                                     <div class="row mt-3">
-                                                        <!-- LEFT: Shipping Table -->
-                                                        <div class="col-md-8">
-                                                            <h6 class="fs-6 fw-bold py-3 pb-1"> Set Shipping Cost </h6>
-
-                                                            <div class="table-responsive">
-                                                                <table class="table table-bordered table-striped">
-                                                                    <thead>
-                                                                        <tr class="align-middle">
-                                                                            <th class="col-4">Region</th>
-                                                                            <th class="col-4">Country</th>
-                                                                            <th class="col-3">Shipping Cost</th>
-                                                                            <th class="col">Delete</th>
-                                                                        </tr>
-                                                                    </thead>
-                                                                    <tbody id="expeditedTableBody">
-                                                                        <tr>
-                                                                            <td colspan="4">
-                                                                                <button type="button"
-                                                                                    class="btnsem d-flex align-items-center"
-                                                                                    onclick="addRow('expeditedTableBody','expedited')">
-                                                                                    <span class="plus-circle">
-                                                                                        <i class="fa fa-plus"></i>
-                                                                                    </span>
-                                                                                    <span class="btntext">Add Region / Country</span>
-                                                                                </button>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- RIGHT: VIDEO GUIDE -->
                                                         <div class="col-md-4">
-                                                            <div class="card shadow-sm h-100">
-                                                                <div class="card-body text-center">
-                                                                    <h6 class="fw-bold mb-3">How to set Shipping Cost</h6>
+                                                            <div class="form-group mb-2">
+                                                                <label for="rate_table" class="form-label">Enter
+                                                                    Shipping Partner</label>
+                                                                <input type="text" name="shipping_partner"
+                                                                    id="shipping_partner" class="form-control"
+                                                                    value="{{ isset($product->rate_table->shipping_partner) ? $product->rate_table->shipping_partner : '' }}">
 
-                                                                    <div class="ratio ratio-16x9">
-
-
-                                                                        <video
-                                                                            controls
-                                                                            preload="metadata"
-                                                                            style="width:100%; border-radius:6px;">
-                                                                            <source src="{{ asset('uploads/member_packages//How-to-set-Shipping-Cost.mp4') }}" type="video/mp4">
-                                                                            Your browser does not support the video tag.
-                                                                        </video>
-                                                                    </div>
-
-                                                                    <small class="text-muted d-block mt-2">
-                                                                        Watch this video to understand region & country based shipping
-                                                                    </small>
-                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
 
-
-                                                    <style>
-                                                        .plus-circle {
-                                                            height: 30px;
-                                                            width: 30px;
-                                                            display: flex !important;
-                                                            justify-content: center;
-                                                            align-items: center;
-                                                            border: 1px dashed #110090;
-                                                            border-radius: 50%;
-                                                            cursor: pointer !important;
-                                                            color: #1e03e9 !important;
-                                                        }
-
-                                                        .btnsem {
-                                                            outline: none !important;
-                                                            border: none !important;
-                                                        }
-
-                                                        .btnsem .btntext {
-                                                            color: #1e03e9 !important;
-                                                            margin-left: 1rem !important;
-                                                            font-size: 14px !important;
-                                                        }
-                                                    </style>
-
-                                                </div>
-                                            </div>
-                                            <div class="d-flex ">
-                                                <h5 class="fs-6 fw-bold me-3">Your Settings</h5>
-
-                                            </div>
-                                            <div id="yoursetting">
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group mb-2">
-                                                            <label for="htime" class="form-label">Handling
-                                                                time</label>
-                                                            <select name="handling_time" class="form-select">
-                                                                @php
-                                                                $handling_time = isset(
-                                                                $product->product_setting->handling_time,
-                                                                )
-                                                                ? $product->product_setting->handling_time
-                                                                : 1;
-                                                                @endphp
-                                                                @for ($day = 1; $day <= 10; $day++)
-                                                                    <option @selected($handling_time==$day)
-                                                                    value="{{ $day }}">
-                                                                    {{ $day }} Business day(s)</option>
-                                                                    @endfor
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <h6 class="fw-bold fs-6 d-none">Item location</h6>
-                                                    <div class="col-md-4 d-none">
-                                                        <div class="form-group mb-2">
-                                                            <label for="htime" class="form-label">Country</label>
-                                                            <select name="country_region" id="country_region"
-                                                                class="form-select">
-                                                                <option value="">Select Country</option>
-                                                                @php
-                                                                $sellerCountry = isset(auth()->user()->country)
-                                                                ? auth()->user()->country
-                                                                : '';
-                                                                @endphp
-                                                                @foreach ($regions as $region)
-                                                                <optgroup label="{{ $region->name }}">
-                                                                    @if (isset($region->countries))
-                                                                    @foreach ($region->countries as $rc)
-                                                                    <option @selected($rc->id == $sellerCountry)
-                                                                        value="{{ $rc->id }}">
-                                                                        {{ $rc->name }}
-                                                                    </option>
-                                                                    @endforeach
-                                                                    @endif
-                                                                </optgroup>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4 d-none">
-                                                        <div class="form-group mb-2">
-                                                            <label for="" class="form-label">State</label>
-                                                            <select name="state_region" id="state_region"
-                                                                class="form-select">
-                                                                <option value="">Select...</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4 d-none">
-                                                        <div class="form-group mb-3">
-                                                            <label for="" class="form-label">City</label>
-                                                            <input type="text" list="cities" name="city"
-                                                                id="city" class="form-control"
-                                                                value="{{ isset(auth()->user()->city) ? auth()->user()->city : '' }}"
-                                                                placeholder="Enter your city" />
-                                                            <datalist id="cities">
-
-                                                            </datalist>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4 d-none">
-                                                        <div class="form-group mb-2">
-                                                            <label for="" class="form-label">ZIP Code</label>
-                                                            <input type="text" name="zip" class="form-control"
-                                                                placeholder="XXCI"
-                                                                value="{{ isset(auth()->user()->zip) ? auth()->user()->zip : '' }}" />
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-md-12 mt-3">
-                                                        <h6 class="fw-bold fs-6 d-flex">
-                                                            Accept returns
-                                                            <div
-                                                                class="form-check mx-2 align-items-center form-switch">
-                                                                <input class="form-check-input" name="isReturnAccept"
-                                                                    type="checkbox" role="switch"
-                                                                    id="isReturnAccept"
-                                                                    @checked(isset($product->product_setting->isReturnAccept) && $product->product_setting->isReturnAccept == 1) />
-                                                            </div>
-                                                        </h6>
-                                                        <div class="card py-2">
-                                                            <div class="card-body  d-flex justify-content-between">
-                                                                <div class="row w-100">
-
-                                                                    <div class="col-md-3 d-flex align-items-center">
-                                                                        <div class="input-check "
-                                                                            style="white-space: nowrap">
-                                                                            <input type="checkbox" name="buyer_pay"
-                                                                                id="buyer_pay"
-                                                                                class="form-check-input"
-                                                                                @checked(isset($product->product_setting->buyer_pay) && $product->product_setting->buyer_pay) />
-                                                                            <label for="buyer_pay"
-                                                                                class="form-label mb-0">Buyer pay
-                                                                                Return
-                                                                                Cost</label>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-3 d-flex align-items-center">
-                                                                        <div class="input-check"
-                                                                            style="white-space: nowrap">
-                                                                            <input type="checkbox" name="seller_pay"
-                                                                                id="seller_pay"
-                                                                                class="form-check-input"
-                                                                                @checked(isset($product->product_setting->seller_pay) && $product->product_setting->seller_pay) />
-                                                                            <label for="seller_pay"
-                                                                                class="form-label mb-0">Seller pay
-                                                                                Return
-                                                                                Cost</label>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div
-                                                                        class="col-md-3 d-flex align-items-center justify-content-between">
-                                                                        <div class="form-group me-3 w-100">
-                                                                            <label for="form-label">Return
-                                                                                Timeline</label>
-                                                                            <select class="form-control "
-                                                                                name="return_timeline"
-                                                                                id="return_timeline">
-                                                                                <option @selected(isset($product->product_setting->return_timeline) && $product->product_setting->return_timeline == '7')
-                                                                                    value="7">7 Days</option>
-                                                                                <option @selected(isset($product->product_setting->return_timeline) && $product->product_setting->return_timeline == '14')
-                                                                                    value="14">14 Days</option>
-                                                                                <option @selected(isset($product->product_setting->return_timeline) && $product->product_setting->return_timeline == '21')
-                                                                                    value="21">21 Days</option>
-                                                                                <option @selected(isset($product->product_setting->return_timeline) && $product->product_setting->return_timeline == '28')
-                                                                                    value="28">28 Days</option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-3 d-flex align-items-center">
-                                                                        <div class="form-group me-3 w-100">
-                                                                            <label for="refund">Refund</label>
-                                                                            <select class="form-control "
-                                                                                name="refund" id="refund">
-                                                                                <option @selected(isset($product->product_setting->refund) && $product->product_setting->refund == 'Money Back')
-                                                                                    value="Money Back">Money Back
-                                                                                </option>
-                                                                                <option @selected(isset($product->product_setting->refund) && $product->product_setting->refund == 'New Item')
-                                                                                    value="New Item">New Item
-                                                                                </option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label for="shipping_method"
+                                                                    class="form-label">Shipping Method</label>
+                                                                <select name="shipping_method"
+                                                                    class="form-select">
+                                                                    <option @selected(isset($product->rate_table->shipping_method) && $product->rate_table->shipping_method == 'Standard Shipping')
+                                                                        value="Standard Shipping">Standard
+                                                                        Shipping</option>
+                                                                    <option @selected(isset($product->rate_table->shipping_method) && $product->rate_table->shipping_method == 'Express Shipping')
+                                                                        value="Express Shipping">Express
+                                                                        Shipping</option>
+                                                                    <option @selected(isset($product->rate_table->shipping_method) && $product->rate_table->shipping_method == 'Overnight Shipping')
+                                                                        value="Overnight Shipping">Overnight
+                                                                        Shipping</option>
+                                                                    <option @selected(isset($product->rate_table->shipping_method) && $product->rate_table->shipping_method == 'International Shipping')
+                                                                        value="International Shipping">
+                                                                        International Shipping</option>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div id="alertContainer" class="mt-3">
+                                            <!-- Shipping Table -->
+                                            <div class="row mt-3">
+                                                <!-- LEFT: Shipping Table -->
+                                                <div class="col-md-8">
+                                                    <h6 class="fs-6 fw-bold py-3 pb-1"> Set Shipping Cost </h6>
 
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-striped">
+                                                            <thead>
+                                                                <tr class="align-middle">
+                                                                    <th class="col-4">Region</th>
+                                                                    <th class="col-4">Country</th>
+                                                                    <th class="col-3">Shipping Cost</th>
+                                                                    <th class="col">Delete</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="expeditedTableBody">
+                                                                <tr>
+                                                                    <td colspan="4">
+                                                                        <button type="button"
+                                                                            class="btnsem d-flex align-items-center"
+                                                                            onclick="addRow('expeditedTableBody','expedited')">
+                                                                            <span class="plus-circle">
+                                                                                <i class="fa fa-plus"></i>
+                                                                            </span>
+                                                                            <span class="btntext">Add Region / Country</span>
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                                <!-- RIGHT: VIDEO GUIDE -->
+                                                <div class="col-md-4">
+                                                    <div class="card shadow-sm h-100">
+                                                        <div class="card-body text-center">
+                                                            <h6 class="fw-bold mb-3">How to set Shipping Cost</h6>
+
+                                                            <div class="ratio ratio-16x9">
+
+
+                                                                <video
+                                                                    controls
+                                                                    preload="metadata"
+                                                                    style="width:100%; border-radius:6px;">
+                                                                    <source src="{{ asset('uploads/member_packages//How-to-set-Shipping-Cost.mp4') }}" type="video/mp4">
+                                                                    Your browser does not support the video tag.
+                                                                </video>
+                                                            </div>
+
+                                                            <small class="text-muted d-block mt-2">
+                                                                Watch this video to understand region & country based shipping
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <button type="submit" class="btn btn-secondary mt-3">
 
-                                                @if($product->isExpired)
-                                                {{'Re-List & Sell'}}
-                                                @else
-                                                {{'Save Changes'}}
-                                                @endif
-                                            </button>
+
+                                            <style>
+                                                .plus-circle {
+                                                    height: 30px;
+                                                    width: 30px;
+                                                    display: flex !important;
+                                                    justify-content: center;
+                                                    align-items: center;
+                                                    border: 1px dashed #110090;
+                                                    border-radius: 50%;
+                                                    cursor: pointer !important;
+                                                    color: #1e03e9 !important;
+                                                }
+
+                                                .btnsem {
+                                                    outline: none !important;
+                                                    border: none !important;
+                                                }
+
+                                                .btnsem .btntext {
+                                                    color: #1e03e9 !important;
+                                                    margin-left: 1rem !important;
+                                                    font-size: 14px !important;
+                                                }
+                                            </style>
+
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </form>
-            </div>
-            <div class="mt-3">
-                <button type="button" onclick="window.history.back()" class="btn text-light">
-                    <i class="fas fa-arrow-left"></i> Back
-                </button>
-            </div>
+                        <div class="col-md-12">
+                            <div class="row justify-content-between">
+                                <div class="row mt-3">
+                                    <div class="col-md-9">
+                                        <div class="d-flex ">
+                                            <h5 class="fs-6 fw-bold me-3">Your Settings</h5>
+                                        </div>
+                                        <div id="yoursetting">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-2">
+                                                        <label for="htime" class="form-label">Handling Time</label>
+                                                        <select name="handling_time" class="form-select">
+                                                            @php
+                                                            $handling_time = isset(
+                                                            $product->product_setting->handling_time,
+                                                            )
+                                                            ? $product->product_setting->handling_time
+                                                            : 1;
+                                                            @endphp
+                                                            @for ($day = 1; $day <= 10; $day++)
+                                                                <option @selected($handling_time==$day)
+                                                                value="{{ $day }}">
+                                                                {{ $day }} Business day(s)</option>
+                                                                @endfor
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <h6 class="fw-bold fs-6 d-none">Item location</h6>
+                                                <div class="col-md-4 d-none">
+                                                    <div class="form-group mb-2">
+                                                        <label for="htime" class="form-label">Country</label>
+                                                        <select name="country_region" id="country_region"
+                                                            class="form-select">
+                                                            <option value="">Select Country</option>
+                                                            @php
+                                                            $sellerCountry = isset(auth()->user()->country)
+                                                            ? auth()->user()->country
+                                                            : '';
+                                                            @endphp
+                                                            @foreach ($regions as $region)
+                                                            <optgroup label="{{ $region->name }}">
+                                                                @if (isset($region->countries))
+                                                                @foreach ($region->countries as $rc)
+                                                                <option @selected($rc->id == $sellerCountry)
+                                                                    value="{{ $rc->id }}">
+                                                                    {{ $rc->name }}
+                                                                </option>
+                                                                @endforeach
+                                                                @endif
+                                                            </optgroup>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 d-none">
+                                                    <div class="form-group mb-2">
+                                                        <label for="" class="form-label">State</label>
+                                                        <select name="state_region" id="state_region"
+                                                            class="form-select">
+                                                            <option value="">Select...</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 d-none">
+                                                    <div class="form-group mb-3">
+                                                        <label for="" class="form-label">City</label>
+                                                        <input type="text" list="cities" name="city"
+                                                            id="city" class="form-control"
+                                                            value="{{ isset(auth()->user()->city) ? auth()->user()->city : '' }}"
+                                                            placeholder="Enter your city" />
+                                                        <datalist id="cities">
 
+                                                        </datalist>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 d-none">
+                                                    <div class="form-group mb-2">
+                                                        <label for="" class="form-label">ZIP Code</label>
+                                                        <input type="text" name="zip" class="form-control"
+                                                            placeholder="XXCI"
+                                                            value="{{ isset(auth()->user()->zip) ? auth()->user()->zip : '' }}" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12 mt-3">
+                                                    <h6 class="fw-bold fs-6 d-flex">
+                                                        Accept returns
+                                                        <div
+                                                            class="form-check mx-2 align-items-center form-switch">
+                                                            <input class="form-check-input" name="isReturnAccept"
+                                                                type="checkbox" role="switch"
+                                                                id="isReturnAccept"
+                                                                @checked(isset($product->product_setting->isReturnAccept) && $product->product_setting->isReturnAccept == 1) />
+                                                        </div>
+                                                    </h6>
+                                                    <div class="card py-2">
+                                                        <div class="card-body  d-flex justify-content-between">
+                                                            <div class="row w-100">
+
+                                                                <div class="col-md-3 d-flex align-items-center">
+                                                                    <div class="input-check "
+                                                                        style="white-space: nowrap">
+                                                                        <input type="checkbox" name="buyer_pay"
+                                                                            id="buyer_pay"
+                                                                            class="form-check-input"
+                                                                            @checked(isset($product->product_setting->buyer_pay) && $product->product_setting->buyer_pay) />
+                                                                        <label for="buyer_pay"
+                                                                            class="form-label mb-0">Buyer pay
+                                                                            Return
+                                                                            Cost</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3 d-flex align-items-center">
+                                                                    <div class="input-check"
+                                                                        style="white-space: nowrap">
+                                                                        <input type="checkbox" name="seller_pay"
+                                                                            id="seller_pay"
+                                                                            class="form-check-input"
+                                                                            @checked(isset($product->product_setting->seller_pay) && $product->product_setting->seller_pay) />
+                                                                        <label for="seller_pay"
+                                                                            class="form-label mb-0">Seller pay
+                                                                            Return
+                                                                            Cost</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="col-md-3 d-flex align-items-center justify-content-between">
+                                                                    <div class="form-group me-3 w-100">
+                                                                        <label for="form-label">Return
+                                                                            Timeline</label>
+                                                                        <select class="form-control "
+                                                                            name="return_timeline"
+                                                                            id="return_timeline">
+                                                                            <option @selected(isset($product->product_setting->return_timeline) && $product->product_setting->return_timeline == '7')
+                                                                                value="7">7 Days</option>
+                                                                            <option @selected(isset($product->product_setting->return_timeline) && $product->product_setting->return_timeline == '14')
+                                                                                value="14">14 Days</option>
+                                                                            <option @selected(isset($product->product_setting->return_timeline) && $product->product_setting->return_timeline == '21')
+                                                                                value="21">21 Days</option>
+                                                                            <option @selected(isset($product->product_setting->return_timeline) && $product->product_setting->return_timeline == '28')
+                                                                                value="28">28 Days</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3 d-flex align-items-center">
+                                                                    <div class="form-group me-3 w-100">
+                                                                        <label for="refund">Refund</label>
+                                                                        <select class="form-control "
+                                                                            name="refund" id="refund">
+                                                                            <option @selected(isset($product->product_setting->refund) && $product->product_setting->refund == 'Money Back')
+                                                                                value="Money Back">Money Back
+                                                                            </option>
+                                                                            <option @selected(isset($product->product_setting->refund) && $product->product_setting->refund == 'New Item')
+                                                                                value="New Item">New Item
+                                                                            </option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="alertContainer" class="mt-3">
+
+                                        </div>
+                                        <button type="submit" class="btn btn-secondary mt-3">
+                                            @if($product->isExpired)
+                                            {{'Re-List & Sell'}}
+                                            @else
+                                            {{'Save Changes'}}
+                                            @endif
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            </form>
         </div>
+        <div class="mt-3">
+            <button type="button" onclick="window.history.back()" class="btn text-light">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+        </div>
+
+    </div>
     </div>
 </section>
 @endsection

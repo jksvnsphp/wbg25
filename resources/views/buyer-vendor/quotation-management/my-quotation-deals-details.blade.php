@@ -63,7 +63,7 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                {{ $quotation->quantity ?? '' }} Sale Provision
+                                                USD&dollar;{{ ($quotationOffer->offer_price*5)/100 ?? 0 }} Sale Provision
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center justify-content-between">

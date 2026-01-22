@@ -27,6 +27,11 @@ class Wallet extends Model
 
     public function offerTender()
     {
-        return $this->belongsTo(OrderItem::class, 'offer_tender_id');
+        return $this->belongsTo(OfferTender::class, 'offer_tender_id');
+    }
+
+    public function offerQuotation()
+    {
+        return $this->belongsTo(OfferQuotation::class, 'offer_quotation_id');
     }
 }

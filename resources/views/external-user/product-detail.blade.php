@@ -474,20 +474,7 @@
                                         @endif
                                     </strong>
                                 </p>
-                                <p class="mt-3">
-                                    Excludes:
-                                    @if (!$data['is_worldwide'])
-                                    @if (count($data['regions']) == 0 && count($data['countries']) == 0)
-                                    None
-                                    @else
-                                    Worldwide
-                                    @endif
-                                    @else
-                                    None
-                                    @endif
-                                </p>
                                 <div class="row mt-4">
-
                                     <div class="col-md-12 mt-4">
                                         <div class="table-responsive">
                                             <table class="table">
@@ -502,21 +489,55 @@
                                                 <tbody>
                                                     <tr>
                                                         <td>
-                                                            @if(isset($yourShippingCost['shipping_cost']))
-                                                            @if($yourShippingCost['shipping_cost'] == 0)
-                                                            Free International Shipping
-                                                            @else
-                                                            <!-- US${{ $yourShippingCost['shipping_cost'] }} WBG International Shipping -->
-                                                            @if (count($data['countries']))
-                                                            @foreach ($data['countries'] as $iii=>$country)
-                                                            @php $currencyVar = "currency".$iii; @endphp
-                                                            <span class="text-warning" style="font-size: 14px;"> {{ $country['name'] }} : {{$product->$currencyVar ?? 'USD'}}$ {{ number_format($country['cost'], 2) }} </span> <br />
-                                                            @endforeach
-                                                            @endif
-                                                            @endif
-                                                            @else
-                                                            No Shipping Zone
-                                                            @endif
+                                                            <p class="fontp">
+                                                                <strong class="fw-bolder">
+
+                                                                    @if(isset($yourShippingCost['shipping_cost']))
+
+                                                                    {{-- FREE SHIPPING --}}
+                                                                    @if($yourShippingCost['shipping_cost'] == 0)
+                                                                    Free International Shipping
+
+                                                                    {{-- PAID SHIPPING --}}
+                                                                    @else
+
+                                                                    {{-- COUNTRY LEVEL --}}
+                                                                    @if(!empty($data['countries']) && count($data['countries']) > 0)
+
+                                                                    <div style="color:#FF7519;">Cost by Country:</div>
+                                                                    <div class="shipping-list" id="country-list">
+
+                                                                        @foreach($data['countries'] as $index => $country)
+                                                                        @php $currencyVar = "currency".$index; @endphp
+
+                                                                        <div class="shipping-item">
+                                                                            {{ $country['name'] }} :
+                                                                            {{ $product->$currencyVar ?? 'USD' }}$
+                                                                            {{ number_format($country['cost'], 2) }}
+                                                                        </div>
+                                                                        @endforeach
+                                                                    </div>
+
+                                                                    {{-- REGION LEVEL --}}
+                                                                    @elseif(!empty($data['regions']) && count($data['regions']) > 0)
+
+                                                                    <div style="color:#FF7519;">Cost by Region:</div>
+                                                                    <div class="shipping-list" id="region-list">
+
+                                                                        @foreach($data['regions'] as $index => $region)
+                                                                        <div class="shipping-item">
+                                                                            <strong>{{ $region['name'] }}</strong> :
+                                                                            USD${{ number_format($region['cost'], 2) }}
+                                                                        </div>
+                                                                        @endforeach
+                                                                    </div>
+                                                                    @else
+                                                                    No Shipping Zone
+                                                                    @endif
+                                                                    @endif
+                                                                    @endif
+                                                                </strong>
+                                                            </p>
                                                         </td>
                                                         <td>{{ isset($data['shipping_partner']) ? $data['shipping_partner'] : 'N/A' }}</td>
                                                         <td>{{ isset($data['shipping_method']) ? $data['shipping_method'] : 'N/A' }}</td>
@@ -858,68 +879,7 @@
         </div>
 
         <div class="col-md-9 mt-0" id="shipmentinfo">
-
-            <h6 class="fw-bolder my-2 mt-5">Shipping and handling</h6>
-            <p>
-                Item location:
-                <strong
-                    class="fw-bold">{{ isset($product->item_country->name) ? $product->item_country->name . ', ' : '' }}{{ isset($product->item_state->name) ? $product->item_state->name . ', ' : '' }}
-                    {{ isset($product->product_setting->city) ? $product->product_setting->city : '' }}
-                </strong>
-            </p>
-
-            <p class="mt-3">Ships to:
-                <strong class="fw-bold">
-                    @if ($data['is_worldwide'])
-                    {{ $data['is_worldwide']['status'] }}
-                    @else
-                    {{ implode(', ', collect($data['regions'])->pluck('name')->toArray()) }}
-                    @if (count($data['countries']))
-                    , {{ implode(', ', collect($data['countries'])->pluck('name')->toArray()) }}
-                    @endif
-                    @endif
-                </strong>
-            </p>
-            <p class="mt-3">
-                Excludes:
-                @if (!$data['is_worldwide'])
-                @if (count($data['regions']) == 0 && count($data['countries']) == 0)
-                None
-                @else
-                Worldwide
-                @endif
-                @else
-                None
-                @endif
-            </p>
-
             <div class="row mt-4">
-
-                <div class="col-md-12 mt-4">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr class="table-active">
-                                    <th>Shipping cost</th>
-                                    <th>Shipping Partner</th>
-                                    <th>Shipping Method</th>
-                                    <th>Handling Time</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>$
-                                        {{ isset($yourShippingCost['shipping_cost']) ? $yourShippingCost['shipping_cost'] : 'No Shipping Zone' }}
-                                    </td>
-                                    <td>{{ isset($data['shipping_partner']) ? $data['shipping_partner'] : 'N/A' }}</td>
-                                    <td>{{ isset($data['shipping_method']) ? $data['shipping_method'] : 'N/A' }}</td>
-                                    <td>{{ $product->duration }} Business Days</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
                 <div class="col-md-12 mt-4">
                     <h4 class="my-2 mb-4 fw-bold fs-4">Return policy</h4>
                     <div class="table-responsive">
@@ -1030,19 +990,25 @@ $imageGallery = json_decode($product->mainGallery);
 @section('custom-js-external')
 
 <script>
-    document.getElementById('showMoreBtn')?.addEventListener('click', function() {
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('show-more')) {
 
-        // Smooth scroll to expanded content
-        document.getElementById('region-list')
-            .scrollIntoView({
-                behavior: 'smooth'
-            });
+            const targetClass = e.target.dataset.target;
+            const scrollId = e.target.dataset.scroll;
 
-        $('#nav-shipping-pay-tab').click()
+            document.querySelectorAll('.' + targetClass)
+                .forEach(el => el.classList.remove('d-none'));
+
+            e.target.remove();
+
+            document.getElementById(scrollId)
+                ?.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            $('#nav-shipping-pay-tab').click();
+        }
     });
-</script>
 
-<script>
     function startCountdown() {
         let countdownElement = document.getElementById("ends_in");
         let endDate = countdownElement.getAttribute("data-end");

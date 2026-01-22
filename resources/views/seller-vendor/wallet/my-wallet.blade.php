@@ -82,6 +82,8 @@
                                                 echo "Product Sale Provision";
                                             } elseif (!empty($wallet->offer_tender_id)) {
                                                 echo "Tender Sale Provision";
+                                            } elseif (!empty($wallet->offer_quotation_id)) {
+                                                echo "Quotation Sale Provision";
                                             } else {
                                                 echo str_replace('_', ' ', $wallet->type);
                                             }
@@ -95,6 +97,9 @@
                                         } elseif (!empty($wallet->offer_tender_id)) {
                                             $tender_id = $wallet->offerTender->tender_id ?? 0;
                                             echo "TN-" . str_pad($tender_id, 6, '0', STR_PAD_LEFT);
+                                        } elseif (!empty($wallet->offer_quotation_id)) {
+                                            $quotation_id = $wallet->offerQuotation->quotation_id ?? 0;
+                                            echo "Q" . str_pad($quotation_id, 9, '0', STR_PAD_LEFT);
                                         } else {
                                             echo "1";
                                         }
@@ -114,6 +119,10 @@
                                             <span class="text-success">USD
                                                 @if($wallet->type == 'sale_provision' && ($wallet->order_item_id != null))
                                                 {{ number_format(getOrderPriceWithoutTax($wallet->order_item_id), 2, '.', ',') }}
+                                                @elseif($wallet->type == 'sale_provision' && ($wallet->offer_tender_id != null))
+                                                {{ number_format($wallet->offerTender->offer_price, 2, '.', ',') }}
+                                                @elseif($wallet->type == 'sale_provision' && ($wallet->offer_quotation_id != null))
+                                                {{ number_format($wallet->offerQuotation->offer_price, 2, '.', ',') }}
                                                 @elseif($wallet->type == 'sale_provision_deduction' && ($wallet->order_item_id != null))
                                                 {{ number_format(getOrderPriceWithoutTax($wallet->order_item_id), 2, '.', ',') }}
                                                 @else

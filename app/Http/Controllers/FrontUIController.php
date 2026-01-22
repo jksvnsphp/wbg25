@@ -478,7 +478,7 @@ class FrontUIController extends Controller
     public function mywallet()
     {
         if (Auth::check() && Auth::user()->account_type == "seller") {
-            $wallets = Wallet::with('orderItem')->latest()->where('user_id', Auth::user()->id)->get();
+            $wallets = Wallet::with('orderItem', 'offerTender', 'offerQuotation')->latest()->where('user_id', Auth::user()->id)->get();
             // dd($wallets->toArray());
             return view('seller-vendor.wallet.my-wallet', compact('wallets'));
         } else {

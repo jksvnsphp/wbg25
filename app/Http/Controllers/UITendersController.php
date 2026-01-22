@@ -398,7 +398,7 @@ class UITendersController extends Controller
             }
             $tender->searched_path = $searchedPath;
             $tender->shippingData = $shippingData;
-            // dd($tender);
+            // dd($tender->shippingData->toArray());
             return view('external-user.tender.tender-details', compact('tender', 'seller', 'yourShippingCost'));
         } else {
             abort(404);

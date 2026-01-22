@@ -8,9 +8,9 @@
 @endsection
 @section('external-main-content')
 <!-- product listing here -->
- <section class="scp_hero mb-0 w-100">
-        <img src="{{ asset('world-business/images/wbg_source_2.png') }}" class="img-fluid w-100" alt="" />
-    </section>
+<section class="scp_hero mb-0 w-100">
+    <img src="{{ asset('world-business/images/wbg_source_2.png') }}" class="img-fluid w-100" alt="" />
+</section>
 <section class="container-fluid">
 
     <div class="row">
@@ -256,54 +256,55 @@
             </style>
             <div class="card send_msg_supplier mt-1">
                 <div class="card-body pb-0">
-                    <div class="row mb-2">
+                    @php
+                    $data = optional($tender->shippingData)->first();
+                    @endphp
+                    <div class="row mb-3">
                         <div class="col-md-4">
                             <p class="fw-bolder fontp">Shipping:</p>
                         </div>
                         <div class="col-md-8">
                             <p class="fontp">
-                                <?php
-
-                                $data = $tender->shippingData->toArray();
-                                $data = $data[0]; ?>
-                                <strong
-                                    class="fw-bolder">
-                                    @if ($data['is_worldwide'])
+                                <strong class="fw-bolder">
+                                    {{-- WORLDWIDE --}}
+                                    @if(!empty($data['is_worldwide']))
                                     {{ $data['is_worldwide']['status'] }}
-                                    @else
-                                    {{ implode(', ', collect($data['regions'])->pluck('name')->toArray()) }}
-                                    @if (count($data['countries']))
-                                    , {{ implode(', ', collect($data['countries'])->pluck('name')->toArray()) }}
-                                    @endif
-                                    @endif
-                                </strong>
 
+                                    {{-- REGION / COUNTRY --}}
+                                    @else
+                                    {{-- Regions --}}
+                                    @if(!empty($data['regions']))
+                                    <div style="color:#FF7519;">Cost by Region:</div>
+                                    @foreach($data['regions'] as $region)
+                                    <div>
+                                        <strong>{{ $region['name'] }}</strong> :
+                                        USD{{ number_format($region['cost'], 2) }}
+                                    </div>
+                                    @endforeach
+                                    @endif
+
+                                    {{-- Countries --}}
+                                    @if(!empty($data['countries']))
+                                    <div style="color:#FF7519;">Cost by Country:</div>
+                                    @foreach($data['countries'] as $country)
+                                    <div>
+                                        <strong>{{ $country['name'] }}</strong> :
+                                        USD{{ number_format($country['cost'], 2) }}
+                                    </div>
+                                    @endforeach
+                                    @endif
+                                    @endif
+
+                                </strong>
                             </p>
 
-                            <p class="text-muted" style="font-size: 12px">
+                            {{-- LOCATION --}}
+                            <p class="text-muted" style="font-size:12px;">
                                 Located in:
-                                {{ isset($tender->vendor->city) ? $tender->vendor->city : '' }},{{ isset($tender->state->name) ? $tender->state->name : '' }},{{ isset($tender->country->name) ? $tender->country->name : '' }}
-                                {{ isset($tender->vendor->zip) ? $tender->vendor->zip : '' }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <p class="fw-bolder fontp">Shipping Cost:</p>
-                        </div>
-                        <div class="col-md-8">
-                            <p class="fontp">
-
-                                <strong class="fw-semibold">
-                                    @if ($data['is_worldwide'])
-                                    {{ $data['is_worldwide']['status'] }}
-                                    @else
-                                    {{ implode(', ', collect($data['regions'])->pluck('cost')->toArray()) }}
-                                    @if (count($data['countries']))
-                                    , {{ implode(', ', collect($data['countries'])->pluck('cost')->toArray()) }}
-                                    @endif
-                                    @endif
-                                </strong>
+                                {{ $tender->vendor->city ?? '' }},
+                                {{ $tender->state->name ?? '' }},
+                                {{ $tender->country->name ?? '' }}
+                                {{ $tender->vendor->zip ?? '' }}
                             </p>
                         </div>
                     </div>
