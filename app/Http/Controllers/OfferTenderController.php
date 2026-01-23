@@ -341,19 +341,6 @@ class OfferTenderController extends Controller
                     $otherTender->save();
                 }
 
-                // Save to SaleProvision table
-                $totalPrice = $tender->offer_price;
-                $commissionAmount = 5;
-                $provisionAmount = ($commissionAmount / 100) * $totalPrice;
-
-                $saleProvision = new Wallet();
-                $saleProvision->order_item_id   = 0;
-                $saleProvision->offer_tender_id = $tender->id;
-                $saleProvision->user_id         = auth()->user()->id;
-                $saleProvision->credit          = $provisionAmount;
-                $saleProvision->type            = 'sale_provision';
-                $saleProvision->save();
-
                 try {
                     $buyer = User::find($tender->user_id);
                     $seller = User::find($tender->vendor_id);

@@ -397,20 +397,6 @@ class UserQuotationController extends Controller
                 $quotation->counter_price = $quotation->offer_price;
                 $quotation->save();
 
-                // Save to SaleProvision table
-                $totalPrice = $quotation->offer_price;
-                $commissionAmount = 5;
-                $provisionAmount = ($commissionAmount / 100) * $totalPrice;
-
-                $saleProvision = new Wallet();
-                $saleProvision->order_item_id   = 0;
-                $saleProvision->offer_tender_id = 0;
-                $saleProvision->offer_quotation_id = $quotation->id;
-                $saleProvision->user_id         = auth()->user()->id;
-                $saleProvision->credit          = $provisionAmount;
-                $saleProvision->type            = 'sale_provision';
-                $saleProvision->save();
-
                 $otherQuotations = OfferQuotation::where('id', '!=', $quotation->id)->where('quotation_id', $request->quotation_id)->where('vendor_id', auth()->user()->id)->get();
                 foreach ($otherQuotations as $otherQuotation) {
                     $otherQuotation->status = "reject";
@@ -682,6 +668,20 @@ class UserQuotationController extends Controller
         $orderItem = OfferQuotation::find($request->offer_id);
         $orderItem[$request->col] = $request->value;
         $orderItem->save();
+
+        // Save to SaleProvision table
+        $totalPrice = $orderItem->offer_price;
+        $provisionAmount = (5 / 100) * $totalPrice;
+
+        $saleProvision = new Wallet();
+        $saleProvision->order_item_id   = 0;
+        $saleProvision->offer_quotation_id = $orderItem->id;
+        $saleProvision->offer_tender_id = 0;
+        $saleProvision->user_id         = auth()->user()->id;
+        $saleProvision->debit           = $provisionAmount;
+        $saleProvision->type            = 'sale_provision';
+        $saleProvision->save();
+
         return response()->json(['status' => true, 'message' => 'Status updated successfully.']);
     }
 

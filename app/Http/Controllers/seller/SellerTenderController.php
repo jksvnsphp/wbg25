@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\region;
 use App\Models\Tender;
+use App\Models\Wallet;
 use App\Models\countries;
 use App\Models\OfferTender;
 use Illuminate\Support\Str;
@@ -893,6 +894,25 @@ class SellerTenderController extends Controller
         $orderItem = OfferTender::find($request->offer_id);
         $orderItem[$request->col] = $request->value;
         $orderItem->save();
+
+        // Expire Tender
+        $tender = Tender::find($orderItem->tender_id);
+        $tender['duration'] = 0;
+        $tender->save();
+
+        // Save to SaleProvision table
+        $totalPrice = $orderItem->offer_price;
+        $provisionAmount = (5 / 100) * $totalPrice;
+
+        $saleProvision = new Wallet();
+        $saleProvision->order_item_id   = 0;
+        $saleProvision->offer_quotation_id = 0;
+        $saleProvision->offer_tender_id = $orderItem->id;
+        $saleProvision->user_id         = auth()->user()->id;
+        $saleProvision->debit          = $provisionAmount;
+        $saleProvision->type            = 'sale_provision';
+        $saleProvision->save();
+
         return response()->json(['status' => true, 'message' => 'Status updated successfully.']);
     }
 

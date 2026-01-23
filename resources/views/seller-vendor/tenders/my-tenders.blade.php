@@ -14,8 +14,8 @@
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <div class="d-flex align-items-center">
                     <h6 class="fs-5 text-light py-2 mt-0 px-3 mb-0">My Tenders</h6>
-                    <a href="{{ route('seller.get.tender') }}" class="btn btn-sm me-3 {{ Route::currentRouteName() == 'seller.get.tender' ? 'btn-secondary disabled' : 'btn-light' }}">Suplliers Tender Deals</a>
-                    <a href="{{ route('seller.get.expired-tender') }}" class="btn btn-sm {{ Route::currentRouteName() == 'seller.get.expired-tender' ? 'btn-secondary disabled' : 'btn-light' }}">My Tender Deals </a>
+                    <a href="{{ route('seller.get.tender') }}" class="btn btn-sm me-3 {{ Route::currentRouteName() == 'seller.get.tender' ? 'btn-secondary disabled' : 'btn-light' }}">Active</a>
+                    <a href="{{ route('seller.get.expired-tender') }}" class="btn btn-sm {{ Route::currentRouteName() == 'seller.get.expired-tender' ? 'btn-secondary disabled' : 'btn-light' }}"> Inactive </a>
                 </div>
                 <a href="{{ route('seller.add.tender') }}" class="btn btn-secondary">+ Add Tender</a>
             </div>
@@ -27,7 +27,6 @@
                             <thead>
                                 <tr>
                                     <th colspan="2">Information</th>
-
                                     <th>Expiring on</th>
                                     <th>Condition</th>
                                     <th>Price</th>

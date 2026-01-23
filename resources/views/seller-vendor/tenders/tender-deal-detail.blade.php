@@ -68,11 +68,12 @@
                                                 </span>
                                             </td>
                                             <td>
+                                                @if ($tenderOffer->vendor_id == auth()->user()->id)
                                                 <span class="text-secondary fw-semibold">
-                                                    @php 
-                                                        $tenderAmount = $tenderOffer->offer_price ?? 0;
-                                                        $commissionRate = 5; // percent 
-                                                        $commission = ($tenderAmount * $commissionRate) / 100; 
+                                                    @php
+                                                    $tenderAmount = $tenderOffer->offer_price ?? 0;
+                                                    $commissionRate = 5; // percent
+                                                    $commission = ($tenderAmount * $commissionRate) / 100;
 
                                                     @endphp
 
@@ -83,6 +84,7 @@
                                                     EURO &euro;{{ ($tenderOffer->offer_price*5)/100 ?? 0 }}
                                                     @endif
                                                 </span>
+                                                @endif
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center justify-content-between">
@@ -96,14 +98,14 @@
                                     </tbody>
                                 </table>
                             </div>
-                           @if ($tenderOffer->vendor_id == auth()->user()->id) 
-                          {{-- @if ($tenderOffer->status != 'accept') --}} 
+                            @if ($tenderOffer->vendor_id == auth()->user()->id)
+                            {{-- @if ($tenderOffer->status != 'accept') --}}
                             <div class="row mt-3">
                                 <div class="col-md-4" style="border-right: 1px solid #ddd">
                                     <h6 class="fw-bold mb-3">Shipping Address</h6>
                                     @php
                                     $sender = $tenderOffer->sender ?? [];
-                                    
+
                                     @endphp
                                     <p class="mb-0">{{ $sender->first_name . ' ' . $sender->last_name }}</p>
                                     @if (isset($tenderOffer->shipping_address) || $tender->isDeal==1)
@@ -127,10 +129,10 @@
                                     @endphp
                                     <p class="mb-2">
                                         {{ $sender->street ?? null }}
-                                        {{ $sender->house_no ?? null }} 
-                                       
+                                        {{ $sender->house_no ?? null }}
+
                                     </p>
-                                    <p class="mb-2"> {{ $sender->postal_code ?? null }}  {{ $sender->city ?? null }}</p>
+                                    <p class="mb-2"> {{ $sender->postal_code ?? null }} {{ $sender->city ?? null }}</p>
                                     <p class="mb-2"> </p>
                                     <p class="mb-2">{{ getStateName($sender->state ?? null) }}</p>
                                     <p class="mb-0">{{ getCountriesName($sender->country ?? null) }}</p>
