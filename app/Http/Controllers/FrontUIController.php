@@ -367,7 +367,7 @@ class FrontUIController extends Controller
             ->limit(10)
             ->get();
         foreach ($randomSellers ?? [] as $randomSeller) {
-            $randomSeller->average_rating = number_format($randomSeller->ratings()->avg('rate'));
+            $randomSeller->average_rating = number_format($randomSeller->ratings()->avg('rate') ?? 0);
         }
         // dd($randomSellers);
         $array = ['banners' => $banner, 'top_suppliers' => $top_suppliers, 'categoryTree' => $makeCategoryTree, 'infos' => $infos, 'categories' => $categories, 'countries' => $countries, 'wholesalerUsers' => $wholesalerUsers, 'latestNews' => $latestNews, 'latestProducts' => $latestProducts, 'latestTenders' => $latestTenders, 'BulkProducts' => $BulkProducts, 'DailyProducts' => $DailyProducts, 'HotsProducts' => $HotsProducts, 'LimitedProducts' => $LimitedProducts, 'spotlights' => $randomSellers, 'videoProduct' => $videoProduct];
