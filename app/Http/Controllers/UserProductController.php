@@ -109,21 +109,21 @@ class UserProductController extends Controller
             $q->whereNotNull('expire_at');
         }]);
 
-  $queryp = Products::query()
-    ->where(function ($q) {
-        $q->whereNull('duration_date')         // old products
-          ->orWhere('duration_date', '>=', now());
-    })               // active products only
-    ->where('totalQty','>=', 0)             // not sold out
-    ->whereHas('vendor', function ($q) {
-        $q->where('account_type', 'seller');
-    })
-    ->with([
-        'vendor.sellerPackageOne' => function ($q) {
-            $q->whereNotNull('expire_at')
-              ->where('expire_at', '>=', now()); // valid package only
-        }
-    ]);
+        $queryp = Products::query()
+            ->where(function ($q) {
+                $q->whereNull('duration_date')         // old products
+                    ->orWhere('duration_date', '>=', now());
+            })               // active products only
+            ->where('totalQty', '>=', 0)             // not sold out
+            ->whereHas('vendor', function ($q) {
+                $q->where('account_type', 'seller');
+            })
+            ->with([
+                'vendor.sellerPackageOne' => function ($q) {
+                    $q->whereNotNull('expire_at')
+                        ->where('expire_at', '>=', now()); // valid package only
+                }
+            ]);
 
 
         $queryp->where('isList', 1);
@@ -276,7 +276,7 @@ class UserProductController extends Controller
             $product->country = $product->vendor->country
                 ? countries::find($product->vendor->country)
                 : null;
-            $product->average_rating = number_format($product->ratings()->avg('rate'));
+            $product->average_rating = number_format($product->vendor->ratings()->avg('rate') ?? 0);
 
             $totalQty = 0;
 
@@ -475,7 +475,7 @@ class UserProductController extends Controller
             $product->country = $product->vendor->country
                 ? countries::find($product->vendor->country)
                 : null;
-            $product->average_rating = number_format($product->ratings()->avg('rate'));
+            $product->average_rating = number_format($product->vendor->ratings()->avg('rate') ?? 0);
 
             $totalQty = 0;
 
@@ -761,7 +761,7 @@ class UserProductController extends Controller
             $product->searched_path = $searchedPath;
 
             $product->shippingData = $shippingData;
-            $product->average_rating = number_format($product->ratings()->avg('rate'));
+            $product->average_rating = number_format($product->vendor->ratings()->avg('rate') ?? 0);
 
             // echo '<pre>';
             // print_r($product->toArray());
@@ -897,7 +897,7 @@ class UserProductController extends Controller
 
             $categoryTree = array_values($categoryTree);
             // dd($categoryTree);
-            $seller->rating = number_format($seller->ratings()->avg('rate'), 1);
+            $seller->rating = number_format($seller->ratings()->avg('rate') ?? 0, 1);
 
             return view('external-user.spotlight-store', compact('seller', 'categories', 'countries', 'products', 'categoryTree'));
         } else {

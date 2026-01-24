@@ -84,7 +84,7 @@ class UINewsController extends Controller
                 $new->country = countries::where('id', $new->vendor->country)->first();
             }
             $new->average_rating = null;
-            $new->average_rating = number_format($new->ratings()->avg('rate'));
+            $new->average_rating = number_format($new->vendor->ratings()->avg('rate') ?? 0);
 
             // Add expiry info for UI if needed
             $expiryDate = Carbon::parse($new->created_at)->addDays($new->duration);
@@ -110,7 +110,7 @@ class UINewsController extends Controller
             $news->state = states::where('id', $news->vendor->state)->first();
         }
         $news->average_rating = null;
-        $news->average_rating = number_format($news->vendor->ratings()->avg('rate'));
+        $news->average_rating = number_format($news->vendor->ratings()->avg('rate') ?? 0);
         // dd($news->toArray());
         return view('external-user.read-news', compact('news'));
     }

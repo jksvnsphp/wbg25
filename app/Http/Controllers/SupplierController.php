@@ -137,7 +137,7 @@ class SupplierController extends Controller
             $seller->average_rating = null;
             $seller->country = countries::where('id', $seller->country)->first();
             $seller->state = states::where('id', $seller->state)->first();
-            $seller->average_rating = number_format($seller->ratings()->avg('rate'));
+            $seller->average_rating = number_format($seller->ratings()->avg('rate') ?? 0);
         }
         // dd($suppliers);
         return view('external-user.all-suppliers', compact('categories', 'countries', 'suppliers'));
