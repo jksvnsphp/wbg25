@@ -179,6 +179,7 @@ class FrontUIController extends Controller
 
         return array_values($categoryTree);
     }
+    
 
 
     public function home()
