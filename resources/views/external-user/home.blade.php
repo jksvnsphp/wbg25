@@ -274,7 +274,7 @@
                     @endphp
 
                     <a class="small_product_card mt-2 p-2 row"
-                        href="{{ route('seller.profile.view', $wholesalerUser->company->slug) }}"
+                        href="{{ route('seller.profile.view', $wholesalerUser->ref_no) }}"
                         title="{{ isset($wholesalerUser->company->name) ? $wholesalerUser->company->name : 'NA' }}">
                         <div class="col-3">
                             <span class="round_img">
