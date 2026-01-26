@@ -196,8 +196,8 @@
                     </p>
                     @if (isset($certificates) && !empty($certificates))
                     @foreach ($certificates as $certificate)
-                    @if (file_exists(asset('uploads/certificates/' . $certificate->image)))
-                    <div class="col-sm-3">
+                    @if (file_exists(public_path('uploads/certificates/' . $certificate->image)))
+                    <div class="col-sm-3 mt-3">
                         <div class="card rounded-0 border-0">
                             <div class="card-img d-flex justify-content-center">
                                 <img src="{{ asset('uploads/certificates/' . $certificate->image) }}"
@@ -208,8 +208,6 @@
                     @endif
                     @endforeach
                     @endif
-
-
                 </div>
             </div>
         </div>
