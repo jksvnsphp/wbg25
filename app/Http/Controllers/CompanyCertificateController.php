@@ -61,20 +61,20 @@ class CompanyCertificateController extends Controller
             }
 
             // Image dimension validation
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $index => $file) {
-                    if (!$file) continue;
+            // if ($request->hasFile('images')) {
+            //     foreach ($request->file('images') as $index => $file) {
+            //         if (!$file) continue;
 
-                    [$width, $height] = getimagesize($file);
+            //         [$width, $height] = getimagesize($file);
 
-                    if ($width != 480 || $height != 360) {
-                        $validator->errors()->add(
-                            "images.$index",
-                            "Image must be exactly 480px × 360px (4:3 ratio)."
-                        );
-                    }
-                }
-            }
+            //         if ($width != 480 || $height != 360) {
+            //             $validator->errors()->add(
+            //                 "images.$index",
+            //                 "Image must be exactly 480px × 360px (4:3 ratio)."
+            //             );
+            //         }
+            //     }
+            // }
         });
 
         if ($validator->fails()) {

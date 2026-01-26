@@ -23,7 +23,7 @@ class UINewsController extends Controller
                 $sq->where('id', "!=", "");
             })->latest()->get();
 
-        $newsQuery = SellerNews::where('isPublish', 1)->with('vendor.company')->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [now()]);
+        $newsQuery = SellerNews::where('isPublish', 1)->with('vendor.company')->whereRaw('DATE_ADD(updated_at, INTERVAL duration DAY) >= ?', [now()]);
 
         // Filter by order_type: all, latest, endest-soon
         $orderType = $request->input('order_type', 'all'); // default to 'all'
@@ -32,7 +32,7 @@ class UINewsController extends Controller
             $newsQuery->latest('created_at');
         } elseif ($orderType === 'expired-soon') {
             // Order by expiry date ascending (soonest to expire first)
-            $newsQuery->orderByRaw('DATE_ADD(created_at, INTERVAL duration DAY) ASC');
+            $newsQuery->orderByRaw('DATE_ADD(updated_at, INTERVAL duration DAY) ASC');
         } else {
             // For 'all' or any other value, default order
             $newsQuery->latest();

@@ -49,7 +49,7 @@
                                 <li>
                                     <a class="dropdown-item mx-0 pb-1 px-0" href="{{ route('all.product-video.show') }}">Product Videos</a>
                                 </li>
-                                
+
                                 <li>
                                     <a class="dropdown-item mx-0 pb-1 px-0" href="{{ route('all.type.products','limited-offer') }}">Limited Offers</a>
                                 </li>
@@ -97,7 +97,7 @@
                                 <li>
                                     <a class="dropdown-item mx-0 pb-1 px-0" href="{{ route('all.product-video.show') }}">Product Videos</a>
                                 </li>
-                                
+
                                 <li>
                                     <a class="dropdown-item mx-0 pb-1 px-0" href="{{ route('all.type.products','limited-offer') }}">Limited Offers</a>
                                 </li>
@@ -163,10 +163,10 @@
                         <div class="col-12">
                             <form method="get" action="{{ route('search') }}" class="form-search d-flex">
                                 <select name="type-filter" id="type-filter">
-                                    <option @selected(request('type-filter')=="products") value="products">Products</option>
-                                    <option @selected(request('type-filter')=="stores") value="stores">Stores</option>
-                                    <option @selected(request('type-filter')=="tenders") value="tenders">Tenders</option>
-                                    <option @selected(request('type-filter')=="suppliers") value="suppliers">Suppliers</option>
+                                    <option @selected(request('type-filter')=="products" ) value="products">Products</option>
+                                    <option @selected(request('type-filter')=="stores" ) value="stores">Stores</option>
+                                    <option @selected(request('type-filter')=="tenders" ) value="tenders">Tenders</option>
+                                    <option @selected(request('type-filter')=="suppliers" ) value="suppliers">Suppliers</option>
                                 </select>
                                 <input type="search" value="{{ request('q') }}" name="search" placeholder="Search your requirement..." />
                                 <button type="submit"
@@ -192,8 +192,8 @@
                                 <div class="info-log">
                                     <h6>
                                         @if (Auth::check())
-                                            <a
-                                                href="
+                                        <a
+                                            href="
                                             @if (auth()->user()->account_type == 'buyer') {{ route('buyer.dashboard') }}
                                             @elseif(auth()->user()->account_type == 'seller')
                                             {{ route('seller.dashboard') }}
@@ -203,15 +203,15 @@
                                               {{-- {{ route('seller.dashboard') }} --}} @endif
                                             ">{{ explode(' ', Auth::user()->first_name)[0] }}</a>
                                         @else
-                                            <a href="{{ route('login') }}">Sign In</a>
+                                        <a href="{{ route('login') }}">Sign In</a>
                                         @endif
                                     </h6>
                                     <p>
                                         @if (Auth::check())
-                                            <a class="pt-2 d-block" href="{{ route('logout') }}">logout</a>
+                                        <a class="pt-2 d-block" href="{{ route('logout') }}">logout</a>
                                         @else
-                                            <a href="{{ route('user.member.package') }}" class="pt-2 d-block">Join
-                                                Free</a>
+                                        <a href="{{ route('user.member.package') }}" class="pt-2 d-block">Join
+                                            Free</a>
                                         @endif
                                     </p>
                                 </div>
@@ -235,10 +235,10 @@
                         <div class="col-xl-12">
                             <form method="get" action="{{ route('search') }}" class="form-search d-flex">
                                 <select name="type-filter" id="type-filter">
-                                    <option @selected(request('type-filter')=="products") value="products">Products</option>
-                                    <option @selected(request('type-filter')=="stores") value="stores">Stores</option>
-                                    <option @selected(request('type-filter')=="tenders") value="tenders">Tenders</option>
-                                    <option @selected(request('type-filter')=="suppliers") value="suppliers">Suppliers</option>
+                                    <option @selected(request('type-filter')=="products" ) value="products">Products</option>
+                                    <option @selected(request('type-filter')=="stores" ) value="stores">Stores</option>
+                                    <option @selected(request('type-filter')=="tenders" ) value="tenders">Tenders</option>
+                                    <option @selected(request('type-filter')=="suppliers" ) value="suppliers">Suppliers</option>
                                 </select>
                                 <input type="search" value="{{ request('q') }}" name="search" placeholder="Search your requirement..." />
                                 <button type="submit"
@@ -264,8 +264,8 @@
                                 <div class="info-log">
                                     <h6>
                                         @if (Auth::check())
-                                            <a
-                                                href="
+                                        <a
+                                            href="
                                             @if (auth()->user()->account_type == 'buyer') {{ route('buyer.dashboard') }}
                                             @elseif(auth()->user()->account_type == 'seller')
                                             {{ route('seller.dashboard') }}
@@ -275,15 +275,15 @@
                                               {{-- {{ route('seller.dashboard') }} --}} @endif
                                             ">{{ explode(' ', Auth::user()->first_name)[0] }}</a>
                                         @else
-                                            <a href="{{ route('login') }}">Sign In</a>
+                                        <a href="{{ route('login') }}">Sign In</a>
                                         @endif
                                     </h6>
                                     <p>
                                         @if (Auth::check())
-                                            <a class="pt-2 d-block" href="{{ route('logout') }}">logout</a>
+                                        <a class="pt-2 d-block" href="{{ route('logout') }}">logout</a>
                                         @else
-                                            <a href="{{ route('user.member.package') }}" class="pt-2 d-block">Join
-                                                Free</a>
+                                        <a href="{{ route('user.member.package') }}" class="pt-2 d-block">Join
+                                            Free</a>
                                         @endif
                                     </p>
                                 </div>
@@ -317,7 +317,7 @@
                             <i class="fa-solid fa-gauge"></i> Dashboard
                         </a>
                     </li>
-                    
+
                     <li class="nav-item">
                         <a href="{{ route('inbox.show') }}" class="nav-link">
                             <span class="d-lg-inline d-none">|</span>
@@ -374,7 +374,7 @@
                                     href="{{ route('seller.profile.preview', auth()->user()->ref_no) }}"><i
                                         class="fa-solid me-2 fa-id-card-clip"></i>View Profile</a>
                             </li>
-							<li>
+                            <li>
                                 <a class="dropdown-item mx-0 px-0"
                                     href="{{ route('seller.change.password', auth()->user()->ref_no) }}"><i
                                         class="fa-solid me-2 fa-id-card-clip"></i>Change Password</a>
@@ -415,12 +415,12 @@
                             <i class="fa-solid fa-link"></i> Spotlight Store
                         </a>
                         <ul class="dropdown-menu p-2">
-						
-						<li>
+
+                            <li>
                                 <a class="dropdown-item mx-0 px-0" href="{{ route('create.spotlight.store') }}"><i
                                         class="fa-solid me-2 fa-gift"></i>Set Store</a>
                             </li>
-						
+
                             <li>
                                 <a class="dropdown-item mx-0 px-0" href="{{ route('seller.multiple-listing') }}"><i
                                         class="fa-solid me-2 fa-gift"></i>List Multiply Products</a>
@@ -473,7 +473,7 @@
                                 <a class="dropdown-item mx-0 px-0" href="{{ route('seller.deal.offer.tender') }}"><i
                                         class="fa-solid me-2 fa-bullhorn"></i>My Tender Deals</a>
                             </li>
-                           
+
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
