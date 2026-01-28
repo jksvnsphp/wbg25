@@ -1,11 +1,4 @@
 @extends('external-user.external-frame')
-@section('meta_data')
-<title>Privacy Policy of World Business Guide – WBG24.com</title>
-<meta name="description"
-    content="The Privacy Policy of World Business Guide - WBG24.com - Your international Market - describes what Data is processed and for what purposes it is used.">
-<meta name="keywords" content="Privacy Policy">
-<meta name="author" content="WBG24.com">
-@endsection
 @section('external-main-content')
 <!-- Header section end here -->
 <style>

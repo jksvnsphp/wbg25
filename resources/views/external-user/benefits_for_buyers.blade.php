@@ -1,13 +1,4 @@
 @extends('external-user.external-frame')
-
-@section('meta_data')
-<title>Get Quote across the Globe on World Business Guide – WBG24.com</title>
-<meta name="description"
-    content="Use Request for Quotation (RFQ) for individual Results & best Price Business Deals on World Business Guide – WBG24.com – Your international Market.">
-<meta name="keywords" content="Get Quote, Request for Quotation, RFQ, Business Deals">
-<meta name="author" content="WBG24.com">
-@endsection
-
 @section('external-main-content')
 <section class="container my-4">
     <div class="row">

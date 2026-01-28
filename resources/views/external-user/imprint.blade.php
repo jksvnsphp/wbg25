@@ -1,13 +1,4 @@
 @extends('external-user.external-frame')
-
-@section('meta_data')
-<title>Imprint of World Business Guide – WBG24.com</title>
-<meta name="description"
-    content="The Imprint of the World Business Guide - WBG24.com - Your international Market - is a Kind of virtual Business Card and serves Customer Transparency.">
-<meta name="keywords" content="Imprint">
-<meta name="author" content="WBG24.com">
-@endsection
-
 @section('external-main-content')
 <!-- Imprint Section -->
 <style>

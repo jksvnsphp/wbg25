@@ -1,15 +1,4 @@
 @extends('external-user.external-frame')
-
-
-@section('meta_data')
-<title>Help & Support on World Business Guide – WBG24.com</title>
-<meta name="description"
-    content="WBG24.com Help & Support offer Help for Buying and Help for Selling - Membership Help Articles and a personalized Support Contact Form.">
-<meta name="keywords" content="WBG24 Help, WBG24 Support, Buying Help, Selling Help, Support">
-<meta name="author" content="WBG24.com">
-@endsection
-
-
 @section('external-main-content')
 <style>
     .main_card_box .card {

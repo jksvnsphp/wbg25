@@ -1,11 +1,4 @@
 @extends('external-user.external-frame')
-@section('meta_data')
-<title>Terms & Conditions of World Business Guide – WBG24.com</title>
-<meta name="description"
-    content="The Terms & Conditions of World Business Guide - WBG24.com - regulate the contractual Clauses for the Standardization and Concretization of Member Contracts.">
-<meta name="keywords" content="Terms & Conditions">
-<meta name="author" content="WBG24.com">
-@endsection
 @section('external-main-content')
 <!-- Terms and Conditions Section -->
 <style>

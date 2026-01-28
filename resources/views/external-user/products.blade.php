@@ -1,15 +1,4 @@
 @extends('external-user.external-frame')
-
-
-@section('meta_data')
-<title>Find the newest Products across the Globe on World Business Guide</title>
-<meta name="description"
-    content="On WBG24.com you will find more than 7000 specific Product Categories with the newest and best Price Products from trusted Suppliers across the Globe.">
-<meta name="keywords" content="Newest Products, latest Products, best Price Products, Multiply Products">
-<meta name="author" content="WBG24.com">
-@endsection
-
-
 @section('external-main-content')
 <section class="container-fluid">
     <div class="row">

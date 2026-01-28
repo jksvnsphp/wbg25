@@ -1,15 +1,4 @@
 @extends('external-user.external-frame')
-
-
-@section('meta_data')
-<title>Find B2B Tenders across the Globe on World Business Guide – WBG24</title>
-<meta name="description"
-    content="B2B Tenders from trusted Suppliers across the Globe offer on World Business Guide – WBG24.com – Your international Market – high Quality & best Price Deals.">
-<meta name="keywords" content="B2B Tenders, Business Tenders, Open Tenders, Selective Tenders">
-<meta name="author" content="WBG24.com">
-@endsection
-
-
 @section('external-main-content')
 <style>
     .price-tag {
@@ -17,8 +6,8 @@
     }
 </style>
 <section class="scp_hero mb-0 w-100">
-        <img src="{{ asset('world-business/images/Tender-Slider-Gallery.jpg') }}" class="img-fluid w-100" alt="" />
-    </section>
+    <img src="{{ asset('world-business/images/Tender-Slider-Gallery.jpg') }}" class="img-fluid w-100" alt="" />
+</section>
 <section class="container-fluid">
 
     <div class="row pb-3 pt-3 shadow" style="border: 1px solid #ddd">

@@ -8,6 +8,14 @@
     @yield('meta_data')
     @else
     @php
+    $pageKey = request()->path();
+    if ($pageKey === '' || $pageKey === '/') {
+    $pageKey = 'home';
+    }
+
+    // Allow controllers to pass $seo explicitly; otherwise load from DB.
+    $seo = $seo ?? seo($pageKey);
+
     $seo = $seo ?? [
     'title' => config('app.name'),
     'keywords' => '',

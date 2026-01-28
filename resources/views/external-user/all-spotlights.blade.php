@@ -1,11 +1,4 @@
 @extends('external-user.external-frame')
-@section('meta_data')
-<title>Spotlight Stores across the Globe with World Business Guide – WBG24</title>
-<meta name="description"
-    content="Search to Spotlight Stores or create & promote your own Subdomain Spotlight Store on World Business Guide – www.WBG24.com /Your-Name">
-<meta name="keywords" content="Spotlight Store, Create Spotlight Store, Promote Spotlight Store">
-<meta name="author" content="WBG24.com">
-@endsection
 @section('external-main-content')
 <style>
     .spotcard {

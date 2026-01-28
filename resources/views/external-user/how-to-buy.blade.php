@@ -1,15 +1,4 @@
 @extends('external-user.external-frame')
-
-
-@section('meta_data')
-<title>How to buy on World Business Guide – Your international Market</title>
-<meta name="description"
-    content="To buy Products, bid on Tenders or Request for Quotation on World Business Guide – WBG24.com – Your international Market - you need to Join a free Buyer Account.">
-<meta name="keywords" content="How to buy, How to Bid, how to get Quotes, Buyer Account">
-<meta name="author" content="WBG24.com">
-@endsection
-
-
 @section('external-main-content')
 <!-- header section end here -->
 <style>
