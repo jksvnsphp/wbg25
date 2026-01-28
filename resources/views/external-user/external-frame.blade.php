@@ -4,21 +4,22 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   <?php /* @yield('meta_data') */ ?>
-    
+    @hasSection('meta_data')
+    @yield('meta_data')
+    @else
     @php
     $seo = $seo ?? [
-        'title' => config('app.name'),
-        'keywords' => '',
-        'description' => ''
+    'title' => config('app.name'),
+    'keywords' => '',
+    'description' => '',
     ];
-@endphp
+    @endphp
 
-<title>{{ $seo['title'] }}</title>
-
-<meta name="keywords" content="{{ $seo['keywords'] }}">
-<meta name="description" content="{{ $seo['description'] }}">
-<meta name="author" content="WBG24.com">
+    <title>{{ $seo['title'] }}</title>
+    <meta name="keywords" content="{{ $seo['keywords'] }}">
+    <meta name="description" content="{{ $seo['description'] }}">
+    <meta name="author" content="WBG24.com">
+    @endif
 
 
     <link rel="shortcut icon" href="{{ asset('world-business/images/logos/logo.png') }}" />
@@ -210,7 +211,7 @@
     </style>
 </head>
 
-<body>
+<body data-logged-in="{{ auth()->check() ? 1 : 0 }}">
     <!-- header section start here -->
     @include('external-user.inc-parts.header')
     <!-- header section end here -->
@@ -220,10 +221,10 @@
 
     <div class="card shadow border-top-0 rounded-0 py-4 mb-4"></div>
     <!-- Right corner popup -->
-     @php
-             $segment = request()->segment(1);
-     @endphp
-     @if ( $segment == 'member-packages')
+    @php
+    $segment = request()->segment(1);
+    @endphp
+    @if ( $segment == 'member-packages')
     <div id="loginPopup" class="popup-container" style="display: none;">
         <div class="popup-content">
             <span class="close-popup">&times;</span>
@@ -254,7 +255,8 @@
     <script>
         $(document).ready(function() {
             // Check if user is logged in (Laravel)
-            @if (!auth()->check())
+            const isLoggedIn = document.body?.dataset?.loggedIn === '1';
+            if (!isLoggedIn) {
                 // Show popup if not logged in
                 $('#loginPopup').fadeIn();
 
@@ -273,13 +275,13 @@
                     $('#loginPopup').hide();
                     $('#popupImageLink').addClass('active');
                 }
-            @endif
+            }
 
             // Handle image click
             $('#popupImageLink').click(function(e) {
                 e.preventDefault();
                 console.log('Image was clicked!');
-                
+
             });
         });
     </script>

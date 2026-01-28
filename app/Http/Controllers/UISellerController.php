@@ -91,7 +91,7 @@ class UISellerController extends Controller
                 'oneStarPercent' => $oneStarPercent,
                 'spotlights' => $spotlights,
             ];
-            // dd($certificates->toArray());
+            // dd($seller->toArray());
 
             return view('external-user.supplier-profile-view', compact('certificates', 'ratingData', 'seller', 'packageData', 'latestNews', 'latestProduct', 'latestTender'));
         } else {
