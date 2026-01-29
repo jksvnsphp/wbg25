@@ -1,40 +1,4 @@
 @extends('external-user.external-frame')
-
-
-@section('meta_data')
-@if ($retype == 'limited-offer')
-<title>Limited Offers across the Globe on World Business Guide – WBG24</title>
-<meta name="description"
-    content="Buy & sell Limited Offers across the Globe and get best Deals on World Business Guide – WBG24.com – Your international Market.">
-<meta name="keywords" content="Limited Offers, Limited Products, Limited Deals">
-<meta name="author" content="WBG24.com">
-@elseif ($retype == 'daily-deal')
-<title>Daily Deals across the Globe on World Business Guide – WBG24</title>
-<meta name="description"
-    content="Daily Deals - buy or sell across the Globe - get best Deals on World Business Guide – WBG24.com – Your international Market.">
-<meta name="keywords" content="Daily Deals, Buy Daily Deals, Sell Daily Deals">
-<meta name="author" content="WBG24.com">
-@elseif ($retype == 'bulk-buying')
-<title>Bulk Buying across the Globe on World Business Guide – WBG24</title>
-<meta name="description"
-    content="Bulk Buying & Bulk Selling across the Globe - get best Deals with World Business Guide – WBG24.com – Your international Market.">
-<meta name="keywords" content="Bulk buying, Bulk selling, Bulk Deals">
-<meta name="author" content="WBG24.com">
-@elseif ($retype == 'hot')
-<title>Hot Products across the Globe on World Business Guide – WBG24</title>
-<meta name="description"
-    content="Buy or sell Hot Products across the Globe and get best Deals on World Business Guide – WBG24.com – Your international Market.">
-<meta name="keywords" content="Hot Products, Buy Hot Products, Sell Hot Products">
-<meta name="author" content="WBG24.com">
-@else
-<title>Find the newest Products across the Globe on World Business Guide</title>
-<meta name="description"
-    content="On WBG24.com you will find more than 7000 specific Product Categories with the newest and best Price Products from trusted Suppliers across the Globe.">
-<meta name="keywords" content="Newest Products, latest Products, best Price Products, Multiply Products">
-<meta name="author" content="WBG24.com">
-@endif
-@endsection
-
 @section('external-main-content')
 <section class="container-fluid">
     <div class="row">

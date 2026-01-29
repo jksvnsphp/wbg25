@@ -1,13 +1,4 @@
 @extends('external-user.external-frame')
-
-@section('meta_data')
-<title>Data Protection of World Business Guide – WBG24.com</title>
-<meta name="description"
-    content="The Data Protection of World Business Guide - WBG24.com - Your international Market - includes Security Measures to regulate Data Access.">
-<meta name="keywords" content="Data Protection">
-<meta name="author" content="WBG24.com">
-@endsection
-
 @section('external-main-content')
 <!-- Header section end here -->
 <style>

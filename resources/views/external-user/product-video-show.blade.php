@@ -1,11 +1,4 @@
 @extends('external-user.external-frame')
-@section('meta_data')
-<title>Product Videos across the Globe on World Business Guide – WBG24</title>
-<meta name="description"
-    content="View the newest Product Videos from Suppliers across the Globe and get detailed Informations on World Business Guide – WBG24.com – Your international Market.">
-<meta name="keywords" content="View Product Videos, List Product Video, Product Videos">
-<meta name="author" content="WBG24.com">
-@endsection
 @section('external-main-content')
 <section class="container-fluid">
     <div class="row">

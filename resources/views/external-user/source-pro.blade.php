@@ -1,13 +1,4 @@
 @extends('external-user.external-frame')
-
-@section('meta_data')
-<title>Source Pro across the Globe on World Business Guide – WBG24</title>
-<meta name="description"
-    content="Source Pro on World Business Guide – WBG24.com - enable you to respond to individual and specific Product Requests in order to generate new Business Deals.">
-<meta name="keywords" content="Source Pro, Product Requests, B2B Requests, Business Deals">
-<meta name="author" content="WBG24.com">
-@endsection
-
 @section('external-main-content')
 <style>
     .clamped-text {
@@ -16,6 +7,7 @@
         -webkit-box-orient: vertical;
         text-overflow: ellipsis;
         -webkit-line-clamp: 1;
+        line-clamp: 1;
     }
 
     .clamped-text2 {
@@ -24,6 +16,7 @@
         -webkit-box-orient: vertical;
         text-overflow: ellipsis;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
     }
 </style>
 <!-- information section -->

@@ -1,11 +1,4 @@
 @extends('external-user.external-frame')
-@section('meta_data')
-<title>Business News across the Globe on World Business Guide – WBG24</title>
-<meta name="description"
-    content="Read or list the latest global Business News, Company News or Product News and stay up to Date with World Business Guide – WBG24.com – Your international Market.">
-<meta name="keywords" content="News, Business News, Company News, Product News">
-<meta name="author" content="WBG24.com">
-@endsection
 @section('external-main-content')
 <section class="container-fluid">
     <div class="row">

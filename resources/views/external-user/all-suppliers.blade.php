@@ -1,20 +1,13 @@
 @extends('external-user.external-frame')
-
-
 @section('meta_data')
-@if (request('country') != '')
-<title>Suppliers by Region across the Globe on World Business Guide</title>
-<meta name="description"
-    content="Find Manufacturer, Wholesaler, Retailer & Service Provider listed by Region on World Business Guide – WBG24.com – Your international Market.">
-<meta name="keywords" content="Suppliers by Region, Manufacturer by Region, Wholesaler by Region">
+@php
+// Allow different SEO entry when a region filter is applied.
+$seo = seo(request('country') ? 'supplier-by-region' : 'suppliers');
+@endphp
+<title>{{ $seo['title'] }}</title>
+<meta name="description" content="{{ $seo['description'] }}">
+<meta name="keywords" content="{{ $seo['keywords'] }}">
 <meta name="author" content="WBG24.com">
-@else
-<title>Find Suppliers across the Globe on World Business Guide – WBG24</title>
-<meta name="description"
-    content="Manufacturer, Wholesaler, Retailer & Service Provider meet across Industries worldwide in Order to fathom new Sale Markets and new Business Contacts.">
-<meta name="keywords" content="Manufacturer, Wholesaler, Retailer, Service Provider, Industries, Business Contacts">
-<meta name="author" content="WBG24.com">
-@endif
 @endsection
 
 

@@ -23,7 +23,7 @@ class UINewsController extends Controller
                 $sq->where('id', "!=", "");
             })->latest()->get();
 
-        $newsQuery = SellerNews::where('isPublish', 1)->with('vendor.company')->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [now()]);
+        $newsQuery = SellerNews::where('isPublish', 1)->with('vendor.company')->whereRaw('DATE_ADD(updated_at, INTERVAL duration DAY) >= ?', [now()]);
 
         // Filter by order_type: all, latest, endest-soon
         $orderType = $request->input('order_type', 'all'); // default to 'all'
@@ -32,7 +32,7 @@ class UINewsController extends Controller
             $newsQuery->latest('created_at');
         } elseif ($orderType === 'expired-soon') {
             // Order by expiry date ascending (soonest to expire first)
-            $newsQuery->orderByRaw('DATE_ADD(created_at, INTERVAL duration DAY) ASC');
+            $newsQuery->orderByRaw('DATE_ADD(updated_at, INTERVAL duration DAY) ASC');
         } else {
             // For 'all' or any other value, default order
             $newsQuery->latest();
@@ -84,7 +84,7 @@ class UINewsController extends Controller
                 $new->country = countries::where('id', $new->vendor->country)->first();
             }
             $new->average_rating = null;
-            $new->average_rating = number_format($new->ratings()->avg('rate'));
+            $new->average_rating = number_format($new->vendor->ratings()->avg('rate') ?? 0);
 
             // Add expiry info for UI if needed
             $expiryDate = Carbon::parse($new->created_at)->addDays($new->duration);
@@ -110,7 +110,7 @@ class UINewsController extends Controller
             $news->state = states::where('id', $news->vendor->state)->first();
         }
         $news->average_rating = null;
-        $news->average_rating = number_format($news->vendor->ratings()->avg('rate'));
+        $news->average_rating = number_format($news->vendor->ratings()->avg('rate') ?? 0);
         // dd($news->toArray());
         return view('external-user.read-news', compact('news'));
     }

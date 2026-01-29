@@ -10,19 +10,17 @@ use Illuminate\Support\Facades\Storage;
 
 class CertificateController extends Controller
 {
-   public function index()
-{
-    $certificates = company_certificate::with('user')
-        ->whereNotNull('image')
-        ->where('image', '!=', '')
-        ->orderBy('id', 'desc')
-        ->get()
-        ->groupBy('vendor_id');
+    public function index()
+    {
+        $certificates = company_certificate::with('user')
+            ->whereNotNull('image')
+            ->where('image', '!=', '')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->groupBy('vendor_id');
 
-    return view('admin.certifications.index', compact('certificates'));
-}
-
-
+        return view('admin.certifications.index', compact('certificates'));
+    }
 
     public function create()
     {

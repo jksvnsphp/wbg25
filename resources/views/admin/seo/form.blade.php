@@ -1,5 +1,12 @@
 <div class="row">
 
+    @php
+    $seoPage = data_get($seo ?? null, 'page');
+    $seoTitle = data_get($seo ?? null, 'title');
+    $seoKeywords = data_get($seo ?? null, 'keywords');
+    $seoDescription = data_get($seo ?? null, 'description');
+    @endphp
+
     <div class="col-md-6">
         <div class="form-group">
             <label>Page</label>
@@ -30,23 +37,21 @@
     <div class="col-md-6">
         <div class="form-group">
             <label>Title</label>
-            <input type="text" class="form-control" name="title"
-                   value="{{ $seo['title'] ?? $seo->title ?? '' }}">
+            <input type="text" class="form-control" name="title" value="{{ $seoTitle ?? '' }}">
         </div>
     </div>
 
     <div class="col-md-12">
         <div class="form-group">
             <label>Keywords</label>
-            <input type="text" class="form-control" name="keywords"
-                   value="{{ $seo['keywords'] ?? $seo->keywords ?? '' }}">
+            <input type="text" class="form-control" name="keywords" value="{{ $seoKeywords ?? '' }}">
         </div>
     </div>
 
     <div class="col-md-12">
         <div class="form-group">
             <label>Description</label>
-            <textarea class="form-control" name="description" rows="6">{{ $seo['description'] ?? $seo->description ?? '' }}</textarea>
+            <textarea class="form-control" name="description" rows="6">{{ $seoDescription ?? '' }}</textarea>
         </div>
     </div>
 

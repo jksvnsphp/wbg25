@@ -1,11 +1,4 @@
 @extends('external-user.external-frame')
-@section('meta_data')
-<title>Join Member Package on World Business Guide – WBG24.com</title>
-<meta name="description"
-    content="Join millions Trading on one of the World`s largest B2B & B2C Trade Platform & promote Your Products to Buyers across the Globe and contact trusted Suppliers.">
-<meta name="keywords" content="Member Package, Millions Trading, Trade Platform, Promote Products">
-<meta name="author" content="WBG24.com">
-@endsection
 @section('external-main-content')
 <section class="package_bg">
     <div class="container-fluid">

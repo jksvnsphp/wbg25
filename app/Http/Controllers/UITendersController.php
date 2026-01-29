@@ -376,7 +376,7 @@ class UITendersController extends Controller
 
             $tender->country = null;
             $seller = User::where('id', $tender->vendor_id)->first();
-            $seller->rating = number_format($seller->ratings()->avg('rate'), 1);
+            $seller->rating = number_format($seller->ratings()->avg('rate') ?? 0, 1);
             $tender->paymentInfo = $tender->vendor->payment_info ?? [];
 
             if (isset($tender->vendor->country)) {

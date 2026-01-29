@@ -653,7 +653,7 @@
                     <h5 class="fs-5 fw-bold py-3">Product Description</h5>
                     <hr />
                     <div class="col-md-12 my-4">
-                        {!! $product->description !!}
+                        {!! html_entity_decode($product->description) !!}
                     </div>
                 </div>
             </div>

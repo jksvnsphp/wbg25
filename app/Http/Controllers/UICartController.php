@@ -150,19 +150,19 @@ class UICartController extends Controller
 
         return $data;
     }
-    
-    
+
+
     public function index()
     {
         $id = Auth::user()->id ?? null;
         $quotationOffers = OfferQuotation::where('user_id', $id)->where('status', 'accept')->where('isDealClose', 0)->count();
         $tenderOffers = OfferTender::where('user_id', $id)->where('status', 'accept')->where('isDealClose', 0)->count();
-        
+
         $carts = Cart::latest()->where('user_id', auth()->user()->id)->with('product.gallery', 'product.product_setting', 'product.vendor.company')->get();
         $groupedCarts = [];
         if ($carts) {
             foreach ($carts as $cart) {
-                $cart->average_rating = number_format($cart->product->ratings()->avg('rate'));
+                $cart->average_rating = number_format($cart->product->vendor->ratings()->avg('rate') ?? 0);
                 $cart->shippingData = $this->getShippingData($cart->product->rate_table_id);
                 $cart->yourShippingCost = $this->getShippingCostByIp($cart->product->rate_table_id);
                 $cart->isReturnAccept = isset($cart->product->product_setting->isReturnAccept);
@@ -181,11 +181,11 @@ class UICartController extends Controller
         $id = Auth::user()->id ?? null;
         $tenderOffers = OfferTender::where('user_id', $id)->where('status', 'accept')->with('tender.vendor.company')->where('isDealClose', 0)->get();
         $quotationOffers = OfferQuotation::where('user_id', $id)->where('status', 'accept')->where('isDealClose', 0)->count();
-        $cartOffers = Cart::where('user_id',$id)->count();
+        $cartOffers = Cart::where('user_id', $id)->count();
         $groupedCarts = [];
         if ($tenderOffers) {
             foreach ($tenderOffers as $cart) {
-                $cart->average_rating = number_format($cart->ratings()->avg('rate'));
+                $cart->average_rating = number_format($cart->tender->vendor->ratings()->avg('rate') ?? 0);
                 $cart->shippingData = $this->getShippingData($cart->tender->rate_table_id);
                 $cart->yourShippingCost = $this->getShippingCostByIp($cart->tender->rate_table_id);
 
@@ -195,7 +195,7 @@ class UICartController extends Controller
                 $groupedCarts[$vendorId]['carts'][] = $cart;
             }
         }
-        return view('external-user.shoping-cart-tender', compact('groupedCarts', 'quotationOffers','cartOffers'));
+        return view('external-user.shoping-cart-tender', compact('groupedCarts', 'quotationOffers', 'cartOffers'));
     }
 
     public function cartQuotation()
@@ -203,18 +203,18 @@ class UICartController extends Controller
         $id = Auth::user()->id ?? null;
         $tenderOffers = OfferTender::where('user_id', $id)->where('status', 'accept')->where('isDealClose', 0)->count();
         $quotationOffers = OfferQuotation::where('user_id', $id)->where('status', 'accept')->with('quotation.vendor.company')->where('isDealClose', 0)->get();
-        $cartOffers = Cart::where('user_id',$id)->count();
-        
+        $cartOffers = Cart::where('user_id', $id)->count();
+
         $groupedCarts = [];
         if ($quotationOffers) {
             foreach ($quotationOffers as $cart) {
-                $cart->average_rating = number_format($cart->ratings()->avg('rate'));
+                $cart->average_rating = number_format($cart->quotation->vendor->ratings()->avg('rate') ?? 0);
                 $vendorId = $cart->quotation->vendor->ref_no ?? '';
                 $groupedCarts[$vendorId]['vendor'] = $cart->quotation->vendor->company;
                 $groupedCarts[$vendorId]['carts'][] = $cart;
             }
         }
-        return view('external-user.shoping-cart-quotation', compact('groupedCarts', 'tenderOffers','cartOffers'));
+        return view('external-user.shoping-cart-quotation', compact('groupedCarts', 'tenderOffers', 'cartOffers'));
     }
 
     public function addToCartold(Request $request)
@@ -272,95 +272,94 @@ class UICartController extends Controller
             return response()->json(['success' => false, 'message' => 'Please logged in to use this!']);
         }
     }
-	
-	public function addToCart(Request $request)
-{
-    if (!auth()->check()) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Please login to use this feature'
+
+    public function addToCart(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please login to use this feature'
+            ]);
+        }
+
+        $request->validate([
+            'product_id'    => 'required|exists:products,id',
+            'quantity'      => 'required|integer|min:1',
+            'variant'       => 'nullable|array',
+            'priceMultiply' => 'nullable|numeric',
         ]);
-    }
 
-    $request->validate([
-        'product_id'    => 'required|exists:products,id',
-        'quantity'      => 'required|integer|min:1',
-        'variant'       => 'nullable|array',
-        'priceMultiply' => 'nullable|numeric',
-    ]);
+        $product = products::findOrFail($request->product_id);
+        $qty     = (int) $request->quantity;
 
-    $product = products::findOrFail($request->product_id);
-    $qty     = (int) $request->quantity;
-
-    /*
+        /*
     |--------------------------------------------------------------------------
     | Calculate Price
     |--------------------------------------------------------------------------
     */
-    if ($product->isMultiple == 0) {
+        if ($product->isMultiple == 0) {
 
-        $price = match (true) {
-            $qty >= $product->qtymin0 && $qty <= $product->qtymax0 => $product->price0,
-            $qty >= $product->qtymin1 && $qty <= $product->qtymax1 => $product->price1,
-            $qty >= $product->qtymin2 && $qty <= $product->qtymax2 => $product->price2,
-            default => 0,
-        };
+            $price = match (true) {
+                $qty >= $product->qtymin0 && $qty <= $product->qtymax0 => $product->price0,
+                $qty >= $product->qtymin1 && $qty <= $product->qtymax1 => $product->price1,
+                $qty >= $product->qtymin2 && $qty <= $product->qtymax2 => $product->price2,
+                default => 0,
+            };
+        } else {
+            $price = (float) $request->priceMultiply;
+        }
 
-    } else {
-        $price = (float) $request->priceMultiply;
-    }
-
-    /*
+        /*
     |--------------------------------------------------------------------------
     | Find Existing Cart
     |--------------------------------------------------------------------------
     */
-    $query = Cart::where('user_id', auth()->id())
-        ->where('product_id', $product->id);
+        $query = Cart::where('user_id', auth()->id())
+            ->where('product_id', $product->id);
 
-    if ($product->isMultiple == 1) {
-        $query->where('variant', json_encode($request->variant));
-    }
+        if ($product->isMultiple == 1) {
+            $query->where('variant', json_encode($request->variant));
+        }
 
-    $cart = $query->first();
+        $cart = $query->first();
 
-    /*
+        /*
     |--------------------------------------------------------------------------
     | Create or Update Cart
     |--------------------------------------------------------------------------
     */
-    if ($cart) {
-        $cart->update([
-            'quantity' => $qty,
-            'qtyPrice' => $price,
-            'price'    => $price * $qty,
-        ]);
-    } else {
-        Cart::create([
-            'user_id'   => auth()->id(),
-            'product_id' => $product->id,
-            'variant'   => $request->variant ? json_encode($request->variant) : null,
-            'quantity'  => $qty,
-            'qtyPrice'  => $price,
-            'price'     => $price * $qty,
-        ]);
-    }
+        if ($cart) {
+            $cart->update([
+                'quantity' => $qty,
+                'qtyPrice' => $price,
+                'price'    => $price * $qty,
+            ]);
+        } else {
+            Cart::create([
+                'user_id'   => auth()->id(),
+                'product_id' => $product->id,
+                'variant'   => $request->variant ? json_encode($request->variant) : null,
+                'quantity'  => $qty,
+                'qtyPrice'  => $price,
+                'price'     => $price * $qty,
+            ]);
+        }
 
-    /*
+        /*
     |--------------------------------------------------------------------------
     | Cart Count
     |--------------------------------------------------------------------------
     */
-    $cartCount = Cart::where('user_id', auth()->id())->sum('quantity');
+        $cartCount = Cart::where('user_id', auth()->id())->sum('quantity');
 
-    return response()->json([
-        'success'   => true,
-        'message'   => 'Product added to cart successfully',
-        'cartCount' => $cartCount,
-    ]);
-}
+        return response()->json([
+            'success'   => true,
+            'message'   => 'Product added to cart successfully',
+            'cartCount' => $cartCount,
+        ]);
+    }
 
-	
+
     public function checkoutNow(Request $request)
     {
         if (isset(auth()->user()->id)) {

@@ -1,15 +1,4 @@
 @extends('external-user.external-frame')
-
-
-@section('meta_data')
-<title>Find the newest Products across the Globe on World Business Guide</title>
-<meta name="description"
-    content="On WBG24.com you will find more than 7000 specific Product Categories with the newest and best Price Products from trusted Suppliers across the Globe.">
-<meta name="keywords" content="Newest Products, latest Products, best Price Products, Multiply Products">
-<meta name="author" content="WBG24.com">
-@endsection
-
-
 @section('external-main-content')
 <section class="container-fluid">
     <div class="row">
@@ -464,15 +453,17 @@
                             <img class="img-fluid" src="{{ $previewImage }}" alt="{{ $item->name }}" />
                         </div>
                     </a>
-                    <a href="{{ route('product.detail', $item->slug) }}"
-                        class="product_title fs-6 fw-bold text-primary">{{ $item->name }}</a>
-                    <span class="product_price text-secondary">
-                        @if ($item->minPrice != '' && $item->minPrice == $item->maxPrice)
-                        US$ {{ $item->minPrice ?? 0 }}
-                        @else
-                        US$ {{ $item->minPrice ?? 0 }} - US$ {{ $item->maxPrice ?? 0 }}
-                        @endif
-                    </span>
+                    <div class="right_product_describe text-center">
+                        <a href="{{ route('product.detail', $item->slug) }}"
+                            class="product_title fs-6 fw-bold text-primary">{{ $item->name }}</a>
+                        <span class="product_price text-secondary">
+                            @if ($item->minPrice != '' && $item->minPrice == $item->maxPrice)
+                            US$ {{ $item->minPrice ?? 0 }}
+                            @else
+                            US$ {{ $item->minPrice ?? 0 }} - US$ {{ $item->maxPrice ?? 0 }}
+                            @endif
+                        </span>
+                    </div>
                 </div>
                 @endforeach
                 @endif
