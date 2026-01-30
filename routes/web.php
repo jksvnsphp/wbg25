@@ -140,6 +140,7 @@ Route::controller(UserProductController::class)->group(function () {
 });
 
 
+
 Route::controller(FrontUIController::class)->group(function () {
    Route::get('/', 'home')->name('home');
    Route::get('/home', 'home')->name('home.show');

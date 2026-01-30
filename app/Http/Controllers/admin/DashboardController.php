@@ -103,9 +103,7 @@ class DashboardController extends Controller
     public function productApproval()
     {
         // Example: Assuming you have a Product model with relations to User (seller)
-        $products = \App\Models\Product::with('seller') // seller = belongsTo(User::class, 'user_id')
-            ->latest()
-            ->paginate(10);
+        $products = collect([]); // Replace with actual product fetching logic
 
         return view('admin.approval-center.product-approval', compact('products'));
     }
