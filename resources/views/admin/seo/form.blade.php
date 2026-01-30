@@ -30,12 +30,10 @@
                 <option value="user/help-support" {{ $seoPage == 'user/help-support' ? 'selected' : '' }}>Help & Support</option>
                 <option value="user/benefits-for-buyers" {{ $seoPage == 'user/benefits-for-buyers' ? 'selected' : '' }}>Benefits For Buyers</option>
                 <option value="member-packages" {{ $seoPage == 'member-packages' ? 'selected' : '' }}>Member Packages</option>
-
                 <option value="privacy-and-policy" {{ $seoPage == 'privacy-and-policy' ? 'selected' : '' }}>Privacy And Policy</option>
                 <option value="data-protection" {{ $seoPage == 'data-protection' ? 'selected' : '' }}>Data Protection</option>
                 <option value="imprint" {{ $seoPage == 'imprint' ? 'selected' : '' }}>Imprint</option>
                 <option value="terms-and-conditions" {{ $seoPage == 'terms-and-conditions' ? 'selected' : '' }}>Terms And Conditions</option>
-
                 <option value="limited-offer/products" {{ $seoPage == 'limited-offer/products' ? 'selected' : '' }}>Limited Offer Products</option>
                 <option value="bulk-buying/products" {{ $seoPage == 'bulk-buying/products' ? 'selected' : '' }}>Bulk Buying Products</option>
                 <option value="daily-deals/products" {{ $seoPage == 'daily-deals/products' ? 'selected' : '' }}>Daily Deals Products</option>
