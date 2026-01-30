@@ -1001,7 +1001,21 @@
     });
 </script>
 <script>
-    //var editor1 = new RichTextEditor("#div_editor1");
+    $(document).ready(function() {
+        $('#div_editor1').summernote({
+            placeholder: 'Write your Item Description...',
+            tabsize: 2,
+            height: 300,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'italic', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['codeview', 'help']]
+            ]
+        });
+    });
 </script>
 <script>
     $(document).ready(function() {

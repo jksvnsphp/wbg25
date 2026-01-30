@@ -48,7 +48,7 @@
                                     <span class="fw-bold text-dark">{{ $news->title }}</span>
                                 </div>
                                 <div class="col-md-2 d-flex align-items-center">
-                                    <h5 class="fw-bold text-secondary">{{ date('d M Y', strtotime($news->created_at)) }}
+                                    <h5 class="fw-bold text-secondary">{{ date('d M Y', strtotime($news->updated_at)) }}
                                     </h5>
                                 </div>
 

@@ -396,7 +396,7 @@ class FrontUIController extends Controller
                     });
             });
         if ($request->has('q') && !empty($request->q)) {
-            $searchTerm = $request->q;
+            $searchTerm = trim($request->q);
 
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('first_name', 'LIKE', "%{$searchTerm}%")
@@ -406,14 +406,23 @@ class FrontUIController extends Controller
                         $subQuery->where('name', 'LIKE', "%{$searchTerm}%");
                     })
                     ->orWhereHas('store_keys', function ($StoreKeyQuery) use ($searchTerm) {
-                        for ($i = 1; $i <= 10; $i++) {
-                            $StoreKeyQuery->orWhere("key{$i}", 'LIKE', "%{$searchTerm}%");
-                        }
+                        $StoreKeyQuery->where(function ($keysQuery) use ($searchTerm) {
+                            for ($i = 1; $i <= 10; $i++) {
+                                $column = "key{$i}";
+                                if ($i === 1) {
+                                    $keysQuery->where($column, 'LIKE', "%{$searchTerm}%");
+                                } else {
+                                    $keysQuery->orWhere($column, 'LIKE', "%{$searchTerm}%");
+                                }
+                            }
+                        });
                     })
                     ->orWhereHas('store_meta', function ($metaQuery) use ($searchTerm) {
-                        $metaQuery->where('title', 'LIKE', "%{$searchTerm}%")
-                            ->orWhere('keywords', 'LIKE', "%{$searchTerm}%")
-                            ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                        $metaQuery->where(function ($metaSubQuery) use ($searchTerm) {
+                            $metaSubQuery->where('title', 'LIKE', "%{$searchTerm}%")
+                                ->orWhere('keywords', 'LIKE', "%{$searchTerm}%")
+                                ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                        });
                     });
             });
         }

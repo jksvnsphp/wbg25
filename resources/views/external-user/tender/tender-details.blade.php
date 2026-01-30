@@ -116,7 +116,7 @@
                         <div class="card-body">
                             <h5 class="fw-bold fs-6">Description</h5>
                             <p class="fs-6 mt-2" style="line-height: 1.5">
-                                {!! $tender->description !!}
+                                {!! html_entity_decode($tender->description) !!}
                             </p>
                         </div>
                     </div>

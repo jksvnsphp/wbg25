@@ -22,30 +22,31 @@ use App\Models\TenderCategory;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+
 class StoresController extends Controller
 {
     //
-     
-public function index(Request $request)
+
+    public function index(Request $request)
     {
         $countries = countries::orderBy('name', 'ASC')->get();
         $query = User::where('account_type', 'seller')
             ->where('isComplete', 1)
             ->where('status', 1)
             ->with('company', 'sellerPackage');
-            // ->whereHas('company', function ($companyQuery) {
-            //     $companyQuery->whereNotNull('spotlight_banner')
-            //         ->whereNotNull('spotlight_preview1');
-            // });
-            // ->whereHas('sellerPackage', function ($query) {
-            //     $query->whereHas('package', function ($subQuery) {
-            //         $subQuery->whereIn('type', ['gold', 'platinum']);
-            //     })
-            //         ->where(function ($expireQuery) {
-            //             $expireQuery->whereNull('expire_at')
-            //                 ->orWhere('expire_at', '>', now());
-            //         });
-            // });
+        // ->whereHas('company', function ($companyQuery) {
+        //     $companyQuery->whereNotNull('spotlight_banner')
+        //         ->whereNotNull('spotlight_preview1');
+        // });
+        // ->whereHas('sellerPackage', function ($query) {
+        //     $query->whereHas('package', function ($subQuery) {
+        //         $subQuery->whereIn('type', ['gold', 'platinum']);
+        //     })
+        //         ->where(function ($expireQuery) {
+        //             $expireQuery->whereNull('expire_at')
+        //                 ->orWhere('expire_at', '>', now());
+        //         });
+        // });
         if ($request->has('q') && !empty($request->q)) {
             $searchTerm = $request->q;
 
@@ -57,14 +58,23 @@ public function index(Request $request)
                         $subQuery->where('name', 'LIKE', "%{$searchTerm}%");
                     })
                     ->orWhereHas('store_keys', function ($StoreKeyQuery) use ($searchTerm) {
-                        for ($i = 1; $i <= 10; $i++) {
-                            $StoreKeyQuery->orWhere("key{$i}", 'LIKE', "%{$searchTerm}%");
-                        }
+                        $StoreKeyQuery->where(function ($keysQuery) use ($searchTerm) {
+                            for ($i = 1; $i <= 10; $i++) {
+                                $column = "key{$i}";
+                                if ($i === 1) {
+                                    $keysQuery->where($column, 'LIKE', "%{$searchTerm}%");
+                                } else {
+                                    $keysQuery->orWhere($column, 'LIKE', "%{$searchTerm}%");
+                                }
+                            }
+                        });
                     })
                     ->orWhereHas('store_meta', function ($metaQuery) use ($searchTerm) {
-                        $metaQuery->where('title', 'LIKE', "%{$searchTerm}%")
-                            ->orWhere('keywords', 'LIKE', "%{$searchTerm}%")
-                            ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                        $metaQuery->where(function ($metaSubQuery) use ($searchTerm) {
+                            $metaSubQuery->where('title', 'LIKE', "%{$searchTerm}%")
+                                ->orWhere('keywords', 'LIKE', "%{$searchTerm}%")
+                                ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                        });
                     });
             });
         }
@@ -97,7 +107,7 @@ public function index(Request $request)
         if ($request->has('pageItem') && $request->filled('pageItem')) {
             $pageItem = $request->pageItem ?? 10;
         }
-       
+
         $spotlights = $query->orderByRaw("
         (CASE 
             WHEN EXISTS (SELECT 1 FROM seller_packages sp 
@@ -119,7 +129,7 @@ public function index(Request $request)
             $spotlight->average_rating = $averageRating !== null ? number_format($averageRating, 2) : '0.00';
         }
         $categories = CustomeCategory::where('status', "1")->where('deleted', "0")->where('parent_id', "0")->orderBy('category_name', 'ASC')->get();
-       
+
         // echo "<pre/>";
         // print_r($spotlights->toArray());
         // die('dsad');
@@ -133,13 +143,13 @@ public function index(Request $request)
         //    // ->where('isComplete', 1)
         //    // ->where('status', 1)
         //     ->with('company', 'sellerPackage');
-             
-          $query = User::where('account_type', 'seller')
-        ->with('company', 'sellerPackage')
-        ->whereHas('company', function ($q) {
-            $q->whereNotNull('company_logo')
-              ->where('company_logo', '!=', '');
-        });  
+
+        $query = User::where('account_type', 'seller')
+            ->with('company', 'sellerPackage')
+            ->whereHas('company', function ($q) {
+                $q->whereNotNull('company_logo')
+                    ->where('company_logo', '!=', '');
+            });
         if ($request->has('q') && !empty($request->q)) {
             $searchTerm = $request->q;
 
@@ -151,14 +161,23 @@ public function index(Request $request)
                         $subQuery->where('name', 'LIKE', "%{$searchTerm}%");
                     })
                     ->orWhereHas('store_keys', function ($StoreKeyQuery) use ($searchTerm) {
-                        for ($i = 1; $i <= 10; $i++) {
-                            $StoreKeyQuery->orWhere("key{$i}", 'LIKE', "%{$searchTerm}%");
-                        }
+                        $StoreKeyQuery->where(function ($keysQuery) use ($searchTerm) {
+                            for ($i = 1; $i <= 10; $i++) {
+                                $column = "key{$i}";
+                                if ($i === 1) {
+                                    $keysQuery->where($column, 'LIKE', "%{$searchTerm}%");
+                                } else {
+                                    $keysQuery->orWhere($column, 'LIKE', "%{$searchTerm}%");
+                                }
+                            }
+                        });
                     })
                     ->orWhereHas('store_meta', function ($metaQuery) use ($searchTerm) {
-                        $metaQuery->where('title', 'LIKE', "%{$searchTerm}%")
-                            ->orWhere('keywords', 'LIKE', "%{$searchTerm}%")
-                            ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                        $metaQuery->where(function ($metaSubQuery) use ($searchTerm) {
+                            $metaSubQuery->where('title', 'LIKE', "%{$searchTerm}%")
+                                ->orWhere('keywords', 'LIKE', "%{$searchTerm}%")
+                                ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                        });
                     });
             });
         }
@@ -191,7 +210,7 @@ public function index(Request $request)
         if ($request->has('pageItem') && $request->filled('pageItem')) {
             $pageItem = $request->pageItem ?? 10;
         }
-       
+
         $spotlights = $query->orderByRaw("
         (CASE 
             WHEN EXISTS (SELECT 1 FROM seller_packages sp 
@@ -228,7 +247,7 @@ public function index(Request $request)
         }
     }
 
-   public function storeBanners(Request $request)
+    public function storeBanners(Request $request)
     {
         $countries = countries::orderBy('name', 'ASC')->get();
         $query = User::where('account_type', 'seller')
@@ -260,14 +279,23 @@ public function index(Request $request)
                         $subQuery->where('name', 'LIKE', "%{$searchTerm}%");
                     })
                     ->orWhereHas('store_keys', function ($StoreKeyQuery) use ($searchTerm) {
-                        for ($i = 1; $i <= 10; $i++) {
-                            $StoreKeyQuery->orWhere("key{$i}", 'LIKE', "%{$searchTerm}%");
-                        }
+                        $StoreKeyQuery->where(function ($keysQuery) use ($searchTerm) {
+                            for ($i = 1; $i <= 10; $i++) {
+                                $column = "key{$i}";
+                                if ($i === 1) {
+                                    $keysQuery->where($column, 'LIKE', "%{$searchTerm}%");
+                                } else {
+                                    $keysQuery->orWhere($column, 'LIKE', "%{$searchTerm}%");
+                                }
+                            }
+                        });
                     })
                     ->orWhereHas('store_meta', function ($metaQuery) use ($searchTerm) {
-                        $metaQuery->where('title', 'LIKE', "%{$searchTerm}%")
-                            ->orWhere('keywords', 'LIKE', "%{$searchTerm}%")
-                            ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                        $metaQuery->where(function ($metaSubQuery) use ($searchTerm) {
+                            $metaSubQuery->where('title', 'LIKE', "%{$searchTerm}%")
+                                ->orWhere('keywords', 'LIKE', "%{$searchTerm}%")
+                                ->orWhere('description', 'LIKE', "%{$searchTerm}%");
+                        });
                     });
             });
         }
@@ -300,7 +328,7 @@ public function index(Request $request)
         if ($request->has('pageItem') && $request->filled('pageItem')) {
             $pageItem = $request->pageItem ?? 10;
         }
-       
+
         $spotlights = $query->orderByRaw("
         (CASE 
             WHEN EXISTS (SELECT 1 FROM seller_packages sp 
@@ -447,7 +475,7 @@ public function index(Request $request)
         }
     }
 
-        /**
+    /**
      * Show details of a product.
      */
     public function show(Request $request, $id)
@@ -460,12 +488,12 @@ public function index(Request $request)
             ->where('order_items.product_id', $product->id)
             ->sum('order_items.quantity');
         $product->totalReviews = $product->reviews()->count();
-    
-       // echo '<pre>'; print_r($product->toArray()); die;
+
+        // echo '<pre>'; print_r($product->toArray()); die;
         return view('admin.store.show', compact('product'));
     }
-    
-     public function deletImage()
+
+    public function deletImage()
     {
         $category_id = request()->spotlight_id;
         $TenderCategory = TenderCategory::where('id', $category_id)->first();

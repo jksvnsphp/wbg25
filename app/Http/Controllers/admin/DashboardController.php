@@ -287,6 +287,17 @@ class DashboardController extends Controller
     {
         $seo = SeoMeta::findOrFail($id);
 
+        $rawPage = trim((string) $request->input('page', ''));
+        $path = parse_url($rawPage, PHP_URL_PATH);
+        if (is_string($path) && $path !== '') {
+            $rawPage = $path;
+        }
+        $normalizedPage = trim($rawPage, '/');
+        if ($normalizedPage === '') {
+            $normalizedPage = 'home';
+        }
+        $request->merge(['page' => $normalizedPage]);
+
         $request->validate([
             'page' => 'required|unique:seo_meta,page,' . $seo->id,
             'title' => 'required',
@@ -315,6 +326,17 @@ class DashboardController extends Controller
 
     public function seo_store(Request $request)
     {
+        $rawPage = trim((string) $request->input('page', ''));
+        $path = parse_url($rawPage, PHP_URL_PATH);
+        if (is_string($path) && $path !== '') {
+            $rawPage = $path;
+        }
+        $normalizedPage = trim($rawPage, '/');
+        if ($normalizedPage === '') {
+            $normalizedPage = 'home';
+        }
+        $request->merge(['page' => $normalizedPage]);
+
         $request->validate([
             'page' => 'required',
             'title' => 'required',
