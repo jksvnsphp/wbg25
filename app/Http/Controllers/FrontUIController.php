@@ -179,7 +179,7 @@ class FrontUIController extends Controller
 
         return array_values($categoryTree);
     }
-    
+
 
 
     public function home()
@@ -299,7 +299,7 @@ class FrontUIController extends Controller
             ->limit(1)
             ->get()
             ->first();
-        $latestNews = SellerNews::where('isPublish', 1)->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [now()])->latest()->limit(5)->get();
+        $latestNews = SellerNews::where('isPublish', 1)->whereRaw('DATE_ADD(updated_at, INTERVAL duration DAY) >= ?', [now()])->latest()->limit(5)->get();
         $latestProducts = products::latest()->with('gallery')
             ->where('isList', 1)
             ->where(function ($query) {
