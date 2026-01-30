@@ -415,6 +415,26 @@
                             @endif
 
                         </div>
+                         <div class="col-sm-3">
+                            <h6 class="fs-5 fw-bold py-2 text-center">Our Stores</h6>
+                            @if (isset($spotlights))
+                            <div class="card shadow pt-2 rounded-0">
+                                <div class="card-img d-flex justify-content-center">
+                                    <img src="@if (isset($spotlights->image_1) && $spotlights->image_1 != '') {{ asset('uploads/tender/' . $latestTender->image_1) }} @else https://placehold.co/400x400 @endif"
+                                        alt="" style="height: 8rem" class="mx-auto" />
+                                </div>
+                                <div class="card-body text-center">
+                                    <a href="{{ route('all.spotlight') }}"
+                                        class="text-decoration-none text-primary">View More <i
+                                            class="fa fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            @else
+                            <p class="text-center">No Store available</p>
+                            @endif
+
+                        </div>
 
                         <div class="col-sm-3">
                             <h6 class="fs-5 fw-bold py-2 text-center">Our Tenders</h6>
