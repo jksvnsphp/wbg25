@@ -233,11 +233,11 @@
                                 </div>
                                 <div class="col-md-3 d-flex align-items-center">
                                     <a href="{{ route('read.news', $article->slug) }}"
-                                        class="fw-bold text-dark"> ddd {{ $article->title }}</a>
+                                        class="fw-bold text-dark"> {{ $article->title }}</a>
                                 </div>
                                 <div class="col-md-2 d-flex align-items-center">
                                     <h5 class="fw-bold text-secondary">
-                                        {{ date('d M Y', strtotime($article->created_at)) }}
+                                        {{ date('d M Y', strtotime($article->updated_at)) }}
                                     </h5>
                                 </div>
 
