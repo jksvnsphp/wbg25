@@ -30,6 +30,19 @@
                 <option value="get-quote" {{ (isset($seo['page']) && $seo['page'] == 'get-quote') || (isset($seo->page) && $seo->page == 'get-quote') ? 'selected' : '' }}>Get Quote</option>
 
                 <option value="source-pro" {{ (isset($seo['page']) && $seo['page'] == 'source-pro') || (isset($seo->page) && $seo->page == 'source-pro') ? 'selected' : '' }}>Source Pro</option>
+                <option value="how-to-buy" {{ $seoPage == 'how-to-buy' ? 'selected' : '' }}>How To Buy</option>
+                <option value="how-to-sell" {{ $seoPage == 'how-to-sell' ? 'selected' : '' }}>How To Sell</option>
+                <option value="user/help-support" {{ $seoPage == 'user/help-support' ? 'selected' : '' }}>Help & Support</option>
+                <option value="user/benefits-for-buyers" {{ $seoPage == 'user/benefits-for-buyers' ? 'selected' : '' }}>Benefits For Buyers</option>
+                <option value="member-packages" {{ $seoPage == 'member-packages' ? 'selected' : '' }}>Member Packages</option>
+                <option value="privacy-and-policy" {{ $seoPage == 'privacy-and-policy' ? 'selected' : '' }}>Privacy And Policy</option>
+                <option value="data-protection" {{ $seoPage == 'data-protection' ? 'selected' : '' }}>Data Protection</option>
+                <option value="imprint" {{ $seoPage == 'imprint' ? 'selected' : '' }}>Imprint</option>
+                <option value="terms-and-conditions" {{ $seoPage == 'terms-and-conditions' ? 'selected' : '' }}>Terms And Conditions</option>
+                <option value="limited-offer/products" {{ $seoPage == 'limited-offer/products' ? 'selected' : '' }}>Limited Offer Products</option>
+                <option value="bulk-buying/products" {{ $seoPage == 'bulk-buying/products' ? 'selected' : '' }}>Bulk Buying Products</option>
+                <option value="daily-deals/products" {{ $seoPage == 'daily-deals/products' ? 'selected' : '' }}>Daily Deals Products</option>
+                <option value="hot/products" {{ $seoPage == 'hot/products' ? 'selected' : '' }}>Hot Products</option>
             </select>
         </div>
     </div>
