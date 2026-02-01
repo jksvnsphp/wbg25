@@ -719,15 +719,21 @@ class SellerAuthController extends Controller
 
         $listedMultiplyProduct = products::where('vendor_id', $id)->where('isListingType', 'spotlight')->where('isRead', 0)->count();
 
-        $unreadMessages = inbox::where(function ($query) {
-            $query->where(
-                function ($q) {
-                    $q->where('receiver_id', auth()->id())->where('isReceiverRead', 0);
-                }
-            )->orWhere(function ($q) {
-                $q->where('sender_id', auth()->id())->where('isSenderRead', 0);
-            });
-        })->count();
+        // Count unread *threads* (same as inbox list):
+        // - inbox unread for current user as receiver (inbox.is_read = 0)
+        // - OR any unread chat messages in that thread for current user as receiver (message.is_read = 0)
+        $unreadMessages = inbox::query()
+            ->where(function ($q) use ($id) {
+                $q->where('receiver_id', $id)->orWhere('sender_id', $id);
+            })
+            ->where(function ($q) use ($id) {
+                $q->where(function ($q2) use ($id) {
+                    $q2->where('receiver_id', $id)->where('is_read', 0);
+                })->orWhereHas('chatMessages', function ($q2) use ($id) {
+                    $q2->where('receiver_id', $id)->where('is_read', 0);
+                });
+            })
+            ->count();
 
         $totalMessages = inbox::where(function ($query) use ($id) {
             $query->where('receiver_id', $id)->orWhere('sender_id', $id);

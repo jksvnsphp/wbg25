@@ -158,6 +158,18 @@
             </nav>
         </div>
         <div class="col-md-10 mb-4">
+            <nav aria-label="breadcrumb" class="mb-2 mt-4 d-flex align-items-center justify-content-between">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#" onclick="window.history.back()" class="text-primary">Back</a></li>
+                    <li class="breadcrumb-item"><a href="/" class="text-primary">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Stores
+                    </li>
+                </ol>
+
+                <div>
+                </div>
+            </nav>
             <div class="row">
                 <div class="col-md-12 mt-2">
                     @forelse ($spotlights as $seller)
@@ -172,7 +184,7 @@
                     $rating = (int) ($seller->average_rating ?? 0);
                     @endphp
 
-                    <div class="card mt-4 shadow rounded-0">
+                    <div class="card shadow rounded-0">
                         <div class="row">
                             {{-- Left Column (Logo + Name + Rating) --}}
                             <div class="col-md-4 d-flex justify-content-center align-items-center">

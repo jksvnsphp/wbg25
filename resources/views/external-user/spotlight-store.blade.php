@@ -147,10 +147,10 @@
                     </div>
                     <div
                         class="compnay_contact d-flex align-items-center justify-content-md-end justify-content-center ">
-                        <a href="" class="text-dark me-2">
+                        <!-- <a href="" class="text-dark me-2">
                             <i class="fa fa-share-alt-square " aria-hidden="true"></i>
                             Share
-                        </a>
+                        </a> -->
                         <a data-bs-toggle="modal" data-bs-target="#contactseller" href="javaScript:void(0)"
                             class="text-dark me-2">
                             <i class="fa fa-envelope " aria-hidden="true"></i>
@@ -260,12 +260,12 @@
                             <img class="img-fluid rounded-2" style="max-height: 11rem;" src="{{ $previewImage }}"
                                 alt="">
                         </div>
-                        <div class="card-body pt-2 ">
+                        <div class="card-body pt-2 text-center">
                             <p class="fw-semibold clamp-two-lines" style="line-height:1.2;">
                                 {{ $product->name }}
                             </p>
                             <span class="fw-bold d-block fs-6 mt-2">
-                                Price at: $
+                                Price: $
                                 @if ($product->isMultiple == 1)
                                 {{ number_format($minPrice, 2) }}
                                 @else
