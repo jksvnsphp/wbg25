@@ -70,10 +70,20 @@
                                             </label>
                                             </td>
                                             <td class="align-middle">
-                                                <a href="#" class="btn m-1 btn-sm btn-success"> <i
-                                                        class="fas fa-eye"></i> </a>
-                                                <a href="#" id="delete" class="btn m-1 btn-sm btn-danger"> <i class="fa fa-trash"
-                                                        aria-hidden="true"></i> </a>
+                                                
+                                                        <a href="{{ route('admin.video-shows.view', $item->id) }}" class="btn btn-success btn-sm"><i class="fa fa-eye"></i></a>
+
+                                                <!-- <a href="{{ route('admin.videos.destroy', $item->id) }}" class="btn m-1 btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this video?')"> <i class="fa fa-trash"
+                                                        aria-hidden="true"></i> </a> -->
+                                                        <form action="{{ route('admin.videos.destroy', $item->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to delete this video?');">
+@csrf
+    @method('DELETE')
+
+    <button type="submit" class="btn btn-danger btn-sm">
+        <i class="fa fa-trash"></i>
+    </button>
+</form>
+
 
                                             </td>
                                         </tr>

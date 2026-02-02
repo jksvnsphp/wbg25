@@ -131,7 +131,7 @@ public function index(Request $request)
         $countries = countries::orderBy('name', 'ASC')->get();
         // $query = User::where('account_type', 'seller')
         //    // ->where('isComplete', 1)
-        //    // ->where('status', 1)
+        //    // ->where('.status', 1)
         //     ->with('company', 'sellerPackage');
              
           $query = User::where('account_type', 'seller')

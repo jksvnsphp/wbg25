@@ -16,9 +16,9 @@ class UserInquiryController extends Controller
     {
         // Get only buyer inquiries (filter by message_type if needed)
        $inquiries = Inbox::with(['sender', 'receiver'])
-        ->whereHas('sender', function($q) {
-        $q->where('account_type', 'company')->orWhere('account_type', 'individual');
-         })
+       // ->whereHas('sender', function($q) {
+       // $q->where('account_type', 'company')->orWhere('account_type', 'individual');
+        // })
          ->latest()
          ->paginate(10);
 
