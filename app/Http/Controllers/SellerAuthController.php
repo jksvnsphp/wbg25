@@ -1040,6 +1040,35 @@ class SellerAuthController extends Controller
             $seller->country = countries::where('id', $seller->country)->first();
             $seller->state = states::where('id', $seller->state)->first();
             $latestNews = SellerNews::where('vendor_id', $seller->id)->where('isPublish', 1)->latest()->first();
+            $query = User::where('account_type', 'seller')
+                ->where('isComplete', 1)
+                ->where('status', 1)
+                ->where('id', $seller->id)
+                ->with('company', 'sellerPackage')
+                ->whereHas('company', function ($companyQuery) {
+                    $companyQuery->whereNotNull('spotlight_banner')
+                        ->whereNotNull('spotlight_preview1');
+                })
+                ->whereHas('sellerPackage', function ($query) {
+                    $query->whereHas('package', function ($subQuery) {
+                        $subQuery->whereIn('type', ['gold', 'platinum']);
+                    })
+                        ->where(function ($expireQuery) {
+                            $expireQuery->whereNull('expire_at')
+                                ->orWhere('expire_at', '>', now());
+                        });
+                });
+             $spotlights = $query->orderByRaw("
+                (CASE 
+                    WHEN EXISTS (SELECT 1 FROM seller_packages sp 
+                                JOIN member_packages p ON sp.package_id = p.id 
+                                WHERE users.id = sp.seller_id AND p.type = 'platinum') THEN 1
+                    WHEN EXISTS (SELECT 1 FROM seller_packages sp 
+                                JOIN member_packages p ON sp.package_id = p.id 
+                                WHERE users.id = sp.seller_id AND p.type = 'gold') THEN 2
+                    ELSE 3
+                END)
+                ")->first();
             $latestProduct = products::latest()->where('vendor_id', $seller->id)->with('gallery')->where('isList', 1)->first();
             $latestTender = Tender::latest()->where('vendor_id', $seller->id)->where('status', 1)->first();
 
@@ -1070,7 +1099,7 @@ class SellerAuthController extends Controller
                 'twoStarPercent' => $twoStarPercent,
                 'oneStarPercent' => $oneStarPercent,
             ];
-            return view('external-user.supplier-profile', compact('certificates', 'ratingData', 'seller', 'packageData', 'latestNews', 'latestProduct', 'latestTender'));
+            return view('external-user.supplier-profile', compact('certificates', 'ratingData', 'seller', 'packageData', 'latestNews', 'latestProduct', 'latestTender','spotlights'));
         } else {
             abort(404);
         }

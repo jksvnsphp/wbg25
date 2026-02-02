@@ -201,7 +201,11 @@ class ProductController extends Controller
         $query = products::with([
         'vendor.company',   // load vendor & company
         'gallery'           // load images
-        ])->where('isMultiple', 1)->whereHas('gallery');
+        ])->where('isMultiple', 1)->whereNotNull('mainGallery');
+        //->whereHas('gallery'); // only products with images
+        // Always require image
+        //->whereNotNull('mainGallery')
+
 
         // Search filter
         if ($request->filled('search')) {
@@ -321,5 +325,39 @@ class ProductController extends Controller
         $product->save();
 
         return response()->json(['success' => true]);
+    }
+
+       public function stor_product_image(Request $request)
+    {
+        $query = products::with([
+        'vendor.company',   // load vendor & company
+        'gallery'           // load images
+        ])->where('isMultiple', 1)->whereNotNull('mainGallery');
+        //->whereHas('gallery'); // only products with images
+        // Always require image
+        //->whereNotNull('mainGallery')
+
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhereHas('seller', function ($q) use ($search) {
+                    $q->where('company_name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+        }
+
+        // Sort
+        if ($request->filled('sort') && $request->sort == 'oldest') {
+             $query->orderBy('id', 'asc');
+        } else {
+            $query->latest();
+           
+        }
+
+        $products = $query->paginate(10)->withQueryString();
+
+        return view('admin.store-image.multiple_products', compact('products'));
     }
 }

@@ -14,19 +14,19 @@
                             <ul class="d-flex flex-wrap" style="list-style: disc !important;">
                                 <li class="me-md-5 me-4" style="list-style: disc !important;">
                                     <a class="text-dark text-decoration-underline  d-block position-relative " href="{{route('seller.get.tender')}}">
-                                        My listed Tender
+                                         My listed Tender ({{ $listedRTender }})
                                         <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$listedTender ?? 0}}</span>
                                     </a>
                                 </li>
                                 <li class="me-md-5 me-4" style="list-style: disc !important;">
                                     <a class="text-dark text-decoration-underline d-block position-relative" href="{{route('seller.received.offer.tender')}}">
-                                        My Received Offers
+                                          My Received Offers ({{ $myRReceivedOfferTender }})
                                         <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$myReceivedOfferTender ?? 0}}</span>
                                     </a>
                                 </li>
                                 <li class="me-md-5 me-4" style="list-style: disc !important;">
                                     <a class="text-dark text-decoration-underline d-block  position-relative" href="{{route('seller.offer-counter.tender')}}">
-                                        My Counter Offers
+                                        My Counter Offers ({{ $myRSubmittedCounterOfferTender }})
                                         <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$mySubmittedCounterOfferTender ?? 0}}</span>
                                     </a>
                                 </li>
@@ -44,7 +44,7 @@
                             <ul class="d-flex flex-wrap" style="list-style: disc !important;">
                                 <li class="me-md-5 me-3" style="list-style: disc !important;">
                                     <a class="text-dark text-decoration-underline d-block position-relative" href="{{route('seller.deal.offer.tender')}}">
-                                        My Tender Deals
+                                     My Tender Deals ({{ $myRDealedOfferTender }})
                                         <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$myDealedOfferTender ?? 0}}</span>
                                     </a>
                                 </li>
@@ -60,13 +60,13 @@
                             <ul class="d-flex flex-wrap" style="list-style: disc !important;">
                                 <li class="me-md-5 me-4" style="list-style: disc !important;">
                                     <a class="text-dark text-decoration-underline d-block position-relative" href="{{route('seller.receive.offer-counter.tender')}}">
-                                        My submitted Offers
+                                         My Submitted Offers ({{ $myRSubmittedOfferTender }})
                                         <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$myReceivedCounterOfferTender ?? 0}}</span>
                                     </a>
                                 </li>
                                 <li class="me-md-5 me-3" style="list-style: disc !important;">
                                     <a class="text-dark text-decoration-underline d-block position-relative" href="{{route('seller.offered.tender')}}">
-                                        My Received Offers
+                                        My Received Offers ({{ $myRReceivedOfferTender }})
                                         <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$mySubmittedOfferTender ?? 0}}</span>
                                     </a>
                                 </li>

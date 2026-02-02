@@ -79,4 +79,37 @@ class ProductVideoShowController extends Controller
            // echo "<pre>"; print_r($products[0]->video->toArray()); exit;
         return view('admin.video-shows.index', compact('categories', 'countries','products','suppliers'));
     }
+
+   public function view($id)
+{
+    $product = products::with('video', 'vendor.company')
+        ->where('id', $id)
+        ->whereHas('video', function ($q) {
+            $q->whereNotNull('video_url')
+              ->whereRaw('LENGTH(video_url) > 0');
+        })
+        ->firstOrFail(); // IMPORTANT ✅
+
+    return view('admin.video-shows.view', compact('product'));
+}
+
+public function destroy($id)
+{
+    $product = products::findOrFail($id);
+
+    // Optional: delete video file
+    if ($product->video && $product->video->video_url) {
+        $path = public_path($product->video->video_url);
+        if (file_exists($path)) {
+            unlink($path);
+        }
+        $product->video->delete();
+    }
+
+    $product->delete();
+
+    return redirect()->back()->with('success', 'Video deleted successfully');
+}
+
+
 }
