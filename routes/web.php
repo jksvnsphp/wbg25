@@ -273,10 +273,21 @@ Route::middleware(['role:admin'])->group(function () {
       Route::post('product/toggleApproval', [ProductController::class, 'toggleApproval'])->name('product.approval');
 
 
-      Route::get('/trade-sell-list', [TenderController::class, 'allIndex'])->name('sell.trade.list');
+    Route::get('/trade-sell-list', [TenderController::class, 'allIndex'])
+    ->name('sell.trade.list');
+
+// View tender
+Route::get('/trade-sell/{id}', [TenderController::class, 'view'])
+    ->name('trade-sell.view');
+
+// Delete tender
+Route::delete('/trade-sell/{id}', [TenderController::class, 'destroy'])
+    ->name('trade-sell.destroy');
+
 
       Route::get('/all-tender-deal', [TenderController::class, 'allDealIndex'])->name('sell.trade.deal_list'); //
       // Route::get('/trade-sell-list', 'sellTradeList')->name('admin.sell.trade.list');
+      Route::get('/store-product-images', [ProductController::class, 'stor_product_image'])->name('stores.store_product_images');
    });
 
 
@@ -419,8 +430,16 @@ Route::middleware(['role:admin'])->group(function () {
       // Route::post('/store/tender-category', 'store')->name('admin.store.tender.category');
       // Route::post('/update/tender-category', 'update')->name('admin.update.tender.category');
    });
+   
    Route::controller(ProductVideoShowController::class)->prefix('admin')->group(function () {
       Route::get('/videos', 'index')->name('admin.videos.index');
+      // routes/admin.php or web.php
+      // routes/web.php OR routes/admin.php
+      Route::get('/videos/{id}','view')->name('admin.video-shows.view');
+      Route::delete('/videos/{id}','destroy')->name('admin.videos.destroy');
+
+
+
       // Route::get('/delete/{id}/tender-category', 'DeleteCategory')->name('admin.delete.tender.category');
       // Route::get('/edit/{id}/tender-category', 'edit')->name('admin.edit.tender.category');
       // Route::post('/tender-category/status', 'changeStatus')->name('admin.status.tender.category');

@@ -111,16 +111,16 @@ class TenderController extends Controller
     /**
      * Delete a product.
      */
-    public function destroy(Tender $tender)
-    {
-        // if ($product->image && file_exists(storage_path('app/public/' . $product->image))) {
-        //     unlink(storage_path('app/public/' . $product->image));
-        // }
-        $tender->delete();
+    // public function destroy(Tender $tender)
+    // {
+    //     // if ($product->image && file_exists(storage_path('app/public/' . $product->image))) {
+    //     //     unlink(storage_path('app/public/' . $product->image));
+    //     // }
+    //     $tender->delete();
 
-        return redirect()->route('admin.tenders.index')
-            ->with('success', 'Tender deleted successfully.');
-    }
+    //     return redirect()->route('admin.tenders.index')
+    //         ->with('success', 'Tender deleted successfully.');
+    // }
 
     /**
      * Toggle approval via AJAX.
@@ -155,5 +155,23 @@ class TenderController extends Controller
 
         return view('admin.tenders_management.all-deal-tender',compact('tenders'));
     }
+
+ public function view($id)
+    {
+        $tender = Tender::with('vendor.company')
+            ->findOrFail($id);
+
+        return view('admin.tenders_management.view', compact('tender'));
+    }
+
+public function destroy($id)
+    {
+        $tender = Tender::findOrFail($id);
+        $tender->delete();
+
+        return redirect()->back()
+            ->with('success', 'Tender deleted successfully');
+    }
+
 
 }

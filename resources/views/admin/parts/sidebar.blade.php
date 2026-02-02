@@ -85,7 +85,7 @@
             <div class="bg-white collapse-inner">
                 <a class="collapse-item {{ request()->routeIs('admin.stores.images') ? 'active' : '' }}" href="{{ route('admin.stores.images') }}">Store Logos</a>
                 <a class="collapse-item {{ request()->routeIs('admin.stores.banners') ? 'active' : '' }}" href="{{ route('admin.stores.banners') }}">Store Banners</a>
-                <a class="collapse-item" href="#">Store Product Images</a>
+                <a class="collapse-item {{ request()->routeIs('admin.stores.store_product_images') ? 'active' : '' }}" href="{{ route('admin.stores.store_product_images') }}">Store Product Images</a>
             </div>
         </div>
     </li>
