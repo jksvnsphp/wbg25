@@ -8,8 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Inbox extends Model
 {
     use HasFactory;
-    protected $table="inbox";
-    protected $fillable = ['sender_id', 'receiver_id','subject','message', 'message_type', 'product_id', 'tender_id'];
+    protected $table = "inbox";
+    protected $fillable = ['sender_id', 'receiver_id', 'subject', 'message', 'message_type', 'product_id', 'tender_id'];
+
+    public function chatMessages()
+    {
+        return $this->hasMany(ChatMessage::class, 'message_id');
+    }
+
+    public function latestChatMessage()
+    {
+        return $this->hasOne(ChatMessage::class, 'message_id')->latestOfMany();
+    }
 
     public function receiver()
     {

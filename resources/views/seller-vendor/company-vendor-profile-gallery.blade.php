@@ -78,7 +78,7 @@
                                             <div class="form-group mb-2">
                                                 <label for="company_logo" class="form-label fw-bold">
                                                     Company Logo
-                                                    <span class="text-secondary">(Max Size: 500 × 500 px)</span>
+                                                    <span class="text-secondary">(Max Size: 400 × 400 px)</span>
                                                 </label>
 
                                                 <input
@@ -86,8 +86,8 @@
                                                     id="company_logo"
                                                     name="company_logo"
                                                     class="form-control image-validate"
-                                                    data-width="500"
-                                                    data-height="500">
+                                                    data-width="400"
+                                                    data-height="400">
                                             </div>
 
                                             <div class="preview-wrapper mt-2">

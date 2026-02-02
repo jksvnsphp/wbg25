@@ -51,7 +51,7 @@
           <div class="col-md-11">
               <div class="footer_sec pt-4">
                   @foreach ($footerCategories as $category)
-                      <a href="{{ route('categories.show', $category->slug) }}">{{ $category->name }} | </a>
+                  <a href="{{ route('categories.show', $category->slug) }}">{{ $category->name }} | </a>
                   @endforeach
               </div>
               <hr />
@@ -74,57 +74,57 @@
               </a>
           </div>
           <div class="col-md-3 text-md-end text-center">
-              <a href="https://www.facebook.com/wbg24/" class="fs-5 text-primary me-2"><i class="fa-brands fa-square-facebook"></i></a>
-              <a href="https://www.instagram.com/worldbusinessguideofficial/" class="fs-5 text-primary"><i class="fa-brands fa-square-instagram"></i></a>
+              <a target="_blank" href="https://www.facebook.com/wbg24/" class="fs-5 text-primary me-2"><i class="fa-brands fa-square-facebook"></i></a>
+              <a target="_blank" href="https://www.instagram.com/worldbusinessguideofficial/" class="fs-5 text-primary"><i class="fa-brands fa-square-instagram"></i></a>
           </div>
       </div>
   </footer>
   <!-- end of footer -->
   <script>
-      @if (Session::has('message'))
+      @if(Session::has('message'))
 
-          var type = "{{ Session::get('alert-type', 'info') }}";
+      var type = "{{ Session::get('alert-type', 'info') }}";
 
 
 
-          switch (type) {
-              case 'info':
-                  toastr.info(" {{ Session::get('message') }} ");
-                  break;
+      switch (type) {
+          case 'info':
+              toastr.info(" {{ Session::get('message') }} ");
+              break;
 
-              case 'success':
-                  Swal.fire({
-                      title: "<h5 class='fw-bolder fs-5'>Congratulation!</h5>",
-                      text: "{{ Session::get('message') }}",
-                      icon: "success",
-                      draggable: true,
-                      confirmButtonText: "Okay",
-                      confirmButtonColor: "#FF7519",
-                  })
-                  break;
+          case 'success':
+              Swal.fire({
+                  title: "<h5 class='fw-bolder fs-5'>Congratulation!</h5>",
+                  text: "{{ Session::get('message') }}",
+                  icon: "success",
+                  draggable: true,
+                  confirmButtonText: "Okay",
+                  confirmButtonColor: "#FF7519",
+              })
+              break;
 
-              case 'warning':
-                  toastr.warning(" {{ Session::get('message') }} ");
-                  break;
+          case 'warning':
+              toastr.warning(" {{ Session::get('message') }} ");
+              break;
 
-              case 'error':
-                  toastr.error(" {{ Session::get('message') }} ");
-                  break;
-              case 'unauth':
-                  Swal.fire({
-                      title: "<h5 class='fw-bolder fs-5'>To use this option you need to</h5>",
-                      text: "",
-                      icon: "",
-                      draggable: true,
-                      confirmButtonText: "Sign in",
-                      confirmButtonColor: "#FF7519",
-                  }).then((result) => {
-                      if (result.isConfirmed) {
-                          location.href = "{{ route('login') }}";
-                      }
-                  });
-                  break;
-          }
+          case 'error':
+              toastr.error(" {{ Session::get('message') }} ");
+              break;
+          case 'unauth':
+              Swal.fire({
+                  title: "<h5 class='fw-bolder fs-5'>To use this option you need to</h5>",
+                  text: "",
+                  icon: "",
+                  draggable: true,
+                  confirmButtonText: "Sign in",
+                  confirmButtonColor: "#FF7519",
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      location.href = "{{ route('login') }}";
+                  }
+              });
+              break;
+      }
       @endif
   </script>
 

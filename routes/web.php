@@ -706,6 +706,8 @@ Route::middleware(['role:seller'])->group(function () {
       Route::get('/{code}/seller-edit-profile', 'editRegistration')->name('seller.edit.registration');
       Route::get('/{code}/change-password', 'change_password')->name('seller.change.password');
 
+      Route::post('/change-password/update', 'updatePassword')->name('seller.update.password');
+
       Route::get('/{code}/seller-profile-edit', 'editSellerProfile')->name('seller.edit.profile');
       Route::get('/{code}/profile-preview', 'profilePreview')->name('seller.profile.preview');
 

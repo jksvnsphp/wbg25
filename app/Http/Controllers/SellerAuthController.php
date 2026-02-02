@@ -195,7 +195,11 @@ class SellerAuthController extends Controller
     }
     public function verifyOtpAfterLogin(Request $request)
     {
-        $user = auth()->user();
+        $userId = auth()->id();
+        $user = User::select(['id', 'password', 'ref_no'])->find($userId);
+        if (!$user) {
+            return response()->json(['status' => false, 'message' => 'User not found.']);
+        }
         $inputOtp = $request->otp;
         $storedOtp = Cache::get('otp_' . $user->id);
         if (($storedOtp && $storedOtp == $inputOtp) || $inputOtp == "12345") {
@@ -355,6 +359,63 @@ class SellerAuthController extends Controller
         } else {
             return redirect()->route('home')->with(['alert-type' => 'error', 'message' => 'Something went to wrong']);
         }
+    }
+
+    public function updatePassword(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json([
+                'message' => 'Please login first.',
+                'errors' => [
+                    'auth' => ['Please login first.'],
+                ],
+            ], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        if ($validator->fails()) {
+            $allErrors = $validator->errors()->all();
+            $firstError = $allErrors[0] ?? 'The given data was invalid.';
+            $moreCount = max(count($allErrors) - 1, 0);
+            $message = $firstError;
+            if ($moreCount > 0) {
+                $message .= ' (and ' . $moreCount . ' more ' . ($moreCount === 1 ? 'error' : 'errors') . ')';
+            }
+
+            return response()->json([
+                'message' => $message,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $userId = auth()->id();
+        $user = User::select(['id', 'password', 'ref_no'])->find($userId);
+        if (!$user) {
+            return response()->json(['status' => false, 'message' => 'User not found.']);
+        }
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'Current password is incorrect.',
+                'errors' => [
+                    'current_password' => ['Current password is incorrect.'],
+                ],
+            ], 422);
+        }
+
+        User::whereKey($userId)->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Password updated successfully.',
+            'url' => route('seller.change.password', $user->ref_no),
+        ]);
     }
 
 
@@ -658,15 +719,21 @@ class SellerAuthController extends Controller
 
         $listedMultiplyProduct = products::where('vendor_id', $id)->where('isListingType', 'spotlight')->where('isRead', 0)->count();
 
-        $unreadMessages = inbox::where(function ($query) {
-            $query->where(
-                function ($q) {
-                    $q->where('receiver_id', auth()->id())->where('isReceiverRead', 0);
-                }
-            )->orWhere(function ($q) {
-                $q->where('sender_id', auth()->id())->where('isSenderRead', 0);
-            });
-        })->count();
+        // Count unread *threads* (same as inbox list):
+        // - inbox unread for current user as receiver (inbox.is_read = 0)
+        // - OR any unread chat messages in that thread for current user as receiver (message.is_read = 0)
+        $unreadMessages = inbox::query()
+            ->where(function ($q) use ($id) {
+                $q->where('receiver_id', $id)->orWhere('sender_id', $id);
+            })
+            ->where(function ($q) use ($id) {
+                $q->where(function ($q2) use ($id) {
+                    $q2->where('receiver_id', $id)->where('is_read', 0);
+                })->orWhereHas('chatMessages', function ($q2) use ($id) {
+                    $q2->where('receiver_id', $id)->where('is_read', 0);
+                });
+            })
+            ->count();
 
         $totalMessages = inbox::where(function ($query) use ($id) {
             $query->where('receiver_id', $id)->orWhere('sender_id', $id);

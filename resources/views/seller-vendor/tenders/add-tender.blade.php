@@ -632,7 +632,23 @@
 @endsection
 @section('seller-custome-js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
-
+<script>
+    $(document).ready(function() {
+        $('#div_editor1').summernote({
+            placeholder: 'Write your Item Description...',
+            tabsize: 2,
+            height: 300,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'italic', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['codeview', 'help']]
+            ]
+        });
+    });
+</script>
 <script>
     $(document).ready(function() {
         $('#add_my_tender').on('submit', function(e) {
