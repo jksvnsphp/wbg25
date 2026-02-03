@@ -383,7 +383,6 @@ input::placeholder {
     position: absolute;
     bottom: 0;
     left: 4.5rem;
-    width: 51%;
 }
 
 .product-title {
@@ -899,16 +898,8 @@ li {
     background: url('../../images/city_vector.png');
     background-position: right top !important;
     background-repeat: no-repeat !important;
-    background-size: cover;
+    background-size: fill !important;
 }
-
-.login_forma_m {
-    background: url('../../images/image.jfif');
-    background-position: right top !important;
-    background-repeat: no-repeat !important;
-    background-size: cover;
-}
-
 
 .package_bg {
     background: url('../../images/copy_icon.png');

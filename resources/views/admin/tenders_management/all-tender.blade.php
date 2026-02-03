@@ -60,10 +60,11 @@
                                                 </label>    
                                                 </td>
                                             <td>
-                                                <a href="{{ route('admin.tenders.show', $tender->id) }}" 
-                                                   class="btn btn-sm btn-secondary m-1" title="View">
-                                                   <i class="fas fa-eye"></i>
+                                                <a href="{{ route('admin.trade-sell.view', $tender->id) }}"
+                                                class="btn btn-warning btn-sm">
+                                                <i class="fa fa-eye"></i>
                                                 </a>
+
                                                 <!-- <a href="{{ route('admin.tenders.edit', $tender->id) }}" 
                                                    class="btn btn-sm btn-success m-1" title="Edit">
                                                    <i class="fas fa-edit"></i> -->
