@@ -1,10 +1,8 @@
 @extends('external-user.external-frame')
 @section('meta_data')
-<title>{{ $product->name ?? '' }}</title>
-<meta name="description"
-    content="Buy our {{ $product->name ?? '' }} on World Business Guide - WBG24.com – Your international Market">
-<meta name="keywords" content="{{ $product->name ?? '' }}">
-<meta name="author" content="WBG24.com">
+<title>{{ $metaTitle ?? ($product->name ?? '') }}</title>
+<meta name="description" content="{{ $metaDescription ?? '' }}">
+<meta name="keywords" content="{{ $metaKeywords ?? '' }}">
 @endsection
 @section('external-main-content')
 <style>

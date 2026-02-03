@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsSeoMeta;
 use App\Models\category;
 use App\Models\countries;
 use App\Models\endsubcategory;
@@ -18,6 +19,8 @@ use Illuminate\Support\Facades\Http;
 
 class UITendersController extends Controller
 {
+    use BuildsSeoMeta;
+
     //
     function findCategoryBySlug($slug)
     {
@@ -399,7 +402,13 @@ class UITendersController extends Controller
             $tender->searched_path = $searchedPath;
             $tender->shippingData = $shippingData;
             // dd($tender->shippingData->toArray());
-            return view('external-user.tender.tender-details', compact('tender', 'seller', 'yourShippingCost'));
+
+            $seo = $this->buildSeoMeta($tender->name ?? null, 'Tenders');
+            $metaTitle = $seo['metaTitle'];
+            $metaDescription = $seo['metaDescription'];
+            $metaKeywords = $seo['metaKeywords'];
+
+            return view('external-user.tender.tender-details', compact('tender', 'seller', 'yourShippingCost', 'metaTitle', 'metaDescription', 'metaKeywords'));
         } else {
             abort(404);
         }
