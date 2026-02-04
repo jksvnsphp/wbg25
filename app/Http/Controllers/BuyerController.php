@@ -69,7 +69,7 @@ class BuyerController extends Controller
             }
         }
     }
-    
+
     public function buyerDashboard()
     {
         $id = auth()->user()->id;
@@ -85,68 +85,77 @@ class BuyerController extends Controller
                 ->pluck('orderItems')
                 ->flatten()
                 ->sum('quantity');
-                
-            
+
+
             $mySubmittedOfferTender = OfferTender::where('user_id', $id)
-                                                 ->where('status', 'pending')
-                                                 ->where('isUserRead', 0)
-                                                 ->doesntHave('counters') 
-                                                 ->count();
-    
-            
-             $myReceivedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('isUserRead',0)->where('status','pending')->count();
-        
-            
-                
-             $myDealedOfferTender = OfferQuotation::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
-                                 });
-                               })->where('status', 'accept')->count();    
-            $tenderInfo=$mySubmittedOfferTender+$myReceivedCounterOfferTender+$myDealedOfferTender;
-            
-            
+                ->where('status', 'pending')
+                ->where('isUserRead', 0)
+                ->doesntHave('counters')
+                ->count();
+
+
+            $myReceivedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('isUserRead', 0)->where('status', 'pending')->count();
+
+
+
+            $myDealedOfferTender = OfferQuotation::where(function ($query) {
+                $query->where(
+                    function ($q) {
+                        $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
+                    }
+                )->orWhere(function ($q) {
+                    $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
+                });
+            })->where('status', 'accept')->count();
+            $tenderInfo = $mySubmittedOfferTender + $myReceivedCounterOfferTender + $myDealedOfferTender;
+
+
             // quotation section
             $quotation = Quotation::where('user_id', auth()->user()->id)
-                              ->where('isRead',0)
-                              ->where('isDeal',0)
-                              ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
-                              ->count();
-        
-            $myReceivedOfferQuotation =  OfferQuotation::where('vendor_id', $id)
-                                                   ->where('status','pending') 
-                                                   ->where('isVendorRead',0)
-                                                   ->doesntHave('counters')
-                                                   ->count();
-          $mySubmittedOfferQuotation = OfferQuotation::where('user_id', $id)->where('status','pending')->where('isUserRead',0)->doesntHave('counters')->count();
-        
-         $myOfferQuotationDeal = OfferQuotation::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
-                                 });
-                               })->where('status', 'accept')->count();
+                ->where('isRead', 0)
+                ->where('isDeal', 0)
+                ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
+                ->count();
 
-           $mySubmittedCounterOfferQuotation = CounterOfferQuotation::where('user_id', $id)->where('status', 'pending')->where('isUserRead',0)->count();
-           $myReceivedCounterOfferQuotation = CounterOfferQuotation::whereHas('offer', function ($query) use ($id) {
-                                             $query->where('vendor_id', $id);
-                                          })->where('isVendorRead',0)->where('status','pending')->count();
-        
+            $myReceivedOfferQuotation =  OfferQuotation::where('vendor_id', $id)
+                ->where('status', 'pending')
+                ->where('isVendorRead', 0)
+                ->doesntHave('counters')
+                ->count();
+            $mySubmittedOfferQuotation = OfferQuotation::where('user_id', $id)->where('status', 'pending')->where('isUserRead', 0)->doesntHave('counters')->count();
+
+            $myOfferQuotationDeal = OfferQuotation::where(function ($query) {
+                $query->where(
+                    function ($q) {
+                        $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
+                    }
+                )->orWhere(function ($q) {
+                    $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
+                });
+            })->where('status', 'accept')->count();
+
+            $mySubmittedCounterOfferQuotation = CounterOfferQuotation::where('user_id', $id)->where('status', 'pending')->where('isUserRead', 0)->count();
+            $myReceivedCounterOfferQuotation = CounterOfferQuotation::whereHas('offer', function ($query) use ($id) {
+                $query->where('vendor_id', $id);
+            })->where('isVendorRead', 0)->where('status', 'pending')->count();
+
             $quotationInfo = $quotation + $myReceivedOfferQuotation + $myOfferQuotationDeal + $mySubmittedOfferQuotation + $mySubmittedCounterOfferQuotation + $myReceivedCounterOfferQuotation;
 
-            $unreadMessages = inbox::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('receiver_id', auth()->id())->where('isReceiverRead', 0);
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('sender_id', auth()->id())->where('isSenderRead', 0);
-                                 });
-                               })->count();
+            // Count unread *threads* (same as inbox list):
+            // - inbox unread for current user as receiver (inbox.is_read = 0)
+            // - OR any unread chat messages in that thread for current user as receiver (message.is_read = 0)
+            $unreadMessages = inbox::query()
+                ->where(function ($q) use ($id) {
+                    $q->where('receiver_id', $id)->orWhere('sender_id', $id);
+                })
+                ->where(function ($q) use ($id) {
+                    $q->where(function ($q2) use ($id) {
+                        $q2->where('receiver_id', $id)->where('is_read', 0);
+                    })->orWhereHas('chatMessages', function ($q2) use ($id) {
+                        $q2->where('receiver_id', $id)->where('is_read', 0);
+                    });
+                })
+                ->count();
             $totalMessages = inbox::where(function ($query) use ($id) {
                 $query->where('receiver_id', $id)
                     ->orWhere('sender_id', $id);
@@ -157,54 +166,56 @@ class BuyerController extends Controller
             abort(404);
         }
     }
-    
+
     public function newStateQuotation()
     {
         $id = auth()->user()->id;
-        
+
         $quotation = Quotation::where('user_id', auth()->user()->id)
-                              ->where('isRead',0)
-                              ->where('isDeal',0)
-                              ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
-                              ->count();
-                              
+            ->where('isRead', 0)
+            ->where('isDeal', 0)
+            ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
+            ->count();
+
         $myReceivedOfferQuotation = OfferQuotation::where('vendor_id', $id)
-                                                   ->where('status','pending') 
-                                                   ->where('isVendorRead',0)
-                                                   ->doesntHave('counters')
-                                                   ->count();
-                                                   
+            ->where('status', 'pending')
+            ->where('isVendorRead', 0)
+            ->doesntHave('counters')
+            ->count();
+
         $myRReceivedOfferQuotation = OfferQuotation::where('vendor_id', $id)
-                                                   ->where('status','pending')
-                                                   ->doesntHave('counters')
-                                                   ->count();
-                                                   
+            ->where('status', 'pending')
+            ->doesntHave('counters')
+            ->count();
+
         $myOfferQuotationDeal = OfferQuotation::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
-                                 });
-                               })->where('status','accept')->count();
-                               
+            $query->where(
+                function ($q) {
+                    $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
+                }
+            )->orWhere(function ($q) {
+                $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
+            });
+        })->where('status', 'accept')->count();
+
         $myROfferQuotationDeal = OfferQuotation::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id());
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id());
-                                 });
-                               })->where('status','accept')->count();
+            $query->where(
+                function ($q) {
+                    $q->where('vendor_id', auth()->id());
+                }
+            )->orWhere(function ($q) {
+                $q->where('user_id', auth()->id());
+            });
+        })->where('status', 'accept')->count();
 
         $mySubmittedCounterOfferQuotation = CounterOfferQuotation::whereHas('offer', function ($query) use ($id) {
             $query->where('vendor_id', $id);
-        })->where('isVendorRead',0)->where('status', 'pending')->count();
-        
+        })->where('isVendorRead', 0)->where('status', 'pending')->count();
+
         $myRSubmittedCounterOfferQuotation = CounterOfferQuotation::whereHas('offer', function ($query) use ($id) {
             $query->where('vendor_id', $id);
         })->where('status', 'pending')->count();
-        
+
         return view('buyer-vendor.new-state-quotations', compact(
             'quotation',
             'myReceivedOfferQuotation',
@@ -219,33 +230,35 @@ class BuyerController extends Controller
     {
         $id = auth()->user()->id;
 
-        $mySubmittedOfferTender = OfferTender::where('user_id', $id)->where('status','pending')->where('isUserRead',0)->doesntHave('counters')->count();
+        $mySubmittedOfferTender = OfferTender::where('user_id', $id)->where('status', 'pending')->where('isUserRead', 0)->doesntHave('counters')->count();
         $myDealedOfferTender = OfferTender::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
-                                 });
-                               })->where('status', 'accept')->count();
-                               
-        $myReceivedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('isUserRead',0)->where('status','pending')->count();
-        
-        // All info
-        $myRSubmittedOfferTender = OfferTender::where('user_id', $id)->where('status','pending')->doesntHave('counters')->count();
-        
-        $myRDealedOfferTender = OfferTender::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('vendor_id', auth()->id());
-                                 }
-                                )->orWhere(function ($q){
-                                   $q->where('user_id', auth()->id());
-                                 });
-                               })->where('status', 'accept')->count();
-                               
-        $myRReceivedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('status','pending')->count();
+            $query->where(
+                function ($q) {
+                    $q->where('vendor_id', auth()->id())->where('isVendorDealRead', 0);
+                }
+            )->orWhere(function ($q) {
+                $q->where('user_id', auth()->id())->where('isUserDealRead', 0);
+            });
+        })->where('status', 'accept')->count();
 
-        return view('buyer-vendor.new-state-tender', compact('mySubmittedOfferTender','myDealedOfferTender', 'myReceivedCounterOfferTender','myRSubmittedOfferTender','myRDealedOfferTender', 'myRReceivedCounterOfferTender'));
+        $myReceivedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('isUserRead', 0)->where('status', 'pending')->count();
+
+        // All info
+        $myRSubmittedOfferTender = OfferTender::where('user_id', $id)->where('status', 'pending')->doesntHave('counters')->count();
+
+        $myRDealedOfferTender = OfferTender::where(function ($query) {
+            $query->where(
+                function ($q) {
+                    $q->where('vendor_id', auth()->id());
+                }
+            )->orWhere(function ($q) {
+                $q->where('user_id', auth()->id());
+            });
+        })->where('status', 'accept')->count();
+
+        $myRReceivedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('status', 'pending')->count();
+
+        return view('buyer-vendor.new-state-tender', compact('mySubmittedOfferTender', 'myDealedOfferTender', 'myReceivedCounterOfferTender', 'myRSubmittedOfferTender', 'myRDealedOfferTender', 'myRReceivedCounterOfferTender'));
     }
     public function profileImageGallery()
     {
@@ -417,7 +430,7 @@ class BuyerController extends Controller
 
     public function showAllBuyers()
     {
-        $buyers = User::where('account_type', 'buyer')->with('countryData','sellerPackage')->latest()->get();
+        $buyers = User::where('account_type', 'buyer')->with('countryData', 'sellerPackage')->latest()->get();
         // dd($buyers);
         return view('admin.all-buyers', compact('buyers'));
     }
@@ -499,15 +512,15 @@ class BuyerController extends Controller
                 if (isset($response['id']) && $response['id'] != null) {
                     foreach ($response['links'] as $link) {
                         if ($link['rel'] == 'approve') {
-							
-							try {
-		$company = $user->company ?? null;						
-        Mail::to($user->email)->send(new SellerUpgradeSuccessMail($user, $memberPackage->name ?? 'Seller', route('seller.dashboard')));
-    } catch (\Exception $e) {
-        \Log::error('Failed to send seller upgrade email: ' . $e->getMessage());
-    }
-							
-							
+
+                            try {
+                                $company = $user->company ?? null;
+                                Mail::to($user->email)->send(new SellerUpgradeSuccessMail($user, $memberPackage->name ?? 'Seller', route('seller.dashboard')));
+                            } catch (\Exception $e) {
+                                \Log::error('Failed to send seller upgrade email: ' . $e->getMessage());
+                            }
+
+
                             return redirect()->away($link['href']);
                         }
                     }
@@ -538,12 +551,12 @@ class BuyerController extends Controller
                 $this->functionHandleBusinessSymbole($memberPackage->type, $user->id);
                 session()->flash('success', 'Congratulation, Your account has been successfully upgraded buyer to seller!');
                 $url = route('seller.success.gallery');
-				try {
-					$company = $user->company ?? null;
-        Mail::to($user->email)->send(new SellerUpgradeSuccessMail($user, $memberPackage->name ?? 'Seller', route('seller.dashboard')));
-    } catch (\Exception $e) {
-        \Log::error('Failed to send seller upgrade email: ' . $e->getMessage());
-    }
+                try {
+                    $company = $user->company ?? null;
+                    Mail::to($user->email)->send(new SellerUpgradeSuccessMail($user, $memberPackage->name ?? 'Seller', route('seller.dashboard')));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send seller upgrade email: ' . $e->getMessage());
+                }
                 return redirect($url);
             }
         } else {

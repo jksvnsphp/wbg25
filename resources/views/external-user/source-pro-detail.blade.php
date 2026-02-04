@@ -97,21 +97,33 @@
                         </div>
                         <div class="mt-5" style="border: 1px solid #202020">
                         </div>
-                        <form method="post" id="sendOrder" class="d-flex mt-5 flex-wrap">
-                            <div class="input-group">
-                                <input type="hidden" name="quotation_id" value="{{ $quotation->id }}">
-                                <input type="text" name="offer_price" placeholder="Enter your price"
-                                    class="form-control">
-                                <button type="submit" class="input-group-btn btn btn-primary">Send Quote</button>
-                            </div>
-                        </form>
-                        <!--<a class="btn btn-secondary mt-5"  href="{{route('seller.profile.view', $quotation->vendor->ref_no)}}">Request to Buyer</a>-->
+
                     </div>
                     <div class="col-md-12 mt-3">
                         <div class="my-5" style="min-height: 7rem; border: 1px solid #202020">
                             <h5 class="fw-bold pt-3 mx-2">Description:</h5>
                             <p class="mx-2 mt-2 d-block">{{ $quotation->requirement_details }}</p>
                         </div>
+
+                        <div class="card mb-3 rounded-0">
+                            <div class="card-body">
+                                <h5 class="fw-semibold">Send Your Price Offer</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form method="post" id="sendOrder" class="d-flex mt-2 flex-wrap">
+                                            @csrf
+                                            <div class="input-group">
+                                                <input type="hidden" name="quotation_id" value="{{ $quotation->id }}">
+                                                <input type="text" name="offer_price" placeholder="Enter your price"
+                                                    class="form-control">
+                                                <button type="submit" class="input-group-btn btn btn-primary">Send Quote</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="card mb-3 rounded-0">
                             <div class="card-header rounded-0 bg-body-secondary">
                                 <h5 class="py-2 fw-semibold">Contact Us</h5>

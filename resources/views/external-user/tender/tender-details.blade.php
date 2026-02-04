@@ -7,10 +7,7 @@
 <meta name="author" content="WBG24.com">
 @endsection
 @section('external-main-content')
-<!-- product listing here -->
-<section class="scp_hero mb-0 w-100">
-    <img src="{{ asset('world-business/images/wbg_source_2.png') }}" class="img-fluid w-100" alt="" />
-</section>
+
 <section class="container-fluid">
 
     <div class="row">
@@ -97,29 +94,37 @@
                                 <div class="col-sm-6"></div>
                             </div>
                         </div>
-                        <form method="post" id="sendOrder" class="col-md-6">
-                            <div class="input-group mb-3">
-                                <input type="hidden" name="tender_id" value="{{ $tender->id }}">
-                                <input type="text" name="offer_price" placeholder="Enter your prices"
-                                    class="form-control" />
-                                <button type="submit" class="btn btn-primary input-group-btn">
-                                    Send Price Offer
-                                </button>
-                            </div>
-                        </form>
-                        <div class="col-md-6 text-end">
-                            <button id="directOrder" class="btn btn-secondary" type="button"
-                                data-id="{{ $tender->id }}">Accept Price and Trade</button>
-                        </div>
                     </div>
                     <div class="card mb-3 rounded-0">
                         <div class="card-body">
                             <h5 class="fw-bold fs-6">Description</h5>
                             <p class="fs-6 mt-2" style="line-height: 1.5">
-                                {!! $tender->description !!}
+                                {!! html_entity_decode($tender->description) !!}
                             </p>
                         </div>
                     </div>
+
+                    <div class="card mb-3 rounded-0">
+                        <div class="card-body row">
+                            <div class="col-md-6">
+                                <form method="post" id="sendOrder">
+                                    <div class="input-group mb-3">
+                                        <input type="hidden" name="tender_id" value="{{ $tender->id }}">
+                                        <input type="text" name="offer_price" placeholder="Enter your prices"
+                                            class="form-control" />
+                                        <button type="submit" class="btn btn-primary input-group-btn">
+                                            Send Price Offer
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <button id="directOrder" class="btn btn-secondary" type="button"
+                                    data-id="{{ $tender->id }}">Accept Price and Trade</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="card mb-3 rounded-0">
                         <div class="card-header rounded-0 bg-body-secondary">
                             <h5 class="py-2 pb-1 fw-semibold">Contact</h5>
@@ -311,7 +316,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <p class="fw-bolder fontp">Shipping Partner:</p>
+                            <p class="fw-bolder fontp"> Partner:</p>
                         </div>
                         <div class="col-md-8">
                             <p class="fontp">
@@ -323,7 +328,7 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <p class="fw-bolder fontp">Shipping Method:</p>
+                            <p class="fw-bolder fontp"> Method:</p>
                         </div>
                         <div class="col-md-8">
                             <p class="fontp">

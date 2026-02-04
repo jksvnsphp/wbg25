@@ -11,6 +11,22 @@
 <section class="container-fluid">
 
     <div class="row pb-3 pt-3 shadow" style="border: 1px solid #ddd">
+        <nav aria-label="breadcrumb" class="mb-2 mt-4 d-flex align-items-center justify-content-between">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" onclick="window.history.back()" class="text-primary">Back</a></li>
+                <li class="breadcrumb-item"><a href="/" class="text-primary">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Tenders
+                </li>
+            </ol>
+
+            <div>
+                <strong class="text-secondary">
+                    Total Tenders: {{ $tenders->total() }}
+                </strong>
+            </div>
+        </nav>
+        <hr>
         <div class="col-md-12">
 
             <form method="get" action="{{ route('all.tenders') }}" class="accordion my_filters py-3  w-100"

@@ -2,6 +2,7 @@
 
     @php
     $seoPage = data_get($seo ?? null, 'page');
+    $seoPageNormalized = is_string($seoPage) ? trim($seoPage, '/') : $seoPage;
     $seoTitle = data_get($seo ?? null, 'title');
     $seoKeywords = data_get($seo ?? null, 'keywords');
     $seoDescription = data_get($seo ?? null, 'description');
@@ -12,37 +13,32 @@
             <label>Page</label>
             <select class="form-control" name="page">
                 <option value="">Select</option>
+                <option value="home" {{ $seoPageNormalized == 'home' ? 'selected' : '' }}>Home</option>
+                <option value="/login" {{ $seoPageNormalized == 'login' ? 'selected' : '' }}>Login</option>
+                <option value="products" {{ $seoPageNormalized == 'products' ? 'selected' : '' }}>Products</option>
+                <option value="news" {{ $seoPageNormalized == 'news' ? 'selected' : '' }}>News</option>
+                <option value="/product-videos" {{ $seoPageNormalized == 'product-videos' ? 'selected' : '' }}>Product Videos</option>
+                <option value="all-categories" {{ $seoPageNormalized == 'all-categories' ? 'selected' : '' }}>All Categories</option>
+                <option value="suppliers" {{ $seoPageNormalized == 'suppliers' ? 'selected' : '' }}>Suppliers</option>
+                <option value="/supplier-by-region" {{ $seoPageNormalized == 'supplier-by-region' ? 'selected' : '' }}>Supplier By Region</option>
+                <option value="tenders" {{ $seoPageNormalized == 'tenders' ? 'selected' : '' }}>Tenders</option>
+                <option value="/stores" {{ $seoPageNormalized == 'stores' ? 'selected' : '' }}>Stores</option>
+                <option value="get-quote" {{ $seoPageNormalized == 'get-quote' ? 'selected' : '' }}>Get Quote</option>
+                <option value="source-pro" {{ $seoPageNormalized == 'source-pro' ? 'selected' : '' }}>Source Pro</option>
+                <option value="how-to-buy" {{ $seoPageNormalized == 'how-to-buy' ? 'selected' : '' }}>How To Buy</option>
+                <option value="how-to-sell" {{ $seoPageNormalized == 'how-to-sell' ? 'selected' : '' }}>How To Sell</option>
+                <option value="user/help-support" {{ $seoPageNormalized == 'user/help-support' ? 'selected' : '' }}>Help & Support</option>
+                <option value="user/benefits-for-buyers" {{ $seoPageNormalized == 'user/benefits-for-buyers' ? 'selected' : '' }}>Benefits For Buyers</option>
+                <option value="member-packages" {{ $seoPageNormalized == 'member-packages' ? 'selected' : '' }}>Member Packages</option>
+                <option value="privacy-and-policy" {{ $seoPageNormalized == 'privacy-and-policy' ? 'selected' : '' }}>Privacy And Policy</option>
+                <option value="data-protection" {{ $seoPageNormalized == 'data-protection' ? 'selected' : '' }}>Data Protection</option>
+                <option value="imprint" {{ $seoPageNormalized == 'imprint' ? 'selected' : '' }}>Imprint</option>
+                <option value="terms-and-conditions" {{ $seoPageNormalized == 'terms-and-conditions' ? 'selected' : '' }}>Terms And Conditions</option>
+                <option value="limited-offer/products" {{ $seoPageNormalized == 'limited-offer/products' ? 'selected' : '' }}>Limited Offer Products</option>
+                <option value="bulk-buying/products" {{ $seoPageNormalized == 'bulk-buying/products' ? 'selected' : '' }}>Bulk Buying Products</option>
+                <option value="daily-deals/products" {{ $seoPageNormalized == 'daily-deals/products' ? 'selected' : '' }}>Daily Deals Products</option>
+                <option value="hot/products" {{ $seoPageNormalized == 'hot/products' ? 'selected' : '' }}>Hot Products</option>
 
-                <option value="home" {{ (isset($seo['page']) && $seo['page'] == 'home') || (isset($seo->page) && $seo->page == 'home') ? 'selected' : '' }}>Home</option>
-
-                <option value="product" {{ (isset($seo['page']) && $seo['page'] == 'product') || (isset($seo->page) && $seo->page == 'product') ? 'selected' : '' }}>Product</option>
-
-                <option value="news" {{ (isset($seo['page']) && $seo['page'] == 'news') || (isset($seo->page) && $seo->page == 'news') ? 'selected' : '' }}>News</option>
-
-                <option value="all-categories" {{ (isset($seo['page']) && $seo['page'] == 'all-categories') || (isset($seo->page) && $seo->page == 'all-categories') ? 'selected' : '' }}>All Categories</option>
-
-                <option value="supplier" {{ (isset($seo['page']) && $seo['page'] == 'supplier') || (isset($seo->page) && $seo->page == 'supplier') ? 'selected' : '' }}>Supplier</option>
-
-                <option value="suppliers" {{ (isset($seo['page']) && $seo['page'] == 'suppliers') || (isset($seo->page) && $seo->page == 'suppliers') ? 'selected' : '' }}>Suppliers</option>
-
-                <option value="tenders" {{ (isset($seo['page']) && $seo['page'] == 'tenders') || (isset($seo->page) && $seo->page == 'tenders') ? 'selected' : '' }}>Tenders</option>
-
-                <option value="get-quote" {{ (isset($seo['page']) && $seo['page'] == 'get-quote') || (isset($seo->page) && $seo->page == 'get-quote') ? 'selected' : '' }}>Get Quote</option>
-
-                <option value="source-pro" {{ (isset($seo['page']) && $seo['page'] == 'source-pro') || (isset($seo->page) && $seo->page == 'source-pro') ? 'selected' : '' }}>Source Pro</option>
-                <option value="how-to-buy" {{ $seoPage == 'how-to-buy' ? 'selected' : '' }}>How To Buy</option>
-                <option value="how-to-sell" {{ $seoPage == 'how-to-sell' ? 'selected' : '' }}>How To Sell</option>
-                <option value="user/help-support" {{ $seoPage == 'user/help-support' ? 'selected' : '' }}>Help & Support</option>
-                <option value="user/benefits-for-buyers" {{ $seoPage == 'user/benefits-for-buyers' ? 'selected' : '' }}>Benefits For Buyers</option>
-                <option value="member-packages" {{ $seoPage == 'member-packages' ? 'selected' : '' }}>Member Packages</option>
-                <option value="privacy-and-policy" {{ $seoPage == 'privacy-and-policy' ? 'selected' : '' }}>Privacy And Policy</option>
-                <option value="data-protection" {{ $seoPage == 'data-protection' ? 'selected' : '' }}>Data Protection</option>
-                <option value="imprint" {{ $seoPage == 'imprint' ? 'selected' : '' }}>Imprint</option>
-                <option value="terms-and-conditions" {{ $seoPage == 'terms-and-conditions' ? 'selected' : '' }}>Terms And Conditions</option>
-                <option value="limited-offer/products" {{ $seoPage == 'limited-offer/products' ? 'selected' : '' }}>Limited Offer Products</option>
-                <option value="bulk-buying/products" {{ $seoPage == 'bulk-buying/products' ? 'selected' : '' }}>Bulk Buying Products</option>
-                <option value="daily-deals/products" {{ $seoPage == 'daily-deals/products' ? 'selected' : '' }}>Daily Deals Products</option>
-                <option value="hot/products" {{ $seoPage == 'hot/products' ? 'selected' : '' }}>Hot Products</option>
             </select>
         </div>
     </div>

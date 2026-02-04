@@ -136,7 +136,7 @@ class SourceProController extends Controller
                 $quotation->country = countries::where('id', $quotation->vendor->country)->first();
             }
             $expiryDate = Carbon::parse($quotation->created_at)->addDays($quotation->duration);
-            $expiryDate = Carbon::parse($expiryDate)->format('d-M-Y') . ' | ' . now()->diffInDays($expiryDate, false) . 'd ' . (now()->diffInMinutes($expiryDate, false) % 60) . 'm';
+            $expiryDate = now()->diffInDays($expiryDate, false) . 'D, ' . (now()->diffInHours($expiryDate, false) % 24) . 'H, ' . (now()->diffInMinutes($expiryDate, false) % 60) . 'M, ' . (now()->diffInSeconds($expiryDate, false) % 60) . 'S';
             $quotation->expiry_date = $expiryDate; //$expiryDate->format('Y M d | H:i');
         }
 
@@ -158,7 +158,7 @@ class SourceProController extends Controller
         if ($quotation) {
             $expiryDate = Carbon::parse($quotation->created_at)->addDays($quotation->duration);
             $isExpired = now()->greaterThanOrEqualTo($expiryDate);
-            $expiryDate = Carbon::parse($expiryDate)->format('d-M-Y') . ' | ' . now()->diffInDays($expiryDate, false) . 'd ' . (now()->diffInMinutes($expiryDate, false) % 60) . 'm';
+            $expiryDate = now()->diffInDays($expiryDate, false) . 'D, ' . (now()->diffInHours($expiryDate, false) % 24) . 'H, ' . (now()->diffInMinutes($expiryDate, false) % 60) . 'M, ' . (now()->diffInSeconds($expiryDate, false) % 60) . 'S';
             $quotation->expiry_date = $expiryDate; //$expiryDate->format('Y M d | H:i');
             //$quotation->expiry_date = $expiryDate->format('d M Y | H:i');
             return view('external-user.source-pro-detail', compact('quotation'));

@@ -453,15 +453,17 @@
                             <img class="img-fluid" src="{{ $previewImage }}" alt="{{ $item->name }}" />
                         </div>
                     </a>
-                    <a href="{{ route('product.detail', $item->slug) }}"
-                        class="product_title fs-6 fw-bold text-primary">{{ $item->name }}</a>
-                    <span class="product_price text-secondary">
-                        @if ($item->minPrice != '' && $item->minPrice == $item->maxPrice)
-                        US$ {{ $item->minPrice ?? 0 }}
-                        @else
-                        US$ {{ $item->minPrice ?? 0 }} - US$ {{ $item->maxPrice ?? 0 }}
-                        @endif
-                    </span>
+                    <div class="right_product_describe text-center">
+                        <a href="{{ route('product.detail', $item->slug) }}"
+                            class="product_title fs-6 fw-bold text-primary">{{ $item->name }}</a>
+                        <span class="product_price text-secondary">
+                            @if ($item->minPrice != '' && $item->minPrice == $item->maxPrice)
+                            US$ {{ $item->minPrice ?? 0 }}
+                            @else
+                            US$ {{ $item->minPrice ?? 0 }} - US$ {{ $item->maxPrice ?? 0 }}
+                            @endif
+                        </span>
+                    </div>
                 </div>
                 @endforeach
                 @endif

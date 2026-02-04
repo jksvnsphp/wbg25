@@ -132,17 +132,23 @@ class InboxController extends Controller
     {
         // dd($request->all());
         if (isset(auth()->user()->id)) {
-            
+
             $unreadMessages = inbox::where(function ($query) {
-                                 $query->where(function ($q) {
-                                       $q->where('receiver_id', auth()->id())->where('isReceiverRead', 0);
-                                })->orWhere(function ($q){
-                                   $q->where('sender_id', auth()->id())->where('isSenderRead', 0);
-                                 });
-                               })->get();
-             
-            $allMessages = inbox::latest()
-                ->with('sender', 'receiver', 'product.gallery', 'tender', 'quotation')
+                $query->where(function ($q) {
+                    $q->where('receiver_id', auth()->id())->where('isReceiverRead', 0);
+                })->orWhere(function ($q) {
+                    $q->where('sender_id', auth()->id())->where('isSenderRead', 0);
+                });
+            })->get();
+
+            $allMessages = inbox::query()
+                ->with('sender', 'receiver', 'product.gallery', 'tender', 'quotation', 'latestChatMessage')
+                ->withMax('chatMessages as last_chat_created_at', 'created_at')
+                ->withCount([
+                    'chatMessages as unread_chat_count' => function ($q) {
+                        $q->where('receiver_id', auth()->id())->where('is_read', 0);
+                    },
+                ])
                 ->where(function ($query) {
                     $query->where('receiver_id', auth()->user()->id)
                         ->orWhere('sender_id', auth()->user()->id);
@@ -175,16 +181,17 @@ class InboxController extends Controller
                     $date = $request->input('date');
                     $query->whereDate('created_at', $date);
                 })
+                ->orderByRaw('COALESCE(last_chat_created_at, inbox.created_at) DESC')
                 ->paginate(10);
-            foreach ($unreadMessages ?? [] as $unMessage){
-               if($unMessage->sender_id==auth()->user()->id){
-                  $unMessage->isSenderRead=1; 
-               }elseif($unMessage->receiver_id==auth()->user()->id){
-                  $unMessage->isReceiverRead=1; 
-               }
-               $unMessage->save();
-            } 
-            
+            foreach ($unreadMessages ?? [] as $unMessage) {
+                if ($unMessage->sender_id == auth()->user()->id) {
+                    $unMessage->isSenderRead = 1;
+                } elseif ($unMessage->receiver_id == auth()->user()->id) {
+                    $unMessage->isReceiverRead = 1;
+                }
+                $unMessage->save();
+            }
+
             if (auth()->user()->account_type == "seller") {
                 return view('seller-vendor.inbox.my-inbox', compact('allMessages'));
             } else {
@@ -198,11 +205,19 @@ class InboxController extends Controller
     {
         if (isset(auth()->user()->id)) {
             $message = inbox::where('id', $mail_id)->with('sender', 'product', 'tender', 'quotation')->first();
+            // dd($message->toArray());
             if ($message->receiver_id == auth()->user()->id || $message->sender_id == auth()->user()->id) {
                 if ($message->receiver_id == auth()->user()->id) {
                     $message->is_read = true;
                     $message->save();
                 }
+
+                // Mark chat messages as read for the current (receiving) user
+                ChatMessage::where('message_id', $mail_id)
+                    ->where('receiver_id', auth()->id())
+                    ->where('is_read', 0)
+                    ->update(['is_read' => 1]);
+
                 if (auth()->user()->role == "seller") {
                     return view('seller-vendor.inbox.reply-message', compact('message'));
                 } else {
@@ -245,6 +260,12 @@ class InboxController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
+        // Mark messages as read for the current user when they load the thread
+        ChatMessage::where('message_id', $request->message_id)
+            ->where('receiver_id', auth()->id())
+            ->where('is_read', 0)
+            ->update(['is_read' => 1]);
+
         $messages = ChatMessage::where(function ($query) use ($request) {
             $query->where('sender_id', auth()->user()->id)
                 ->where('receiver_id', $request->receiver_id)
@@ -288,6 +309,7 @@ class InboxController extends Controller
         $message->receiver_id = $request->receiver_id;
         $message->message = $request->message;
         $message->message_id = $request->message_id;
+        $message->is_read = 0;
         $message->save();
 
         return response()->json([

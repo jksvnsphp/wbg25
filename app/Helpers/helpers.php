@@ -1,4 +1,5 @@
 <?php
+
 use App\Models\business_profile_symbol;
 use App\Models\company;
 use App\Models\CounterOfferQuotation;
@@ -74,8 +75,8 @@ if (! function_exists('getMemberPackageName')) {
     function getMemberPackageName($id)
     {
         $package = memberPackage::find($id);
-       // echo "<pre>";
-       // print_r($package);die;
+        // echo "<pre>";
+        // print_r($package);die;
         return $package ? $package->name : null;
     }
 }
@@ -92,13 +93,13 @@ if (! function_exists('getCountryName')) {
         $country = countries::find($id);
         return $country ? $country->name : null;
     }
-}   
+}
 if (! function_exists('getUserName')) {
     function getUserName($id)
     {
         //echo "ID=>>>".$id; die;
         $user = User::find($id);
-        return $user ? $user->first_name." ".$user->last_name : null;
+        return $user ? $user->first_name . " " . $user->last_name : null;
     }
 }
 
@@ -115,7 +116,6 @@ if (! function_exists('getUserDataByEmail')) {
         $user = User::where('email', $email)->first();
         return $user ? $user : null;
     }
-    
 }
 
 if (! function_exists('getUserPhone')) {
@@ -164,7 +164,7 @@ if (! function_exists('getUserPackage')) {
         $user = User::find($id);
         if ($user && $user->seller_package) {
             $package = seller_package::find($user->seller_package);
-            
+
             return $package ? $package->name : 'Free';
         }
         return 'Free';
@@ -181,7 +181,7 @@ if (! function_exists('getPackageServices')) {
         }
         return null;
     }
-}   
+}
 
 if (! function_exists('timeAgo')) {
     function timeAgo($timestamp)
@@ -325,16 +325,16 @@ if (! function_exists('getUnreadMessagesCount')) {
     function getUnreadMessagesCount($userId)
     {
         return \App\Models\Message::where('receiver_id', $userId)
-                                  ->where('status', 0)
-                                  ->count();
+            ->where('status', 0)
+            ->count();
     }
 }
 if (! function_exists('getNotificationsCount')) {
     function getNotificationsCount($userId)
     {
         return \App\Models\Notification::where('user_id', $userId)
-                                       ->where('is_read', 0)
-                                       ->count();
+            ->where('is_read', 0)
+            ->count();
     }
 }
 if (! function_exists('getActiveUsersCount')) {
@@ -342,21 +342,21 @@ if (! function_exists('getActiveUsersCount')) {
     {
         return \App\Models\User::where('is_active', 1)->count();
     }
-}   
+}
 if (! function_exists('getActiveSellersCount')) {
     function getActiveSellersCount()
     {
         return \App\Models\User::where('is_active', 1)
-                               ->where('account_type', 'seller')
-                               ->count();
+            ->where('account_type', 'seller')
+            ->count();
     }
-}   
+}
 if (! function_exists('getActiveBuyersCount')) {
     function getActiveBuyersCount()
     {
         return \App\Models\User::where('is_active', 1)
-                               ->where('account_type', 'buyer')
-                               ->count();
+            ->where('account_type', 'buyer')
+            ->count();
     }
 }
 if (! function_exists('getTotalOrdersCount')) {
@@ -364,12 +364,12 @@ if (! function_exists('getTotalOrdersCount')) {
     {
         return \App\Models\Order::count();
     }
-}   
+}
 if (! function_exists('getTotalRevenue')) {
     function getTotalRevenue()
     {
         return \App\Models\Order::where('status', 2) // Completed orders
-                                ->sum('total_amount');
+            ->sum('total_amount');
     }
 }
 if (! function_exists('getTodayOrdersCount')) {
@@ -382,73 +382,73 @@ if (! function_exists('getTodayRevenue')) {
     function getTodayRevenue()
     {
         return \App\Models\Order::whereDate('created_at', Carbon::today())
-                                ->where('status', 2) // Completed orders
-                                ->sum('total_amount');
+            ->where('status', 2) // Completed orders
+            ->sum('total_amount');
     }
 }
 if (! function_exists('getMonthlyRevenue')) {
     function getMonthlyRevenue($month, $year)
     {
         return \App\Models\Order::whereMonth('created_at', $month)
-                                ->whereYear('created_at', $year)
-                                ->where('status', 2) // Completed orders
-                                ->sum('total_amount');
+            ->whereYear('created_at', $year)
+            ->where('status', 2) // Completed orders
+            ->sum('total_amount');
     }
 }
 if (! function_exists('getYearlyRevenue')) {
     function getYearlyRevenue($year)
     {
         return \App\Models\Order::whereYear('created_at', $year)
-                                ->where('status', 2) // Completed orders
-                                ->sum('total_amount');
+            ->where('status', 2) // Completed orders
+            ->sum('total_amount');
     }
 }
 if (! function_exists('getTopSellingProducts')) {
     function getTopSellingProducts($limit = 5)
     {
         return \App\Models\OrderItem::select('product_id', \DB::raw('SUM(quantity) as total_quantity'))
-                                    ->groupBy('product_id')
-                                    ->orderByDesc('total_quantity')
-                                    ->take($limit)
-                                    ->with('product')
-                                    ->get();
+            ->groupBy('product_id')
+            ->orderByDesc('total_quantity')
+            ->take($limit)
+            ->with('product')
+            ->get();
     }
-}   
+}
 if (! function_exists('getMostActiveSellers')) {
     function getMostActiveSellers($limit = 5)
     {
         return \App\Models\User::where('account_type', 'seller')
-                               ->withCount('orders')
-                               ->orderByDesc('orders_count')
-                               ->take($limit)
-                               ->get();
+            ->withCount('orders')
+            ->orderByDesc('orders_count')
+            ->take($limit)
+            ->get();
     }
 }
 if (! function_exists('getMostActiveBuyers')) {
     function getMostActiveBuyers($limit = 5)
     {
         return \App\Models\User::where('account_type', 'buyer')
-                               ->withCount('orders')
-                               ->orderByDesc('orders_count')
-                               ->take($limit)
-                               ->get();
+            ->withCount('orders')
+            ->orderByDesc('orders_count')
+            ->take($limit)
+            ->get();
     }
 }
 if (! function_exists('getRecentOrders')) {
     function getRecentOrders($limit = 5)
     {
         return \App\Models\Order::with('user')
-                                ->orderByDesc('created_at')
-                                ->take($limit)
-                                ->get();
+            ->orderByDesc('created_at')
+            ->take($limit)
+            ->get();
     }
 }
 if (! function_exists('getRecentUsers')) {
     function getRecentUsers($limit = 5)
     {
         return \App\Models\User::orderByDesc('created_at')
-                               ->take($limit)
-                               ->get();
+            ->take($limit)
+            ->get();
     }
 }
 if (! function_exists('getFileUrl')) {
@@ -815,7 +815,7 @@ if (! function_exists('logActivity')) {
             'user_agent' => request()->header('User-Agent'),
         ]);
     }
-}   
+}
 if (! function_exists('getActivityLogs')) {
     function getActivityLogs($userId = null, $limit = 50)
     {
@@ -838,7 +838,7 @@ if (! function_exists('getUserRole')) {
     {
         return $user ? $user->role : null;
     }
-}   
+}
 if (! function_exists('hasRole')) {
     function hasRole($user, $role)
     {
@@ -876,7 +876,7 @@ if (! function_exists('isDemoMode')) {
     {
         return config('app.demo_mode', false);
     }
-}   
+}
 if (! function_exists('preventDemoModeAction')) {
     function preventDemoModeAction()
     {
@@ -884,7 +884,7 @@ if (! function_exists('preventDemoModeAction')) {
             abort(403, 'Action not allowed in demo mode.');
         }
     }
-}   
+}
 
 if (! function_exists('getEnvironment')) {
     function getEnvironment()
@@ -935,28 +935,28 @@ if (! function_exists('translate')) {
     function translate($key, $replace = [], $locale = null)
     {
         return __($key, $replace, $locale);
-    }       
+    }
 }
 if (! function_exists('getCountriesList')) {
     function getCountriesList()
     {
         return \App\Models\countries::orderBy('name')->pluck('name', 'id')->toArray();
     }
-}   
+}
 
 if (! function_exists('getCertificatesList')) {
     function getCertificatesList($id)
     {
-        
+
         return \App\Models\company_certificate::where('vendor_id', $id)->get();
     }
-} 
- 
+}
+
 if (! function_exists('getStatesList')) {
     function getStatesList($countryId)
     {
         return \App\Models\states::where('country_id', $countryId)->orderBy('name')->pluck('name', 'id')->toArray();
-    }       
+    }
 }
 
 if (! function_exists('getStateName')) {
@@ -980,7 +980,7 @@ if (! function_exists('getCitiesList')) {
     function getCitiesList($stateId)
     {
         return \App\Models\cities::where('state_id', $stateId)->orderBy('name')->pluck('name', 'id')->toArray();
-    }       
+    }
 }
 if (! function_exists('getTimeZonesList')) {
     function getTimeZonesList()
@@ -995,7 +995,7 @@ if (! function_exists('convertToTimeZone')) {
         $date->setTimezone(new \DateTimeZone($timeZone));
         return $date->format('Y-m-d H:i:s');
     }
-}   
+}
 if (! function_exists('formatDateTime')) {
     function formatDateTime($dateTime, $format = 'd-m-Y H:i:s')
     {
@@ -1013,13 +1013,13 @@ if (! function_exists('formatTimeOnly')) {
     {
         return \Carbon\Carbon::parse($dateTime)->format($format);
     }
-}   
+}
 if (! function_exists('getCurrentUser')) {
     function getCurrentUser()
     {
         return auth()->user();
     }
-}   
+}
 if (! function_exists('isUserLoggedIn')) {
     function isUserLoggedIn()
     {
@@ -1040,7 +1040,7 @@ if (! function_exists('loginUser')) {
         auth()->login($user);
         session()->regenerate();
     }
-}   
+}
 if (! function_exists('getUserPermissions')) {
     function getUserPermissions($user)
     {
@@ -1048,7 +1048,7 @@ if (! function_exists('getUserPermissions')) {
         // This is a placeholder function.
         return [];
     }
-}   
+}
 
 if (! function_exists('getCountryISO2')) {
     function getCountryISO2($id)
@@ -1056,12 +1056,12 @@ if (! function_exists('getCountryISO2')) {
         $country = countries::find($id);
         return $country ? $country->iso2 : null;
     }
-}  
+}
 
 if (! function_exists('getOrderPriceWithoutTax')) {
     function getOrderPriceWithoutTax($orderId)
     {
-         $orderPrice = \App\Models\Order::where('id', $orderId)
+        $orderPrice = \App\Models\Order::where('id', $orderId)
             // ->where('status', 2) // Completed orders
             ->select('total_amount')
             ->first();
@@ -1080,114 +1080,111 @@ if (! function_exists('getWalletBalance')) {
 
 if (! function_exists('getNewWalletBalance')) {
     function getNewWalletBalance($userId, $walletId)
-{
-     $credit = \App\Models\Wallet::where('user_id', $userId)
-                ->where('id', '<=', $walletId)
-                ->sum('credit');
+    {
+        $credit = \App\Models\Wallet::where('user_id', $userId)
+            ->where('id', '<=', $walletId)
+            ->sum('credit');
 
-    $debit = \App\Models\Wallet::where('user_id', $userId)
-                ->where('id', '<=', $walletId)
-                ->sum('debit');
+        $debit = \App\Models\Wallet::where('user_id', $userId)
+            ->where('id', '<=', $walletId)
+            ->sum('debit');
 
-    return $credit - $debit;
-    
-}
-
+        return $credit - $debit;
+    }
 }
 
 if (! function_exists('getProductId')) {
     function getProductId($Id)
-{
-     $OrderItem = \App\Models\OrderItem::where('id', $Id)->select('product_id')->first();
- 
-    return $OrderItem->product_id??0;
-    
-}
+    {
+        $OrderItem = \App\Models\OrderItem::where('id', $Id)->select('product_id')->first();
+
+        return $OrderItem->product_id ?? 0;
+    }
 }
 
 if (! function_exists('sendBronzeWelcomeMail')) {
 
-  function sendBronzeWelcomeMail($userId, $plainPassword = null)
-{
-    // Get user
-    $user = DB::table('users')->where('id', $userId)->first();
+    function sendBronzeWelcomeMail($userId, $plainPassword = null)
+    {
+        // Get user
+        $user = DB::table('users')->where('id', $userId)->first();
 
-    if (!$user) {
-        return;
+        if (!$user) {
+            return;
+        }
+
+        // Fetch email template
+        $template = DB::table('email_templates')
+            ->where('type', 'Welcome Mail - Bronce Package')
+            ->first();
+
+        if (!$template) {
+            return;
+        }
+
+        // Replace placeholders
+        $body = str_replace(
+            [
+                '[User’s Name]',
+                'Username:',
+                'Password:',
+            ],
+            [
+                $user->name,
+                'Username: ' . $user->email,
+                $plainPassword ? 'Password: ' . $plainPassword : 'Password: ********',
+            ],
+            $template->body
+        );
+
+        // Send mail
+        Mail::to($user->email)->send(
+            new DynamicMail($template->subject, $body)
+        );
     }
-
-    // Fetch email template
-    $template = DB::table('email_templates')
-        ->where('type', 'Welcome Mail - Bronce Package')
-        ->first();
-
-    if (!$template) {
-        return;
-    }
-
-    // Replace placeholders
-    $body = str_replace(
-        [
-            '[User’s Name]',
-            'Username:',
-            'Password:',
-        ],
-        [
-            $user->name,
-            'Username: ' . $user->email,
-            $plainPassword ? 'Password: ' . $plainPassword : 'Password: ********',
-        ],
-        $template->body
-    );
-
-    // Send mail
-    Mail::to($user->email)->send(
-        new DynamicMail($template->subject, $body)
-    );
-}
 }
 
 
 if (! function_exists('sendWelcomeMail')) {
 
-  function sendWelcomeMail($userId, $type,$plainPassword = null)
-{
-    // Get user
-    $user = DB::table('users')->where('id', $userId)->first();
+    function sendWelcomeMail($userId, $type, $plainPassword = null)
+    {
+        // Get user
+        $user = DB::table('users')->where('id', $userId)->first();
 
-    if (!$user) {
-        return;
+        if (!$user) {
+            return;
+        }
+
+        // Fetch email template
+        $template = DB::table('email_templates')
+            ->where('type',  $type)
+            ->first();
+
+        if (!$template) {
+            return;
+        }
+
+        // Replace placeholders
+        $body = str_replace(
+            [
+                '[User’s Name]',
+                'Username:',
+                'Password:',
+            ],
+            [
+                $user->name,
+                'Username: ' . $user->email,
+                $plainPassword ? 'Password: ' . $plainPassword : 'Password: ********',
+            ],
+            $template->body
+        );
+
+        // Send mail
+        Mail::to($user->email)->send(
+            new DynamicMail($template->subject, $body)
+        );
     }
-
-    // Fetch email template
-    $template = DB::table('email_templates')
-        ->where('type',  $type)
-        ->first();
-
-    if (!$template) {
-        return;
-    }
-
-    // Replace placeholders
-    $body = str_replace(
-        [
-            '[User’s Name]',
-            'Username:',
-            'Password:',
-        ],
-        [
-            $user->name,
-            'Username: ' . $user->email,
-            $plainPassword ? 'Password: ' . $plainPassword : 'Password: ********',
-        ],
-        $template->body
-    );
-
-    // Send mail
-    Mail::to($user->email)->send(
-        new DynamicMail($template->subject, $body)
-    );
-}
 }
 
 //member_packages
@@ -1214,8 +1211,31 @@ if (!function_exists('seo')) {
 
     function seo($page)
     {
+        $page = is_string($page) ? trim($page) : '';
+        $path = parse_url($page, PHP_URL_PATH);
+        if (is_string($path) && $path !== '') {
+            $page = $path;
+        }
+
+        $page = trim($page);
+        if ($page === '' || $page === '/') {
+            $page = 'home';
+        }
+
+        $pageNoSlashes = trim($page, '/');
+        if ($pageNoSlashes === '') {
+            $pageNoSlashes = 'home';
+        }
+
+        $candidates = array_values(array_unique([
+            $page,
+            $pageNoSlashes,
+            ltrim($page, '/'),
+            '/' . $pageNoSlashes,
+        ]));
+
         $seo = DB::table('seo_meta')
-            ->where('page', $page)
+            ->whereIn('page', $candidates)
             ->first();
 
         return [
@@ -1250,9 +1270,9 @@ if (!function_exists('sendDynamicMail')) {
             ->first();
 
         if (!$template) {
-             $template = DB::table('email_templates')
-            ->where('slug', $type)
-            ->first();
+            $template = DB::table('email_templates')
+                ->where('slug', $type)
+                ->first();
 
             if (!$template) {
                 return false;
@@ -1272,7 +1292,7 @@ if (!function_exists('sendDynamicMail')) {
             $template->body
         );
         // Send email
-        
+
         Mail::to($user->email)->send(
             new DynamicMail($subject, $body)
         );
@@ -1296,10 +1316,10 @@ if (!function_exists('sendDynamicMailNoLoginIn')) {
     function sendDynamicMailNoLoginIn(string $email, string $type, array $placeholders = []): bool
     {
         // Fetch email template
-        
+
         $template = DB::table('email_templates')
             ->where('slug', $type)
-            ->first(); 
+            ->first();
         if (!$template) {
             return false;
         }
@@ -1312,10 +1332,10 @@ if (!function_exists('sendDynamicMailNoLoginIn')) {
         );
 
         // Send email
-       
+
         Mail::to($email)->send(
             new DynamicMail($template->subject, $body)
-        );  
+        );
         return true;
     }
 }
@@ -1324,10 +1344,10 @@ if (!function_exists('checkPlanLimit')) {
 
     function checkPlanLimit($userId, $type)
     {
-         $user = DB::table('users')->where('id', $userId)->first();
-         $seller_packages = DB::table('seller_packages')->where('seller_id', $userId)->first();
-         $plan = DB::table('member_packages')->where('id', $seller_packages->package_id)->first();
-        
+        $user = DB::table('users')->where('id', $userId)->first();
+        $seller_packages = DB::table('seller_packages')->where('seller_id', $userId)->first();
+        $plan = DB::table('member_packages')->where('id', $seller_packages->package_id)->first();
+
 
         $plan = DB::table('member_packages')->where('id', $user->member_package_id)->first();
 
@@ -1369,7 +1389,7 @@ if (! function_exists('getTenderType')) {
                 return 'Unknown';
         }
     }
-} 
+}
 
 if (!function_exists('sendDynamicMails')) {
 
@@ -1384,7 +1404,7 @@ if (!function_exists('sendDynamicMails')) {
     function sendDynamicMails(array $emails, string $type, array $placeholders = []): bool
     {
         // Fetch user
-        
+
 
         // Fetch email template
         $template = DB::table('email_templates')
@@ -1392,9 +1412,9 @@ if (!function_exists('sendDynamicMails')) {
             ->first();
 
         if (!$template) {
-             $template = DB::table('email_templates')
-            ->where('slug', $type)
-            ->first();
+            $template = DB::table('email_templates')
+                ->where('slug', $type)
+                ->first();
 
             if (!$template) {
                 return false;
@@ -1414,7 +1434,7 @@ if (!function_exists('sendDynamicMails')) {
             $template->body
         );
         // Send email
-        
+
         Mail::to($emails)->send(
             new DynamicMail($subject, $body)
         );
