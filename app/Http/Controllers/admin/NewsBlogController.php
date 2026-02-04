@@ -141,6 +141,52 @@ class NewsBlogController extends Controller
         }
     }
 
+     public function updateVendorNews(Request $request)
+    {
+        // slug,title,image,content,author_id
+        $request->merge([
+            'slug' => Str::slug($request->title)
+        ]);
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'id' => 'required|exists:seller_news,id',
+                'title' => 'required|string|max:255',
+                'slug' => 'required|string|unique:seller_news,slug,' . $request->id,
+                'url' => 'required|url',
+                'description' => 'required|string',
+                'image' => 'nullable|image|mimes:jpg,jpeg,png|max:204',
+            ]
+        );
+         //dd($validator->errors());
+        if ($validator->fails()) {
+            return back()->withErrors($validator->errors())->with(['alert-type' => 'error', 'message' => 'Please check your data']);
+        } else {
+            $news = SellerNews::where('id', $request->id)->first();
+            if (!empty($news)) {
+
+                $news->title = $request->title;
+                $news->slug = $request->slug;
+                //$news->url = $request->url;
+                $news->short_description = $request->description;
+                $news->vendor_id = auth()->user()->id;
+                if ($request->hasFile('image')) {
+                    $file = $request->file('image');
+                    $manager = new ImageManager(['driver' => 'gd']);
+                    $ext = $file->getClientOriginalExtension();
+                    $fileName = uniqid('news_' . $news->id) . '.' . $ext;
+                    $manager->make($file)->resize(500, 500)->save(public_path('uploads/news/' . $fileName));
+                    $news->image = $fileName;
+                }
+                $news->save();
+                return back()->with(['alert-type' => 'success', 'message' => 'Successfully update your news'])->withErrors($validator->errors());
+            } else {
+                return back()->with(['alert-type' => 'error', 'message' => 'This news is not found'])->withErrors($validator->errors());
+            }
+        }
+    }
+
     public function deleteNews($id)
     {
         $news = news::findOrFail($id);
@@ -156,9 +202,28 @@ class NewsBlogController extends Controller
             return back()->with(['alert-type' => 'error', 'message' => 'This news is not found']);
         }
     }
+       public function deleteVendorNews($id)
+    {
+        $news = SellerNews::findOrFail($id);
+        if (!empty($news)) {
+            if ($news->image != '') {
+                $imagePath = public_path('/uploads/news/' . $news->image);
+                if (File::exists($imagePath)) {
+                    File::delete($imagePath);
+                }
+            }
+            $news->delete();
+        } else {
+            return back()->with(['alert-type' => 'error', 'message' => 'This news is not found']);
+        }
+    }
     public function editNews($id)
     {
-        $news = news::findOrFail($id);
+       // die('here');
+        $news = SellerNews::findOrFail($id);
+       // echo "<pre>";
+       // print_r($news);
+       // echo "</pre>";die;
         if (!empty($news)) {
             return view('admin.news.edit', compact('news'));
         } else {

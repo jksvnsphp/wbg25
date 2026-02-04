@@ -528,7 +528,7 @@ Route::delete('/trade-sell/{id}', [TenderController::class, 'destroy'])
       Route::get('/delete-news/{id}', 'deleteNews')->name('admin.delete.news');
       Route::get('/edit-news/{id}', 'editNews')->name('admin.edit.news');
       Route::post('/store-news', 'storeNews')->name('admin.store.news');
-      Route::post('/update-news', 'updateNews')->name('admin.update.news');
+      Route::post('/update-news', 'updateVendorNews')->name('admin.update.news');
       Route::post('/update-status-news', 'updateStatus')->name('admin.update.status.news');
    });
    Route::controller(CustomeCategoryController::class)->prefix('admin')->group(function () {
