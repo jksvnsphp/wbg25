@@ -10,7 +10,7 @@
 
     <div class="row">
         <div class="col-12 py-4 ">
-            <p class="mb-0 pb-0 ">Home > Tenders {!! $tender->searched_path !!}</p>
+            <p class="mb-0 pb-0 "><a class="text-primary" title="Home" href="{{ url('/') }}">Home</a> > <a class="text-primary" title="Tenders" href="{{ url('/tenders') }}">Tenders</a> {!! $tender->searched_path !!}</p>
         </div>
     </div>
     <div class="row">
