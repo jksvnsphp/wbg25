@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsSeoMeta;
 use App\Models\countries;
 use App\Models\parent_category;
 use App\Models\SellerNews;
@@ -12,6 +13,8 @@ use Illuminate\Http\Request;
 
 class UINewsController extends Controller
 {
+    use BuildsSeoMeta;
+
     public function index(Request $request)
     {
         $categories = parent_category::where('status', "1")->orderBy('name', 'ASC')->get();
@@ -111,7 +114,13 @@ class UINewsController extends Controller
         }
         $news->average_rating = null;
         $news->average_rating = number_format($news->vendor->ratings()->avg('rate') ?? 0);
+
+        $seo = $this->buildSeoMeta($news->title ?? null, 'News');
+        $metaTitle = $seo['metaTitle'];
+        $metaDescription = $seo['metaDescription'];
+        $metaKeywords = $seo['metaKeywords'];
+
         // dd($news->toArray());
-        return view('external-user.read-news', compact('news'));
+        return view('external-user.read-news', compact('news', 'metaTitle', 'metaDescription', 'metaKeywords'));
     }
 }

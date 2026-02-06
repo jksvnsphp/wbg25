@@ -1,9 +1,8 @@
 @extends('external-user.external-frame')
 @section('meta_data')
-<title>{{ $news->title ?? 'WBG24' }}</title>
-<meta name="description" content="{{ $news->short_description ?? 'No Description' }}">
-<meta name="keywords" content="{{ $news->title ?? '' }} ">
-<meta name="author" content="WBG24.com">
+<title>{{ $metaTitle ?? ($news->title ?? 'WBG24') }}</title>
+<meta name="description" content="{{ $metaDescription ?? '' }}">
+<meta name="keywords" content="{{ $metaKeywords ?? '' }}">
 @endsection
 @section('external-main-content')
 <section class="container-fluid">

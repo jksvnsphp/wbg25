@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsSeoMeta;
 use App\Models\countries;
 use App\Models\CustomeCategory;
 use App\Models\OfferQuotation;
@@ -16,6 +17,8 @@ use Illuminate\Support\Facades\Validator;
 
 class SourceProController extends Controller
 {
+    use BuildsSeoMeta;
+
     //
     public function sourcePro_old_05_06_(Request $request)
     {
@@ -161,7 +164,13 @@ class SourceProController extends Controller
             $expiryDate = now()->diffInDays($expiryDate, false) . 'D, ' . (now()->diffInHours($expiryDate, false) % 24) . 'H, ' . (now()->diffInMinutes($expiryDate, false) % 60) . 'M, ' . (now()->diffInSeconds($expiryDate, false) % 60) . 'S';
             $quotation->expiry_date = $expiryDate; //$expiryDate->format('Y M d | H:i');
             //$quotation->expiry_date = $expiryDate->format('d M Y | H:i');
-            return view('external-user.source-pro-detail', compact('quotation'));
+
+            $seo = $this->buildSeoMeta($quotation->product_service ?? null, 'RFQ');
+            $metaTitle = $seo['metaTitle'];
+            $metaDescription = $seo['metaDescription'];
+            $metaKeywords = $seo['metaKeywords'];
+
+            return view('external-user.source-pro-detail', compact('quotation', 'metaTitle', 'metaDescription', 'metaKeywords'));
         } else {
             return redirect()->back()->with(['alert-type' => 'error', 'message' => 'Quotation is more in store!']);
         }
