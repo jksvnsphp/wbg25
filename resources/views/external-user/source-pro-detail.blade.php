@@ -1,10 +1,8 @@
 @extends('external-user.external-frame')
 @section('meta_data')
-<title>{{ $quotation->product_service ?? '' }}</title>
-<meta name="description"
-    content="Bid on our {{ $quotation->product_service ?? '' }} on World Business Guide - WBG24.com – Your international Market.">
-<meta name="keywords" content="{{ $quotation->product_service ?? '' }}">
-<meta name="author" content="WBG24.com">
+<title>{{ $metaTitle ?? ($quotation->product_service ?? '') }}</title>
+<meta name="description" content="{{ $metaDescription ?? '' }}">
+<meta name="keywords" content="{{ $metaKeywords ?? '' }}">
 @endsection
 
 

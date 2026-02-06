@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsSeoMeta;
 use App\Models\category;
 use App\Models\countries;
 use App\Models\endsubcategory;
@@ -20,6 +21,8 @@ use Illuminate\Support\Facades\Http;
 
 class UserProductController extends Controller
 {
+    use BuildsSeoMeta;
+
     //
     function findCategoryBySlug($slug)
     {
@@ -763,11 +766,16 @@ class UserProductController extends Controller
             $product->shippingData = $shippingData;
             $product->average_rating = number_format($product->vendor->ratings()->avg('rate') ?? 0);
 
+            $seo = $this->buildSeoMeta($product->name ?? null, 'Products');
+            $metaTitle = $seo['metaTitle'];
+            $metaDescription = $seo['metaDescription'];
+            $metaKeywords = $seo['metaKeywords'];
+
             // echo '<pre>';
             // print_r($product->toArray());
             // echo '</pre>';
 
-            return view('external-user.product-detail', compact('product', 'yourShippingCost'));
+            return view('external-user.product-detail', compact('product', 'yourShippingCost', 'metaTitle', 'metaDescription', 'metaKeywords'));
         } else {
             return redirect()->back();
         }

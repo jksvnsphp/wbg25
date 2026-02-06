@@ -1,10 +1,8 @@
 @extends('external-user.external-frame')
 @section('meta_data')
-<title> {{ $tender->name ?? '' }}</title>
-<meta name="description"
-    content="Bid on our {{ $tender->name ?? '' }} on World Business Guide - WBG24.com – Your international Market.">
-<meta name="keywords" content="{{ $tender->name ?? '' }}">
-<meta name="author" content="WBG24.com">
+<title>{{ $metaTitle ?? ($tender->name ?? '') }}</title>
+<meta name="description" content="{{ $metaDescription ?? '' }}">
+<meta name="keywords" content="{{ $metaKeywords ?? '' }}">
 @endsection
 @section('external-main-content')
 
@@ -12,7 +10,7 @@
 
     <div class="row">
         <div class="col-12 py-4 ">
-            <p class="mb-0 pb-0 ">Home > Tenders {!! $tender->searched_path !!}</p>
+            <p class="mb-0 pb-0 "><a class="text-primary" title="Home" href="{{ url('/') }}">Home</a> > <a class="text-primary" title="Tenders" href="{{ url('/tenders') }}">Tenders</a> {!! $tender->searched_path !!}</p>
         </div>
     </div>
     <div class="row">

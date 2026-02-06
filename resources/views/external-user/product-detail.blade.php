@@ -1,10 +1,8 @@
 @extends('external-user.external-frame')
 @section('meta_data')
-<title>{{ $product->name ?? '' }}</title>
-<meta name="description"
-    content="Buy our {{ $product->name ?? '' }} on World Business Guide - WBG24.com – Your international Market">
-<meta name="keywords" content="{{ $product->name ?? '' }}">
-<meta name="author" content="WBG24.com">
+<title>{{ $metaTitle ?? ($product->name ?? '') }}</title>
+<meta name="description" content="{{ $metaDescription ?? '' }}">
+<meta name="keywords" content="{{ $metaKeywords ?? '' }}">
 @endsection
 @section('external-main-content')
 <style>
@@ -43,19 +41,17 @@
     }
 </style>
 <section class="container-fluid">
-    <p class="mb-0 pb-0 mt-3">Home > Products {!! $product->searched_path !!}</p>
+    <p class="mb-0 pb-0 mt-3"><a class="text-primary" title="Home" href="{{ url('/') }}">Home</a> > <a class="text-primary" title="Products" href="{{ url('/products') }}">Products</a> {!! $product->searched_path !!}</p>
     <div class="row">
         <div class="col-xl-9 mt-4">
             <div class="card rounded-0 border-0">
                 <div class="row">
-
                     <div class="col-md-6" style="border: 1px solid #ddd">
                         @if ($product->isMultiple == 0)
                         <div class="card border-0 rounded-0">
                             <div class="card-body img_view">
                                 <img class="large-view"
-                                    src="@if (isset($product->gallery[0]->image) && $product->gallery[0]->image != '') {{ asset('uploads/products/gallery/' . $product->gallery[0]->image) }} @else https://placehold.co/400 @endif"
-                                    class="img-fluid" alt="" />
+                                    src="@if (isset($product->gallery[0]->image) && $product->gallery[0]->image != '') {{ asset('uploads/products/gallery/' . $product->gallery[0]->image) }} @else https://placehold.co/400 @endif" class="img-fluid" alt="product image" />
                             </div>
                             <hr />
                             <div class="card-footer border-0 d-flex bg-white">
@@ -63,28 +59,28 @@
                                 <div class="in-img">
                                     <img class="small-view"
                                         src="{{ asset('uploads/products/gallery/' . $product->gallery[0]->image) }}"
-                                        alt="" />
+                                        alt="product image" />
                                 </div>
                                 @endif
                                 @if (isset($product->gallery[1]->image) && $product->gallery[1]->image != '')
                                 <div class="in-img">
                                     <img class="small-view"
                                         src="{{ asset('uploads/products/gallery/' . $product->gallery[1]->image) }}"
-                                        alt="" />
+                                        alt="product image" />
                                 </div>
                                 @endif
                                 @if (isset($product->gallery[2]->image) && $product->gallery[2]->image != '')
                                 <div class="in-img">
                                     <img class="small-view"
                                         src="{{ asset('uploads/products/gallery/' . $product->gallery[2]->image) }}"
-                                        alt="" />
+                                        alt="product image" />
                                 </div>
                                 @endif
                                 @if (isset($product->gallery[3]->image) && $product->gallery[3]->image != '')
                                 <div class="in-img">
                                     <img class="small-view"
                                         src="{{ asset('uploads/products/gallery/' . $product->gallery[3]->image) }}"
-                                        alt="" />
+                                        alt="product image" />
                                 </div>
                                 @endif
 
@@ -94,7 +90,7 @@
                         <div class="card border-0 rounded-0">
                             <div class="card-body img_view">
                                 <img class="large-view" id="largeView" src="https://placehold.co/400"
-                                    class="img-fluid" alt="" />
+                                    class="img-fluid" alt="product image" />
                             </div>
                             <hr />
                             <div
@@ -457,8 +453,7 @@
                                 <p>
                                     Item location:
                                     <strong
-                                        class="fw-bold">{{ isset($product->item_country->name) ? $product->item_country->name . ', ' : '' }}{{ isset($product->item_state->name) ? $product->item_state->name . ', ' : '' }}
-                                        {{ isset($product->product_setting->city) ? $product->product_setting->city : '' }}
+                                        class="fw-bold">{{ isset($product->item_country->name) ? $product->item_country->name : '' }}
                                     </strong>
                                 </p>
 
@@ -467,10 +462,19 @@
                                         @if (isset($data['is_worldwide']))
                                         {{ $data['is_worldwide']['status'] }}
                                         @else
-                                        {{ implode(', ', collect($data['regions'])->pluck('name')->toArray()) }}
-                                        @if (count($data['countries']))
-                                        , {{ implode(', ', collect($data['countries'])->pluck('name')->toArray()) }}
-                                        @endif
+                                        @php
+                                        $regionNames = collect($data['regions'] ?? [])->pluck('name')->filter()->values()->all();
+                                        $countryNames = collect($data['countries'] ?? [])->pluck('name')->filter()->values()->all();
+
+                                        $shipsToParts = array_values(array_filter([
+                                        implode(', ', $regionNames),
+                                        implode(', ', $countryNames),
+                                        ], fn($value) => $value !== ''));
+
+                                        $shipsTo = implode(', ', $shipsToParts);
+                                        @endphp
+
+                                        {{ $shipsTo !== '' ? $shipsTo : 'N/A' }}
                                         @endif
                                     </strong>
                                 </p>
@@ -800,8 +804,7 @@
                             </p>
                             <p class="text-muted" style="font-size: 12px">
                                 Located in:
-                                {{ isset($product->item_country->name) ? $product->item_country->name . ', ' : '' }}{{ isset($product->item_state->name) ? $product->item_state->name . ', ' : '' }}
-                                {{ isset($product->product_setting->city) ? $product->product_setting->city : '' }}
+                                {{ isset($product->item_country->name) ? $product->item_country->name : '' }}
                             </p>
                         </div>
                     </div>
