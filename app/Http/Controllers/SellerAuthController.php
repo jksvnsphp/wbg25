@@ -694,12 +694,14 @@ class SellerAuthController extends Controller
     public function getMyStoreState($type)
     {
         $id = auth()->user()->id;
+        ///var_dump($id);die;
         $soldProducts = products::join('order_items', 'products.id', '=', 'order_items.product_id')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->where('products.vendor_id', $id)
             ->where('products.isListingType', $type)
             ->whereNotIn('orders.payment_status', ['processing', 'failed'])
             ->whereNotIn('orders.order_status', ['canceled'])
+            ->where('products.isDelete', 0)
             ->where('order_items.isRead', 0)
             ->sum('order_items.quantity');
         return $soldProducts;

@@ -2052,8 +2052,10 @@ class SellerProductController extends Controller
             })
             ->with('order', 'rate', 'product.vendor.payment_info', 'product.vendor.countryData', 'product.vendor.stateData', 'product.gallery')
             ->first();
-        // dd($item->toArray());
+        // dd($item->toArray()); //mySoldProductDetail
         if ($item) {
+            OrderItem::where('id', $order_item_id)->where('isRead', 0)->update(['isRead' => 1]);
+            
             return view('seller-vendor.product.buy-product-details', compact('item'));
         } else {
             return back()->with(['alert-type' => 'error', 'message' => 'You are not authorized!']);

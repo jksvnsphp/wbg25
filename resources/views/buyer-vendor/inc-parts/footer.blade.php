@@ -617,4 +617,11 @@
         }
     });
     window.onload = customRestoreLanguage;
+    setInterval(function () {
+    fetch('/buyer/dashboard/unread-inbox-count')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('inboxUnreadCount').innerText = data.count;
+        });
+}, 10000);
 </script>
