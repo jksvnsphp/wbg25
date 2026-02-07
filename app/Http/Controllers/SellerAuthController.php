@@ -707,6 +707,22 @@ class SellerAuthController extends Controller
         return $soldProducts;
     }
 
+      public function getMyStoreRState($type)
+    {
+        $id = auth()->user()->id;
+        ///var_dump($id);die;
+        $soldProducts = products::join('order_items', 'products.id', '=', 'order_items.product_id')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('products.vendor_id', $id)
+            ->where('products.isListingType', $type)
+            ->whereNotIn('orders.payment_status', ['processing', 'failed'])
+            ->whereNotIn('orders.order_status', ['canceled'])
+            ->where('products.isDelete', 0)
+            //->where('order_items.isRead', 0)
+            ->sum('order_items.quantity');
+        return $soldProducts;
+    }
+
     public function sellerDashboard()
     {
         $id = auth()->user()->id;
@@ -987,7 +1003,7 @@ class SellerAuthController extends Controller
                 return now()->lessThan($expiryDate);
             })->count();
 
-        $soldRProducts = $this->getMyStoreState('normal');
+        $soldRProducts = $this->getMyStoreRState('normal');
 
         $purchasedRProductCount = Order::where('user_id', $id)
             ->where('order_status', '!=', 'canceled')

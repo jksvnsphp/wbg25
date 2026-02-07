@@ -2064,15 +2064,27 @@ class SellerProductController extends Controller
 
     public function mySoldProducts()
     {
-        $vendorId = auth()->user()->id;
-        $orders = Order::latest()->whereHas('orderItems', function ($query) use ($vendorId) {
-            $query->whereHas('product', function ($productQuery) use ($vendorId) {
-                $productQuery->where('vendor_id', $vendorId)->where('isMultiple', 0);
-            });
-        })
-            ->with(['orderItems.product.gallery'])
+       
+        $vendorId = auth()->user()->id; 
+        /* 🔹 Update isRead = 1 */
+        OrderItem::whereHas('product', function ($query) use ($vendorId) {
+                $query->where('vendor_id', $vendorId)
+                    ->where('isMultiple', 0);
+            })
             ->where('payment_status', '!=', 'processing')
-            ->paginate(5);
+            ->update(['isRead' => 1]);
+        /* 🔹 Fetch orders normally */
+        $orders = Order::latest()
+            ->whereHas('orderItems', function ($query) use ($vendorId) {
+                $query->whereHas('product', function ($productQuery) use ($vendorId) {
+                    $productQuery->where('vendor_id', $vendorId)
+                                ->where('isMultiple', 0);
+                });
+            })
+            ->with(['orderItems.product.gallery'])
+            ->paginate(5); 
+
+            //Order::whereIn('id', $orderIds)->update(['isRead' => 1]);
         // dd($orders);
         return view('seller-vendor.product.sold-products', compact('orders'));
     }
