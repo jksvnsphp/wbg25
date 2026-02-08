@@ -24,7 +24,11 @@
         <div class="col-md-12 mt-2 bg-primary py-3">
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <h6 class="fs-5 text-light py-2 mt-0 px-3 mb-0">
-                    Quotation Details
+                    @if ($quotationOffer->vendor_id == auth()->user()->id)
+                    Suppliers Quotation Deal Details
+                    @else
+                    My Quotation Deal Details
+                    @endif
                 </h6>
             </div>
 
@@ -62,9 +66,11 @@
                                                     Deal Price: USD&dollar; {{ $quotationOffer->offer_price ?? 0 }}
                                                 </span>
                                             </td>
+                                            @if ($quotationOffer->vendor_id == auth()->user()->id)
                                             <td>
                                                 USD&dollar;{{ ($quotationOffer->offer_price*5)/100 ?? 0 }} Sale Provision
                                             </td>
+                                            @endif
                                             <td>
                                                 <div class="d-flex align-items-center justify-content-between">
                                                     <div class="d-flex align-items-center">
@@ -88,38 +94,55 @@
                                 <div class="col-md-4" style="border-right: 1px solid #ddd">
                                     <h6 class="fw-bold mb-3">Shipping Address</h6>
                                     @php
-                                    $sender = $quotationOffer->sender ?? [];
+                                    $sender = $quotationOffer->sender;
                                     @endphp
-                                    <p class="mb-0">{{ $sender->first_name . ' ' . $sender->last_name }}</p>
-                                    @if (isset($quotationOffer->shipping_address))
+
+                                    <p class="mb-0">{{ trim((data_get($sender, 'first_name') ?? '') . ' ' . (data_get($sender, 'last_name') ?? '')) }}</p>
+
                                     @php
-                                    $shippingAddress = json_decode(
-                                    $quotationOffer->shipping_address,
-                                    true,
-                                    );
-                                    $formattedAddress = implode(
-                                    ', ',
-                                    array_filter([
-                                    $shippingAddress['street'] ?? null,
-                                    $shippingAddress['house_no'] ?? null,
-                                    $shippingAddress['city'] ?? null,
-                                    $shippingAddress['state_name'] ?? null,
-                                    $shippingAddress['country_name'] ?? null,
-                                    $shippingAddress['postal_code'] ?? null,
-                                    $shippingAddress['phone_number'] ?? null,
-                                    ]),
-                                    );
+                                    $shippingAddress = json_decode($quotationOffer->shipping_address ?? '', true);
+                                    if (!is_array($shippingAddress)) {
+                                    $shippingAddress = [];
+                                    }
+
+                                    $street = $shippingAddress['street'] ?? data_get($sender, 'street');
+                                    $houseNo = $shippingAddress['house_no'] ?? ($shippingAddress['house_number'] ?? data_get($sender, 'house_no'));
+                                    $postalCode = $shippingAddress['postal_code']
+                                    ?? ($shippingAddress['zip'] ?? ($shippingAddress['zipcode'] ?? (data_get($sender, 'postal_code') ?? data_get($sender, 'zip'))));
+                                    $city = $shippingAddress['city'] ?? data_get($sender, 'city');
+
+                                    $stateRaw = $shippingAddress['state_name'] ?? ($shippingAddress['state'] ?? data_get($sender, 'state'));
+                                    $stateName = $shippingAddress['state_name'] ?? (is_numeric($stateRaw) ? getStateName($stateRaw) : $stateRaw);
+
+                                    $countryRaw = $shippingAddress['country_name'] ?? ($shippingAddress['country'] ?? data_get($sender, 'country'));
+                                    $countryName = $shippingAddress['country_name'] ?? (is_numeric($countryRaw) ? getCountriesName($countryRaw) : $countryRaw);
+
+                                    $streetLine = trim(implode(' ', array_filter([$street, $houseNo])));
+                                    $cityLine = trim(implode(' ', array_filter([$postalCode, $city])));
+                                    $formattedAddress = implode(', ', array_filter([
+                                    $streetLine ?: null,
+                                    $cityLine ?: null,
+                                    $stateName ?: null,
+                                    $countryName ?: null,
+                                    ]));
+
+                                    $emailAddress = $shippingAddress['email'] ?? data_get($sender, 'email');
+                                    $phoneNumber = $shippingAddress['phone_number']
+                                    ?? ($shippingAddress['phone'] ?? (data_get($sender, 'phone_number') ?? data_get($sender, 'phone')));
                                     @endphp
-                                    <p class="mb-2">
-                                        {{ $shippingAddress['city'] ?? null }}
-                                        {{ $shippingAddress['house_no'] ?? null }}
-                                        {{ $shippingAddress['street'] ?? null }}
-                                        {{ $shippingAddress['postal_code'] ?? null }}
-                                        {{ $shippingAddress['state_name'] ?? null }}
-                                    </p>
-                                    <p class="mb-0">{{ $shippingAddress['country_name'] ?? null }}</p>
+
+                                    @if (!empty($formattedAddress))
+                                    <p class="mb-2">{{ $formattedAddress }}</p>
                                     @else
-                                    <p class="btn btn-danger disabled">Deal Not Closed Yet</p>
+                                    <p class="mb-2 text-muted">Address not provided</p>
+                                    @endif
+
+                                    @if (!empty($emailAddress))
+                                    <p class="mb-1"><strong>Email:</strong> {{ $emailAddress }}</p>
+                                    @endif
+
+                                    @if (!empty($phoneNumber))
+                                    <p class="mb-0"><strong>Phone:</strong> {{ $phoneNumber }}</p>
                                     @endif
                                 </div>
                                 <div style="border-right: 1px solid #ddd"
@@ -130,7 +153,7 @@
                                             @if ($quotationOffer->payment_status == 'pending' || $quotationOffer->payment_status == 'failed')
                                             <button class="btn btn-light rounded-0" style="background: #ddd;"
                                                 type="button"
-                                                onclick="changePayment({{ $quotationOffer->id }},'paid')">Mark As
+                                                data-offer-id="{{ $quotationOffer->id }}" data-status="paid" class="js-change-payment">Mark As
                                                 Paid</button>
                                             @else
                                             <button class="btn btn-light rounded-0" style="background: #ddd;"
@@ -157,13 +180,13 @@
                                             @if ($quotationOffer->shipment_status == 'pending' || $quotationOffer->shipment_status == 'cancelled')
                                             <button class="btn btn-light rounded-0" style="background: #ddd;"
                                                 type="button"
-                                                onclick="changeShipemnt({{ $quotationOffer->id }},'shipped')">Mark
+                                                data-offer-id="{{ $quotationOffer->id }}" data-status="shipped" class="js-change-shipment">Mark
                                                 As
                                                 Shipped</button>
                                             @else
                                             <button class="btn btn-light rounded-0" style="background: #ddd;"
                                                 type="button"
-                                                onclick="changeShipemnt({{ $quotationOffer->id }},'pending')">Not
+                                                data-offer-id="{{ $quotationOffer->id }}" data-status="pending" class="js-change-shipment">Not
                                                 Yet
                                                 Shipped</button>
                                             @endif
@@ -192,7 +215,6 @@
                                     <p><strong>Shipment Tracking Number:</strong> .......</p>
                                     @endif
                                 </div>
-
                             </div>
                             @else
                             <div class="row mt-3">
@@ -200,29 +222,23 @@
                                     <h6 class="fw-bold mb-3">Payment method</h6>
                                     @php
                                     $payment_infos = $quotation->vendor->payment_infos ?? [];
-                                    //echo "<pre>";
-                                    //print_r($quotation);die;
-                                   $sender = $quotation->vendor;
-
+                                    $sender = $quotation->vendor;
                                     @endphp
 
                                     <div class="row">
                                         <p>Please Transfer the deal amount of @if ($quotation->currency == 'usd')
                                             USD &dollar; {{ $quotationOffer->offer_price ?? 0 }}
                                             @else
-                                            EURO &euro; {{ $quotationOffer->offer_price ?? 0 }}
+                                            USD &dollar; {{ $quotationOffer->offer_price ?? 0 }}
                                             @endif</p>
-                                        <h5>To:</h5>
-
                                         <p class="mb-2">
-                                        {{ $sender->street ?? null }}
-                                        {{ $sender->house_no ?? null }} 
-                                       
-                                    </p>
-                                    <p class="mb-2"> {{ $sender->postal_code ?? null }}  {{ $sender->city ?? null }}</p>
-                                    <p class="mb-2"> </p>
-                                    <p class="mb-2">{{ getStateName($sender->state ?? null) }}</p>
-                                    <p class="mb-0">{{ getCountriesName($sender->country ?? null) }}</p>
+                                            {{ $sender->street ?? null }}
+                                            {{ $sender->house_no ?? null }}
+                                        </p>
+                                        <p class="mb-2"> {{ $sender->postal_code ?? null }} {{ $sender->city ?? null }}</p>
+                                        <p class="mb-2"> </p>
+                                        <p class="mb-2">{{ getStateName($sender->state ?? null) }}</p>
+                                        <p class="mb-0">{{ getCountriesName($sender->country ?? null) }}</p>
 
 
                                         @php
@@ -308,9 +324,9 @@
                                         @endforeach
                                     </div>
 
-                                    @if($quotationOffer->isDealClose==0)
+                                    <!-- @if($quotationOffer->isDealClose==0)
                                     <a href="" class="btn mt-3 btn-secondary rounded-0">Deal Close Now</a>
-                                    @endif
+                                    @endif -->
                                 </div>
                                 <div style="border-right: 1px solid #ddd"
                                     class="col-md-3 d-flex flex-column justify-content-start">
@@ -490,6 +506,14 @@
 @section('seller-custome-js')
 @if ($quotationOffer->vendor_id == auth()->user()->id)
 <script>
+    $(document).on('click', '.js-change-payment', function() {
+        changePayment($(this).data('offer-id'), $(this).data('status'));
+    });
+
+    $(document).on('click', '.js-change-shipment', function() {
+        changeShipemnt($(this).data('offer-id'), $(this).data('status'));
+    });
+
     function changePayment(id, status) {
         let paymentStatus = status;
         let orderItemId = id;
