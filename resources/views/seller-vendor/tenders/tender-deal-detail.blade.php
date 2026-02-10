@@ -24,7 +24,11 @@
         <div class="col-md-12 mt-2 bg-primary py-3">
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <h6 class="fs-5 text-light py-2 mt-0 px-3 mb-0">
-                    Tender Details {{$tenderOffer->shipping_address}}
+                    @if ($tenderOffer->vendor_id == auth()->user()->id)
+                    My Tender Deal Details
+                    @else
+                    Suppliers Tender Deal Details
+                    @endif
                 </h6>
             </div>
 
@@ -104,38 +108,60 @@
                                 <div class="col-md-4" style="border-right: 1px solid #ddd">
                                     <h6 class="fw-bold mb-3">Shipping Address</h6>
                                     @php
-                                    $sender = $tenderOffer->sender ?? [];
-
+                                    $sender = $tenderOffer->sender;
                                     @endphp
-                                    <p class="mb-0">{{ $sender->first_name . ' ' . $sender->last_name }}</p>
-                                    @if (isset($tenderOffer->shipping_address) || $tender->isDeal==1)
+                                    <p class="mb-0">{{ trim((data_get($sender, 'first_name') ?? '') . ' ' . (data_get($sender, 'last_name') ?? '')) }}</p>
                                     @php
-                                    $shippingAddress = json_decode(
-                                    $tenderOffer->shipping_address,
-                                    true,
-                                    );
-                                    $formattedAddress = implode(
-                                    ', ',
-                                    array_filter([
-                                    $shippingAddress['street'] ?? null,
-                                    $shippingAddress['house_no'] ?? null,
-                                    $shippingAddress['city'] ?? null,
-                                    $shippingAddress['state_name'] ?? null,
-                                    $shippingAddress['country_name'] ?? null,
-                                    $shippingAddress['postal_code'] ?? null,
-                                    $shippingAddress['phone_number'] ?? null,
-                                    ]),
-                                    );
-                                    @endphp
-                                    <p class="mb-2">
-                                        {{ $sender->street ?? null }}
-                                        {{ $sender->house_no ?? null }}
+                                    $shippingAddress = json_decode($tenderOffer->shipping_address ?? '', true);
+                                    if (!is_array($shippingAddress)) {
+                                    $shippingAddress = [];
+                                    }
 
-                                    </p>
-                                    <p class="mb-2"> {{ $sender->postal_code ?? null }} {{ $sender->city ?? null }}</p>
-                                    <p class="mb-2"> </p>
-                                    <p class="mb-2">{{ getStateName($sender->state ?? null) }}</p>
-                                    <p class="mb-0">{{ getCountriesName($sender->country ?? null) }}</p>
+                                    $street = $shippingAddress['street'] ?? data_get($sender, 'street');
+                                    $houseNo = $shippingAddress['house_no'] ?? ($shippingAddress['house_number'] ?? data_get($sender, 'house_no'));
+                                    $postalCode = $shippingAddress['postal_code']
+                                    ?? ($shippingAddress['zip'] ?? ($shippingAddress['zipcode'] ?? (data_get($sender, 'postal_code') ?? data_get($sender, 'zip'))));
+                                    $city = $shippingAddress['city'] ?? data_get($sender, 'city');
+
+                                    $stateRaw = $shippingAddress['state_name'] ?? ($shippingAddress['state'] ?? data_get($sender, 'state'));
+                                    $stateName = $shippingAddress['state_name'] ?? (is_numeric($stateRaw) ? getStateName($stateRaw) : $stateRaw);
+
+                                    $countryRaw = $shippingAddress['country_name'] ?? ($shippingAddress['country'] ?? data_get($sender, 'country'));
+                                    $countryName = $shippingAddress['country_name'] ?? (is_numeric($countryRaw) ? getCountriesName($countryRaw) : $countryRaw);
+
+                                    $streetLine = trim(implode(' ', array_filter([$street, $houseNo])));
+                                    $cityLine = trim(implode(' ', array_filter([$postalCode, $city])));
+                                    $formattedAddress = implode(', ', array_filter([
+                                    $streetLine ?: null,
+                                    $cityLine ?: null,
+                                    $stateName ?: null,
+                                    $countryName ?: null,
+                                    ]));
+
+                                    $emailAddress = $shippingAddress['email'] ?? data_get($sender, 'email');
+                                    $phoneNumber = $shippingAddress['phone_number']
+                                    ?? ($shippingAddress['phone'] ?? (data_get($sender, 'phone_number') ?? data_get($sender, 'phone')));
+
+                                    $canShowShipping = ($tender->isDeal == 1)
+                                    || !empty($tenderOffer->shipping_address)
+                                    || !empty($streetLine)
+                                    || !empty($cityLine);
+                                    @endphp
+
+                                    @if ($canShowShipping)
+                                    @if (!empty($formattedAddress))
+                                    <p class="mb-2">{{ $formattedAddress }}</p>
+                                    @else
+                                    <p class="mb-2 text-muted">Address not provided</p>
+                                    @endif
+
+                                    @if (!empty($emailAddress))
+                                    <p class="mb-1"><strong>Email:</strong> {{ $emailAddress }}</p>
+                                    @endif
+
+                                    @if (!empty($phoneNumber))
+                                    <p class="mb-1"><strong>Phone:</strong> {{ $phoneNumber }}</p>
+                                    @endif
                                     @else
                                     <p class="btn btn-danger disabled">Deal Not Closed Yet</p>
                                     @endif
@@ -148,7 +174,7 @@
                                             @if ($tenderOffer->payment_status == 'pending' || $tenderOffer->payment_status == 'failed')
                                             <button class="btn btn-light rounded-0" style="background: #ddd;"
                                                 type="button"
-                                                onclick="changePayment({{ $tenderOffer->id }},'paid')">Mark As
+                                                data-offer-id="{{ $tenderOffer->id }}" data-status="paid" class="js-change-payment">Mark As
                                                 Paid</button>
                                             @else
                                             <button class="btn btn-light rounded-0" style="background: #ddd;"
@@ -175,13 +201,13 @@
                                             @if ($tenderOffer->shipment_status == 'pending' || $tenderOffer->shipment_status == 'cancelled')
                                             <button class="btn btn-light rounded-0" style="background: #ddd;"
                                                 type="button"
-                                                onclick="changeShipemnt({{ $tenderOffer->id }},'shipped')">Mark
+                                                data-offer-id="{{ $tenderOffer->id }}" data-status="shipped" class="js-change-shipment">Mark
                                                 As
                                                 Shipped</button>
                                             @else
                                             <button class="btn btn-light rounded-0" style="background: #ddd;"
                                                 type="button"
-                                                onclick="changeShipemnt({{ $tenderOffer->id }},'pending')">Not
+                                                data-offer-id="{{ $tenderOffer->id }}" data-status="pending" class="js-change-shipment">Not
                                                 Yet
                                                 Shipped</button>
                                             @endif
@@ -473,6 +499,14 @@
 @section('seller-custome-js')
 @if ($tenderOffer->vendor_id == auth()->user()->id)
 <script>
+    $(document).on('click', '.js-change-payment', function() {
+        changePayment($(this).data('offer-id'), $(this).data('status'));
+    });
+
+    $(document).on('click', '.js-change-shipment', function() {
+        changeShipemnt($(this).data('offer-id'), $(this).data('status'));
+    });
+
     function changePayment(id, status) {
         let paymentStatus = status;
         let orderItemId = id;
