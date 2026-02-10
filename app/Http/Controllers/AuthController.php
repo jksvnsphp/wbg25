@@ -246,9 +246,9 @@ class AuthController extends Controller
                 'country' => 'required|string',
                 'state' => 'required|string',
                 'city' => 'required|string',
-                'zip' => 'nullable|numeric',
-                'street_name' => 'nullable|string',
-                'house_no' => 'nullable|string',
+                'zip' => 'required|numeric',
+                'street_name' => 'required|string',
+                'house_no' => 'required|string',
             ];
         } else {
             $rules =  [
@@ -261,9 +261,9 @@ class AuthController extends Controller
                 'country' => 'required|string',
                 'state' => 'required|string',
                 'city' => 'required|string',
-                'zip' => 'nullable|numeric',
-                'street_name' => 'nullable|string',
-                'house_no' => 'nullable|string',
+                'zip' => 'required|numeric',
+                'street_name' => 'required|string',
+                'house_no' => 'required|string',
             ];
         }
         $validator = Validator::make($request->all(), $rules);

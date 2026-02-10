@@ -408,6 +408,10 @@ Route::delete('/trade-sell/{id}', [TenderController::class, 'destroy'])
       Route::post('/update/suppliers-subcategory', 'update')->name('admin.update.supplier.subcategory');
    });
 
+   
+
+
+
    Route::controller(TendersController::class)->prefix('admin')->group(function () {
       Route::get('/tenders-category', 'index')->name('admin.tenders.category');
       Route::get('/delete/{id}/tender-category', 'DeleteCategory')->name('admin.delete.tender.category');
@@ -526,9 +530,10 @@ Route::delete('/trade-sell/{id}', [TenderController::class, 'destroy'])
       Route::get('/all-news-images', 'allNewsImages')->name('admin.all.newsImages');
       Route::get('/add-news', 'addNews')->name('admin.add.news');
       Route::get('/delete-news/{id}', 'deleteNews')->name('admin.delete.news');
-      Route::get('/edit-news/{id}', 'editNews')->name('admin.edit.news');
+       Route::get('/delete-news/{id}', 'deleteVendorNews')->name('admin.delete.news');
+            Route::get('/edit-news/{id}', 'editNews')->name('admin.edit.news');
       Route::post('/store-news', 'storeNews')->name('admin.store.news');
-      Route::post('/update-news', 'updateNews')->name('admin.update.news');
+      Route::post('/update-news', 'updateVendorNews')->name('admin.update.news');
       Route::post('/update-status-news', 'updateStatus')->name('admin.update.status.news');
    });
    Route::controller(CustomeCategoryController::class)->prefix('admin')->group(function () {
@@ -618,6 +623,13 @@ Route::middleware(['role:buyer'])->group(function () {
       Route::get('/deal/quotes/{slug}/{offer_id}/details', 'dealQuotesDetails')->name('buyer.offer.quote-deal');
       Route::post('/accept/counter-quote-offer', 'acceptCounterQuoteOffer')->name('buyer.sender.accept-counter-quote');
       Route::post('/deal/update-quotation', 'updateQuotationDealStatus')->name('buyer.status.deal-quotation');
+       Route::get('/dashboard/unread-inbox-count', function () {
+         return response()->json([
+            'count' => \App\Models\ChatMessage::where('receiver_id', auth()->id())
+                  ->where('is_read', 0)
+                  ->count()
+         ]);
+      });
    });
 });
 
@@ -730,6 +742,13 @@ Route::middleware(['role:seller'])->group(function () {
       Route::post('/profile/meta-data', 'updateProfileMetaData')->name('seller.update.profile-meta-data');
       Route::get('/store/search-key', 'storeSearchKeys')->name('seller.spotlight.search.key')->middleware('checkService:Subdomain Spotlight Store');
       Route::post('/store/search-key', 'updateStoreSearchKeys')->name('seller.update.store-search.keys');
+      Route::get('/dashboard/unread-inbox-count', function () {
+         return response()->json([
+            'count' => \App\Models\ChatMessage::where('receiver_id', auth()->id())
+                  ->where('is_read', 0)
+                  ->count()
+         ]);
+      });
    });
    Route::controller(MemberPackageController::class)->prefix('seller')->group(function () {
       Route::get('/upgrade-member-packages', 'upgradeMembership')->name('seller.upgrade.member.package');

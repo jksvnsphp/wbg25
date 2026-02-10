@@ -128,7 +128,7 @@
                                                 <p class="card-text fs-5 mb-0 fw-bolder pb-0">
                                                     Inbox
                                                 </p>
-                                                <h5 class="card-title py-1 fs-5">{{ $unreadMessages ?? 0 }} Messages</h5>
+                                                <h5 class="card-title py-1 fs-5" > <span id="inboxUnreadCount">{{ $unreadMessages ?? 0 }}</span> Messages</h5>
                                             </div>
                                             <div class="col-5 d-flex align-items-center justify-content-center">
                                                 <i class="fas fa-envelope fs-1"></i>
