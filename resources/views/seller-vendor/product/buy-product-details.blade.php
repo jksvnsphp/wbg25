@@ -95,6 +95,10 @@
                                                 <div class="fw-bold mb-2" style="color: #2E2B70;">
                                                     USD {{ number_format($item->total_price) }}
                                                 </div>
+                                                                                                <div class="fw-bold mb-2" style="color: #FF7519;">Shipping Cost : </div>
+                                                <div class="fw-bold mb-2" style="color: #2E2B70;">
+                                                    USD {{ number_format($item->order->shipping_cost) }}
+                                                </div>
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center justify-content-between">
@@ -118,9 +122,9 @@
 
                                     <div class="row">
                                         <p>Please Transfer the product amount of @if ($item->product->currency0 == 'USD')
-                                            USD &dollar; {{ $item->total_price ?? 0 }}
+                                            USD &dollar; {{ $item->total_price + $item->order->shipping_cost ?? 0 }}
                                             @else
-                                            EURO &euro; {{ $item->total_price ?? 0 }}
+                                            EURO &euro; {{ $item->total_price + $item->order->shipping_cost ?? 0 }}
                                             @endif</p>
                                         <h5>To:</h5>
                                         @foreach ($payment_infos as $bankDetails)

@@ -81,9 +81,14 @@
                                                 </div>
                                             </td>
                                             <td>
+                                               
                                                 <div class="fw-bold mb-2" style="color: #FF7519;">Sale Price : </div>
                                                 <div class="fw-bold mb-2" style="color: #2E2B70;">
                                                     USD {{ number_format($item->total_price) }}
+                                                </div>
+                                                 <div class="fw-bold mb-2" style="color: #FF7519;">Shipping Cost : </div>
+                                                <div class="fw-bold mb-2" style="color: #2E2B70;">
+                                                    USD {{ number_format($item->order->shipping_cost) }}
                                                 </div>
                                             </td>
                                             <td>
