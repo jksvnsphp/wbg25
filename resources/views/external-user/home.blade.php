@@ -125,6 +125,13 @@
         text-align: center;
         /* Explicit center alignment for title & price */
     }
+
+    .product-card .product-price {
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
 </style>
 <!-- main home banner section start here -->
 <section class="container-fluid mt-2 mb-0 main-banner-slider">
@@ -221,9 +228,7 @@
 
                 <!-- Pass all categories and subcategories as a JSON object -->
                 <script type="text/javascript">
-                    var categoriesData = {
-                        !!json_encode($categories) !!
-                    };
+                    var categoriesData = @json($categories);
                 </script>
 
             </div>
@@ -594,9 +599,8 @@
                             $imgg=isset($mainGallery[0]['image'])?asset(
                             'uploads/products/'.$mainGallery[0]['image']):asset('uploads/pngwing.com (18).png');
                             $flImg=$imgg;
-
                             }else{
-                            $flImg='https://placehold.co/600x400';
+                            $flImg='https://placehold.co/500x500';
                             }
                             if (empty($previewImage)) {
                             $previewImage =
