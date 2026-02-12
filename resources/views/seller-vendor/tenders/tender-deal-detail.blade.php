@@ -63,11 +63,18 @@
                                             </td>
                                             <td>
                                                 <span class="text-secondary fw-semibold">
-                                                    Tender Price
+                                                    Tender Price:
                                                     @if ($tender->currency == 'usd')
                                                     USD &dollar;{{ $tender->price }}
                                                     @else
                                                     EURO &euro;{{ $tender->price }}
+                                                    @endif
+                                                    <br>
+                                                    Shiping Cost:
+                                                    @if ($tender->currency == 'usd')
+                                                    USD &dollar;{{ $tenderOffer->tender->price ?? 0 }}
+                                                    @else
+                                                    EURO &euro;{{ $tenderOffer->tender->price ?? 0 }}
                                                     @endif
                                                 </span>
                                             </td>
@@ -130,11 +137,12 @@
                                     $countryName = $shippingAddress['country_name'] ?? (is_numeric($countryRaw) ? getCountriesName($countryRaw) : $countryRaw);
 
                                     $streetLine = trim(implode(' ', array_filter([$street, $houseNo])));
-                                    $cityLine = trim(implode(' ', array_filter([$postalCode, $city])));
+                                    $cityLine = trim(implode(' ', array_filter([$city])));
                                     $formattedAddress = implode(', ', array_filter([
                                     $streetLine ?: null,
                                     $cityLine ?: null,
                                     $stateName ?: null,
+                                    $postalCode ?: null,
                                     $countryName ?: null,
                                     ]));
 

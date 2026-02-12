@@ -13,7 +13,7 @@ use App\Models\Tender;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class UISellerController extends Controller
+class UISellerController extends \App\Http\Controllers\Controller
 {
     //
     public function profilePreview($code)
@@ -41,17 +41,8 @@ class UISellerController extends Controller
                                 ->orWhere('expire_at', '>', now());
                         });
                 });
-            $spotlights = $query->orderByRaw("
-                (CASE 
-                    WHEN EXISTS (SELECT 1 FROM seller_packages sp 
-                                JOIN member_packages p ON sp.package_id = p.id 
-                                WHERE users.id = sp.seller_id AND p.type = 'platinum') THEN 1
-                    WHEN EXISTS (SELECT 1 FROM seller_packages sp 
-                                JOIN member_packages p ON sp.package_id = p.id 
-                                WHERE users.id = sp.seller_id AND p.type = 'gold') THEN 2
-                    ELSE 3
-                END)
-                ")->first();
+            $spotlights = $query->first();
+            // dd($spotlights->toArray());
 
 
             $packageData = seller_package::latest()->where('seller_id', $seller->id)->with('package')->first();
@@ -89,11 +80,10 @@ class UISellerController extends Controller
                 'threeStarPercent' => $threeStarPercent,
                 'twoStarPercent' => $twoStarPercent,
                 'oneStarPercent' => $oneStarPercent,
-                'spotlights' => $spotlights,
             ];
             // dd($seller->toArray());
 
-            return view('external-user.supplier-profile-view', compact('certificates', 'ratingData', 'seller', 'packageData', 'latestNews', 'latestProduct', 'latestTender'));
+            return view('external-user.supplier-profile-view', compact('certificates', 'ratingData', 'seller', 'packageData', 'latestNews', 'latestProduct', 'latestTender', 'spotlights'));
         } else {
             abort(404);
         }

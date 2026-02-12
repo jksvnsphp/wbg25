@@ -109,7 +109,7 @@
                                                     style="height: 4rem;" alt="">
                                             </div>
                                             <h6>
-                                                US$ {{ $quote->counter_price ?? 0 }}
+                                                US$ {{ $tender->price + $quote->offer_price ?? 0 }}
                                             </h6>
                                             @if ($quote->user_id == auth()->user()->id)
                                             <button

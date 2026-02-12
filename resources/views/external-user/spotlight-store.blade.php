@@ -251,7 +251,7 @@
                 $previewImage =
                 isset($product->gallery[0]->image) && !empty($product->gallery[0]->image)
                 ? asset('uploads/products/gallery/' . $product->gallery[0]->image)
-                : 'https://placehold.co/600x400';
+                : 'https://placehold.co/500x500';
                 }
                 @endphp
                 <a href="{{ route('product.detail', $product->slug) }}" class="col-md-4 col-lg-3 mt-3 d-block">

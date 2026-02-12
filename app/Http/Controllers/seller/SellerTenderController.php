@@ -863,7 +863,7 @@ class SellerTenderController extends Controller
             $query->where('user_id', $id)
                 ->orWhere('vendor_id', $id);
         })->where('status', 'accept')->where('id', $offer_id)->with('tender.vendor.payment_infos', 'sender')->first();
-        // dd($tenderOffer);
+        // dd($tenderOffer->toArray());
         $tender = Tender::where('slug', $slug)->first();
         if (!$tender) {
             return back()->with(['alert-type' => 'error', 'message' => 'Tender not found!']);
