@@ -11,7 +11,7 @@
                                 <ul class="d-flex flex-wrap justify-content-between align-items-center" style="list-style: disc !important;">
                                     <li style="list-style: disc !important;">
                                         <a class="text-dark text-decoration-underline  d-block mt-3 position-relative" href="{{route('seller.get.products')}}">
-                                            My listed Products ({{ $listedRProduct }})
+                                            My listed Products ({{ $listedRProduct    }})
                                              <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$listedProduct ?? 0}}</span>
                                         </a>
                                     </li>

@@ -13,20 +13,20 @@
                         <div class="col-md-8">
                             <ul class="d-flex flex-wrap" style="list-style: disc !important;">
                                 <li class="me-md-5 me-4" style="list-style: disc !important;">
-                                    <a class="text-dark text-decoration-underline  d-block position-relative " href="{{ route('myquotations.show') }}">
-                                          My listed Quotations ({{ $quotationR }})
-                                        <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$quotation ?? 0}}</span>
-                                    </a>
+                                                                        <a class="text-dark text-decoration-underline  d-block position-relative " href="{{ route('myquotations.show') }}">
+                                                                                    My listed Quotations ({{ $quotationR ?? 0 }})
+                                                                                <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$quotation ?? 0}}</span>
+                                                                        </a>
                                 </li>
                                 <li class="me-md-5 me-4" style="list-style: disc !important;">
                                     <a class="text-dark text-decoration-underline d-block position-relative" href="{{ route('myreceived.quotes.show') }}">
-                                         My Received Quotes ({{ $myRReceivedOfferQuotation }})
+                                         My Received Quotes ({{ $myRReceivedOfferQuotation ?? 0 }})
                                         <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$myReceivedOfferQuotation ?? 0}}</span>
                                     </a>
                                 </li>
                                 <li class="me-md-5 me-4" style="list-style: disc !important;">
                                     <a class="text-dark text-decoration-underline d-block  position-relative" href="{{ route('my.counter.quotes.show') }}">
-                                        My Counter Quotes ({{ $myRSubmittedCounterOfferQuotation }})
+                                        My Counter Quotes ({{ $myRSubmittedCounterOfferQuotation ?? 0 }})
                                         <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$mySubmittedCounterOfferQuotation ?? 0}}</span>
                                     </a>
                                 </li>
@@ -44,7 +44,7 @@
                             <ul class="d-flex flex-wrap" style="list-style: disc !important;">
                                 <li class="me-md-5 me-3" style="list-style: disc !important;">
                                     <a class="text-dark text-decoration-underline d-block position-relative" href="{{ route('seller.quote-deal') }}">
-                                        My Quotation Deals ({{ $myROfferQuotationDeal }})
+                                        My Quotation Deals ({{ $myROfferQuotationDeal ?? 0 }})
                                         <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$myOfferQuotationDeal ?? 0}}</span>
                                     </a>
                                 </li>
@@ -60,14 +60,14 @@
                             <ul class="d-flex flex-wrap" style="list-style: disc !important;">
                                 <li class="me-md-5 me-4" style="list-style: disc !important;">
                                     <a class="text-dark text-decoration-underline d-block position-relative" href="{{ route('mysubmitted.quotes.show') }}">
-                                       My Submitted Quotes ({{ $myRSubmittedOfferQuotation }})
+                                       My Submitted Quotes ({{ $myRSubmittedOfferQuotation ?? 0 }})
                                         <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$mySubmittedOfferQuotation ?? 0}}</span>
                                     </a>
                                 </li>
                                 <li class="me-md-5 me-3" style="list-style: disc !important;">
                                     <a class="text-dark text-decoration-underline d-block position-relative" href="{{ route('seller.quote-counter.offer') }}">
-                                          My Received Counters ({{ $myRReceivedCounterOfferQuotation }})
-                                        <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$myReceivedCounterOfferQuotation ?? 0}}</span>
+                                                                                    My Received Counters ({{ $myRReceivedCounterOfferQuotation ?? 0 }})
+                                                                                <span class="position-absolute top-4 start-100 translate-middle badge rounded-pill bg-danger">{{$myReceivedCounterOfferQuotation ?? 0}}</span>
                                     </a>
                                 </li>
                             </ul>

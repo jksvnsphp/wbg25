@@ -453,8 +453,8 @@ class SellerAuthController extends Controller
             'state' => 'required|string',
             'city' => 'required|string',
             'zip' => 'required',
-            'street' => 'nullable|string',
-            'house_no' => 'nullable|string',
+            'street' => 'required|string',
+            'house_no' => 'required|string',
             'company_category' => 'nullable|numeric',
             'company_sub_category' => 'nullable|numeric',
         ]);
@@ -851,7 +851,7 @@ class SellerAuthController extends Controller
         $soldProducts = $this->getMyStoreState('spotlight');
 
         $listedRMultiplyProduct = products::where('vendor_id', $id)->where('isListingType', 'spotlight')->count();
-        $soldRProducts = $this->getMyStoreState('spotlight');
+        $soldRProducts = $this->getMyStoreRState('spotlight');
         return view('seller-vendor.new-state-store', compact('listedMultiplyProduct', 'soldProducts', 'listedRMultiplyProduct', 'soldRProducts'));
     }
     public function newStateQuotation()
@@ -888,11 +888,13 @@ class SellerAuthController extends Controller
         // all quotation
         $quotationR = Quotation::where('user_id', auth()->user()->id)
             ->where('isDeal', 0)
+             ->where('isRead', 1)
             ->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])
             ->count();
 
         $myRReceivedOfferQuotation = OfferQuotation::where('vendor_id', $id)
             ->where('status', 'pending')
+            ->where('isVendorRead', 1)
             ->doesntHave('counters')
             ->count();
 
@@ -911,7 +913,8 @@ class SellerAuthController extends Controller
 
         $myRSubmittedCounterOfferQuotation = CounterOfferQuotation::whereHas('offer', function ($query) use ($id) {
             $query->where('vendor_id', $id);
-        })->where('status', 'pending')->count();
+            
+        })->where('isVendorRead', 1)->where('status', 'pending')->count();
 
         return view('seller-vendor.new-state-quotations', compact(
             'quotation',
@@ -952,8 +955,8 @@ class SellerAuthController extends Controller
 
         // all tender data
         $listedRTender = Tender::where('vendor_id', $id)->where('isDeal', 0)->whereRaw('DATE_ADD(created_at, INTERVAL duration DAY) >= ?', [Carbon::now()])->count();
-        $myRReceivedOfferTender = OfferTender::where('vendor_id', $id)->where('status', 'pending')->doesntHave('counters')->count();
-        $myRSubmittedOfferTender = OfferTender::where('user_id', $id)->where('status', 'pending')->doesntHave('counters')->count();
+        $myRReceivedOfferTender = OfferTender::where('vendor_id', $id)->where('status', 'pending')->doesntHave('counters')->where('isVendorRead', 1)->count();
+        $myRSubmittedOfferTender = OfferTender::where('user_id', $id)->where('status', 'pending')->doesntHave('counters')->where('isUserRead', 1)->count();
 
         $myRDealedOfferTender = OfferTender::where(function ($query) {
             $query->where(
@@ -965,7 +968,7 @@ class SellerAuthController extends Controller
             });
         })->where('status', 'accept')->count();
 
-        $myRReceivedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('status', 'pending')->count();
+        $myRReceivedCounterOfferTender = CounterOfferTender::where('user_id', $id)->where('status', 'pending')->where('isUserRead', 1)->count();
         $myRSubmittedCounterOfferTender = CounterOfferTender::whereHas('offer', function ($query) use ($id) {
             $query->where('vendor_id', $id);
         })->where('status', 'pending')->count();
@@ -997,6 +1000,7 @@ class SellerAuthController extends Controller
 
         // all products    
         $listedRProduct = products::where('vendor_id', $id)->where('isListingType', 'normal')
+            ->where('isRead', 1)
             ->get()
             ->filter(function ($product) {
                 $expiryDate = Carbon::parse($product->created_at)->addDays($product->duration);
@@ -1009,6 +1013,7 @@ class SellerAuthController extends Controller
             ->where('order_status', '!=', 'canceled')
             ->where('payment_status', '!=', 'processing')
             ->where('payment_status', '!=', 'failed')
+             ->where('isRead', 1)
             ->with('orderItems')
             ->get()
             ->pluck('orderItems')
