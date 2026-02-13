@@ -705,6 +705,16 @@ Route::controller(SellerAuthController::class)->prefix('seller')->group(function
    Route::post('/seller/verify/otp', 'verifyOtp')->name('seller.verify.otp');
    Route::post('/seller-complete/profile/store', 'completeMyProfile')->name('seller.complete.profile.save');
 });
+
+Route::get('paypal/pay', [PayPalController::class, 'payWithPayPal'])
+   ->name('paypal.pay');
+
+Route::get('paypal/status', [PayPalController::class, 'payPalStatus'])
+   ->name('paypal.status');
+
+Route::get('paypal/free/success', [PayPalController::class, 'paypalFreeSuccess'])
+   ->name('paypal.free.success');
+   
 Route::controller(RatingController::class)->prefix('buyer')->group(function () {
    Route::post('/buyer-set-rating', 'setBuyerRate')->name('buyer.set.rate');
 });
@@ -908,11 +918,3 @@ Route::controller(UserProductController::class)->group(function () {
       ->name('seller.spotlight');
 });
 
-Route::get('paypal/pay', [PayPalController::class, 'payWithPayPal'])
-   ->name('paypal.pay');
-
-Route::get('paypal/status', [PayPalController::class, 'payPalStatus'])
-   ->name('paypal.status');
-
-Route::get('paypal/free/success', [PayPalController::class, 'paypalFreeSuccess'])
-   ->name('paypal.free.success');

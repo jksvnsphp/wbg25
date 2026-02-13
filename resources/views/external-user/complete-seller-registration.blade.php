@@ -361,7 +361,7 @@
                                 <div class="col-md-3">
                                     <div class="form-group mb-3">
                                         <label for="" class="form-label">House Number <span class="text-danger fs-5">*</span></label>
-                                        <input type="number" name="house_no" value="{{ session('house_no') }}" class="form-control" placeholder="House Number" required />
+                                        <input type="text" name="house_no" value="{{ session('house_no') }}" class="form-control" placeholder="House Number" required />
                                         @error('house_no')
                                         <span class="text-danger"> {{ $message }} </span>
                                         @enderror

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use App\Models\Quotation;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 class PayPalController extends Controller
 {
     private function createUniqueSlug1($title, $id = null)
@@ -136,39 +137,41 @@ public function payWithPayPal()
     // CASE 1: Amount > 0 → Go to PayPal
     // ---------------------------------------------------
     if ($amount > 0) {
+        try {
+            $provider = new PayPalClient();
+            $provider->setApiCredentials(config('paypal'));
+            $token = $provider->getAccessToken();
+            $provider->setAccessToken($token);
 
-        $provider = new PayPalClient();
-        $provider->setApiCredentials(config('paypal'));
-        $token = $provider->getAccessToken();
-        $provider->setAccessToken($token);
-
-        $response = $provider->createOrder([
-            "intent" => "CAPTURE",
-            "application_context" => [
-                "return_url" => route('paypal.status'),
-                "cancel_url" => route('paypal.status'),
-            ],
-            "purchase_units" => [
-                [
-                    "amount" => [
-                        "currency_code" => "EUR",
-                        "value" => (string)$amount
+            $response = $provider->createOrder([
+                "intent" => "CAPTURE",
+                "application_context" => [
+                    "return_url" => route('paypal.status'),
+                    "cancel_url" => route('paypal.status'),
+                ],
+                "purchase_units" => [
+                    [
+                        "amount" => [
+                            "currency_code" => "EUR",
+                            "value" => (string)$amount
+                        ]
                     ]
                 ]
-            ]
-        ]);
+            ]);
 
-        if (isset($response['id']) && $response['id'] != null) {
-            foreach ($response['links'] as $link) {
-                if ($link['rel'] == 'approve') {
-                    return redirect()->away($link['href']);
+            if (isset($response['id']) && $response['id'] != null) {
+                foreach ($response['links'] as $link) {
+                    if ($link['rel'] == 'approve') {
+                        return redirect()->away($link['href']);
+                    }
                 }
             }
-        }
 
-        //return redirect()->route('home')->with('error', 'Payment error. Please try again.');
-		return back()->with('error', 'Payment error. Please try again.');
-//dd('AMOUNT > 0 DEBUG', ['amount'   => $amount,'response' => $response,]);
+            return back()->with('error', 'Payment error. Please try again.');
+        } catch (\Exception $e) {
+            Log::error('PayPal createOrder error: ' . $e->getMessage());
+            return back()->with('error', 'Unable to initialize PayPal payment. Please try again later.');
+        }
     }
 
     // ---------------------------------------------------
@@ -364,7 +367,7 @@ public function paypalFreeSuccess()
        return redirect()->route('home')->with('success', 'Account created successfully.');
 }
 private function finalizeUserAndPackage($signup, $paymentTemp, $paymentId)
-{
+{         
 
     
     DB::beginTransaction();
